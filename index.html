@@ -6091,6 +6091,47 @@ function clonarLoteObj(obj){
   return JSON.parse(JSON.stringify(obj||{}));
 }
 
+function numFreteRateio(v){
+  if(v===undefined||v===null||v==='')return 0;
+  if(typeof finNum==='function')return finNum(v);
+  return parseFloat(String(v).replace(/\./g,'').replace(',','.'))||0;
+}
+
+function getOrcamentoAtualEmEdicao(){
+  if(calcMode!=='lote'||!activeLoteId||activeOrcEditIndex===null||activeOrcEditIndex===undefined)return null;
+  var lote=getLotes().find(function(l){return l.id===activeLoteId;});
+  return lote&&lote.orcamentos?lote.orcamentos[activeOrcEditIndex]:null;
+}
+
+function calcularFreteUnitarioOrc(o){
+  o=o||{};
+  var temFixo=o.freteRateioFixo||o.freteLiquidoAnimalFixo!==undefined;
+  if(temFixo){
+    var liquido=numFreteRateio(o.freteLiquidoAnimalFixo);
+    var bonus=numFreteRateio(o.freteBonusAnimalFixo);
+    var bruto=numFreteRateio(o.freteBrutoAnimalFixo)||(liquido+bonus);
+    return {fixo:true,bruto:bruto,bonus:bonus,liquido:liquido};
+  }
+  var qtd=numFreteRateio(o.qtd);
+  var km=numFreteRateio(o.freteKm||o.distanciaKm);
+  var custoKm=numFreteRateio(o.freteCusto);
+  var bonusCalc=numFreteRateio(o.bonusFrete);
+  var brutoCalc=qtd>0?(km*custoKm)/qtd:0;
+  return {fixo:false,bruto:brutoCalc,bonus:bonusCalc,liquido:Math.max(0,brutoCalc-bonusCalc)};
+}
+
+function fixarFreteUnitarioLote(lote){
+  if(!lote||!Array.isArray(lote.orcamentos))return;
+  lote.orcamentos.forEach(function(o){
+    if(!o)return;
+    var f=calcularFreteUnitarioOrc(o);
+    o.freteRateioFixo=true;
+    o.freteBrutoAnimalFixo=f.bruto;
+    o.freteBonusAnimalFixo=f.bonus;
+    o.freteLiquidoAnimalFixo=f.liquido;
+  });
+}
+
 function escalarValoresLote(lote,ratio,novaQtd,sufixoLabel){
   lote.qtd=novaQtd;
   if(Array.isArray(lote.orcamentos)){
@@ -6131,6 +6172,7 @@ function gerarParcialLote(){
   if(i<0)return;
   var lote=arr[i];
   applyEditPanelDraft(lote);
+  fixarFreteUnitarioLote(lote);
   var qtdTotal=parseFloat(lote.qtd)||0;
   if(!qtdParcial||qtdParcial<=0){
     toast('⚠ Informe a quantidade da parcial');
@@ -8372,8 +8414,9 @@ function calcPreviewFrete(){
   var bonus=num('bonusFrete');
   var pesoCom=num('pesoCom');
   var rendE=num('rendEntrada')/100;
-  var freteBruto=qtd>0?(km*custoKm)/qtd:0;
-  var freteAnimal=Math.max(0,freteBruto-bonus);
+  var freteFixo=calcularFreteUnitarioOrc(getOrcamentoAtualEmEdicao());
+  var freteBruto=freteFixo&&freteFixo.fixo?freteFixo.bruto:(qtd>0?(km*custoKm)/qtd:0);
+  var freteAnimal=freteFixo&&freteFixo.fixo?freteFixo.liquido:Math.max(0,freteBruto-bonus);
   var atCompra=pesoCom*rendE/15;
   return {
     total:freteAnimal*qtd,
@@ -8532,6 +8575,13 @@ function salvarResultadoNoLote(){
     custoAtProd:_lastCalcCustoAt||0,
     boitelCompare:_lastCalcBoitel
   };
+  var freteRateioAnterior=calcularFreteUnitarioOrc(orcAnterior);
+  if(freteRateioAnterior&&freteRateioAnterior.fixo){
+    orc.freteRateioFixo=true;
+    orc.freteBrutoAnimalFixo=freteRateioAnterior.bruto;
+    orc.freteBonusAnimalFixo=freteRateioAnterior.bonus;
+    orc.freteLiquidoAnimalFixo=freteRateioAnterior.liquido;
+  }
   var arr=getLotes();
   var salvouEmLoteExistente=false;
   var statusDestino='embarque';
@@ -8942,9 +8992,10 @@ function calcular(opts){
 
   // ── Biometria (fórmula correta — quebra só na entrada, como transporte) ────
   // Frete por animal (menos bônus de frete se houver)
-  const freteBruto=qtd>0?(freteKm*freteCusto)/qtd:0;
-  const bonusFrete=g('bonusFrete');          // desconto/rebate no frete
-  const freteAnim=Math.max(0, freteBruto - bonusFrete);
+  const freteFixoEdicao=calcularFreteUnitarioOrc(getOrcamentoAtualEmEdicao());
+  const bonusFrete=freteFixoEdicao&&freteFixoEdicao.fixo?freteFixoEdicao.bonus:g('bonusFrete');          // desconto/rebate no frete
+  const freteBruto=freteFixoEdicao&&freteFixoEdicao.fixo?freteFixoEdicao.bruto:(qtd>0?(freteKm*freteCusto)/qtd:0);
+  const freteAnim=freteFixoEdicao&&freteFixoEdicao.fixo?freteFixoEdicao.liquido:Math.max(0, freteBruto - bonusFrete);
 
   const valAnim=pesoCom*valorKG;
 
