@@ -2273,37 +2273,61 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
     .calc-field-nav{
       position:fixed;
       left:50%;
-      bottom:calc(86px + env(safe-area-inset-bottom));
+      bottom:calc(82px + env(safe-area-inset-bottom));
       transform:translateX(-50%);
       z-index:1400;
       align-items:center;
-      gap:8px;
-      padding:6px;
-      border-radius:999px;
-      background:rgba(13,27,42,.96);
-      border:1px solid rgba(201,162,78,.78);
-      box-shadow:0 14px 34px rgba(13,27,42,.34),inset 0 1px 0 rgba(255,255,255,.08);
+      gap:6px;
+      padding:5px;
+      border-radius:18px;
+      background:rgba(13,27,42,.94);
+      border:1px solid rgba(201,162,78,.55);
+      box-shadow:0 10px 24px rgba(13,27,42,.28),inset 0 1px 0 rgba(255,255,255,.08);
+      backdrop-filter:blur(10px);
     }
     .calc-field-nav.is-visible{display:flex}
     .calc-field-nav button{
       appearance:none;
-      border:1px solid rgba(245,214,143,.68);
-      background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(201,162,78,.16));
-      color:#F5D68F;
-      width:48px;
-      height:38px;
-      border-radius:999px;
-      font:900 22px/1 Inter,sans-serif;
+      border:0;
+      min-height:34px;
+      border-radius:13px;
+      font-family:Inter,sans-serif;
+      font-size:12px!important;
+      font-weight:900;
+      letter-spacing:.2px;
       display:flex;
       align-items:center;
       justify-content:center;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+      gap:6px;
       touch-action:manipulation;
+      white-space:nowrap;
+    }
+    .calc-field-nav-prev{
+      padding:0 10px;
+      color:rgba(242,237,227,.82);
+      background:rgba(255,255,255,.08);
+    }
+    .calc-field-nav-next{
+      padding:0 14px;
+      color:#0D1B2A;
+      background:linear-gradient(145deg,#F7D891,#C9A24E);
+      box-shadow:0 5px 14px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.45);
+    }
+    .calc-field-nav-tab{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:36px;
+      height:22px;
+      padding:0 7px;
+      border-radius:7px;
+      background:rgba(13,27,42,.12);
+      border:1px solid rgba(13,27,42,.22);
+      font-size:11px;
+      letter-spacing:.8px;
     }
     .calc-field-nav button:active{
       transform:translateY(1px);
-      background:linear-gradient(145deg,#F7D891,#C9A24E);
-      color:#0D1B2A;
     }
   }
 	
@@ -2405,8 +2429,8 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   </div>
 
   <div id="calc-field-nav" class="calc-field-nav" aria-label="Navegar entre campos da calculadora">
-    <button type="button" id="calc-field-prev" aria-label="Campo anterior">‹</button>
-    <button type="button" id="calc-field-next" aria-label="Próximo campo">›</button>
+    <button type="button" id="calc-field-prev" class="calc-field-nav-prev" aria-label="Campo anterior">‹ Voltar</button>
+    <button type="button" id="calc-field-next" class="calc-field-nav-next" aria-label="Próximo campo"><span class="calc-field-nav-tab">TAB</span><span>Próximo</span> ›</button>
   </div>
 
   <div class="main">
