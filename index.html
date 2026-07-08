@@ -815,7 +815,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .status-total-sub{font-size:9px;color:var(--text-3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .status-table-wrap{background:#fff;border:1px solid var(--border);border-radius:14px;overflow-x:auto;box-shadow:0 6px 22px rgba(13,27,42,.07);width:100%;}
   .status-table{width:100%;min-width:1320px;}
-.status-head,.status-filter-row,.status-row{display:grid;grid-template-columns:88px 48px 92px minmax(220px,1.35fr) 128px 58px 82px 82px 92px minmax(104px,.95fr) minmax(104px,.95fr) minmax(94px,.85fr) 68px 68px 96px 96px;align-items:center;}
+.status-head,.status-filter-row,.status-row{display:grid;grid-template-columns:88px 48px 92px 112px minmax(220px,1.35fr) 128px 58px 82px 82px 92px minmax(104px,.95fr) minmax(104px,.95fr) minmax(94px,.85fr) 68px 68px 96px 96px;align-items:center;}
   .status-head{background:#f6f9fb;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:2;}
   .status-head-cell{position:relative;padding:10px 9px;font-size:8.5px;font-weight:850;letter-spacing:.9px;text-transform:uppercase;color:var(--text-3);white-space:nowrap;cursor:pointer;user-select:none;}
   .status-head-cell:first-child{text-align:center;}
@@ -836,8 +836,10 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .status-column-option input{width:16px;height:16px;accent-color:var(--accent);}
   .status-sort-tools{display:flex;align-items:center;gap:6px;}
   .status-sort-tools select{height:32px;border:1px solid var(--border);border-radius:9px;background:#fff;color:var(--text);font-size:10px;font-weight:750;padding:0 28px 0 10px;outline:none;}
-  .status-filter-row{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:37px;z-index:2;}
+  .status-filter-row{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:2;}
   .status-filter-cell{padding:6px 6px;}
+  .status-filter-label{position:relative;display:flex;align-items:center;gap:4px;min-height:16px;margin:0 0 4px;border:0;background:transparent;color:var(--taupe);font-family:'Inter',sans-serif;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;line-height:1;cursor:pointer;padding:0;text-align:left;}
+  .status-filter-label:hover{color:var(--accent);}
   .status-filter-control{position:relative;width:100%;}
   .status-filter-control input{width:100%;height:30px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);padding:0 22px 0 8px;font-family:'Inter',sans-serif;font-size:11px;color:var(--text);outline:none;font-weight:650;}
   .status-filter-control input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 2px rgba(201,162,78,.12);}
@@ -912,7 +914,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	  @media(max-width:1180px){
 	    #panel-lotes{width:calc(100vw - 28px);}
 	    .status-table{min-width:1420px;}
-	    .status-head,.status-filter-row,.status-row{grid-template-columns:86px 52px 112px 160px 108px 54px 84px 84px 96px 112px 112px 102px 70px 70px 104px 104px;}
+	    .status-head,.status-filter-row,.status-row{grid-template-columns:86px 52px 112px 118px 160px 108px 54px 84px 84px 96px 112px 112px 102px 70px 70px 104px 104px;}
 	    .status-head-cell{padding:9px 7px;font-size:8px;}
 	    .status-cell{padding:8px 7px;font-size:11.5px;}
 	  }
@@ -977,7 +979,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	    .status-total-value{font-size:14px;}
 	    .status-table-wrap{border-radius:12px;}
 	    .status-table{min-width:1440px;}
-	    .status-head,.status-filter-row,.status-row{grid-template-columns:86px 56px 132px 170px 108px 54px 86px 86px 98px 116px 116px 106px 72px 72px 106px 106px;}
+	    .status-head,.status-filter-row,.status-row{grid-template-columns:86px 56px 132px 118px 170px 108px 54px 86px 86px 98px 116px 116px 106px 72px 72px 106px 106px;}
 	    .status-head-cell{padding:9px 7px;font-size:8px;}
 	    .status-filter-cell{padding:5px;}
 	    .status-filter-control input{height:28px;font-size:10px;}
@@ -2177,7 +2179,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   #panel-lotes .status-table-wrap{max-height:calc(100vh - 238px);overflow:auto;border-radius:14px;}
   #panel-lotes .status-table{min-width:1380px;}
   #panel-lotes .status-head{position:sticky;top:0;z-index:6;background:#fbfaf5;}
-  #panel-lotes .status-filter-row{position:sticky;top:34px;z-index:5;background:#fffdf7;}
+  #panel-lotes .status-filter-row{position:sticky;top:0;z-index:5;background:#fffdf7;}
   #panel-lotes .status-head-cell{padding:8px 9px;font-size:8px;}
   #panel-lotes .status-filter-cell{padding:5px 6px;}
   #panel-lotes .status-filter-control input{height:28px;font-size:10px;border-radius:8px;}
@@ -3304,10 +3306,10 @@ let activeLoteDetailId=null;
 let activeOrcEditIndex=null;
 let activeLoteReturnStatus=null;
 let pillFilter='';
-var statusColumnFilters={status:'',ano:'',confinamento:'',lote:'',b3:'',qtd:'',entrada:'',abate:'',recebimento:'',faturamento:'',capital:'',lucro:'',rent:'',rentmes:'',eficiencia:'',eficienciaChegada:''};
+var statusColumnFilters={status:'',ano:'',confinamento:'',origem:'',lote:'',b3:'',qtd:'',entrada:'',abate:'',recebimento:'',faturamento:'',capital:'',lucro:'',rent:'',rentmes:'',eficiencia:'',eficienciaChegada:''};
 var STATUS_COLS=[
   {key:'status',label:'Status',w:88},{key:'ano',label:'Ano',w:52},{key:'confinamento',label:'Confinamento',w:112},
-  {key:'lote',label:'Lote',w:230},{key:'b3',label:'B3',w:126},{key:'qtd',label:'Qtd',w:62},
+  {key:'origem',label:'Origem',w:118},{key:'lote',label:'Lote',w:230},{key:'b3',label:'B3',w:126},{key:'qtd',label:'Qtd',w:62},
   {key:'entrada',label:'Entrada',w:92},{key:'abate',label:'Abate',w:92},{key:'recebimento',label:'Recebimento',w:104},
   {key:'faturamento',label:'Fat. lote',w:126},{key:'capital',label:'Capital',w:126},{key:'lucro',label:'Lucro',w:116},
   {key:'rent',label:'% Oper.',w:76},{key:'rentmes',label:'% Mês',w:76},{key:'eficiencia',label:'Efic. Origem',w:116},{key:'eficienciaChegada',label:'Efic. Cheg.',w:116}
@@ -6894,7 +6896,7 @@ function setStatusSort(key,dir){
   statusSortState={key:key||'status',dir:dir||((statusSortState.key===key&&statusSortState.dir==='asc')?'desc':'asc')};
   try{localStorage.setItem(STATUS_SORT_KEY,JSON.stringify(statusSortState));}catch(e){}
   sortStatusRows();
-  document.querySelectorAll('#panel-lotes .status-head-cell').forEach(function(el){
+  document.querySelectorAll('#panel-lotes .status-head-cell,#panel-lotes .status-filter-label').forEach(function(el){
     var active=el.getAttribute('data-col')===statusSortState.key;
     var mark=el.querySelector('.status-sort-mark');
     if(mark)mark.textContent=active?(statusSortState.dir==='asc'?'↑':'↓'):'';
@@ -7013,13 +7015,22 @@ function renderLotes(){
     if(!opts.length)return '';
     return '<datalist id="status-dl-'+key+'">'+opts.map(function(v){return '<option value="'+escHtml(v)+'"></option>';}).join('')+'</datalist>';
   }
-  function filterInput(key,placeholder){
-    var v=statusColumnFilters[key]||'';
-    return '<div class="status-filter-cell '+statusColClass(key)+'"><div class="status-filter-control"><input type="text" list="status-dl-'+key+'" value="'+escHtml(v)+'" placeholder="'+escHtml(placeholder||'Filtrar')+'" onfocus="abrirSugestoesFiltroStatus(this)" oninput="updateStatusColumnFilter(\''+key+'\',this.value)" onclick="event.stopPropagation();abrirSugestoesFiltroStatus(this)" onpointerdown="event.stopPropagation()">'+filterOptionsHtml(key)+'</div></div>';
+  function statusFilterLabel(c){
+    var mark=statusSortState.key===c.key?(statusSortState.dir==='asc'?'↑':'↓'):'';
+    return '<button type="button" class="status-filter-label" data-col="'+c.key+'" onclick="event.stopPropagation();setStatusSort(\''+c.key+'\')">'
+      +escHtml(c.label)
+      +'<span class="status-sort-mark">'+mark+'</span>'
+      +'<span class="status-col-resizer" onmousedown="startStatusColumnResize(event,\''+c.key+'\')"></span>'
+    +'</button>';
   }
-  function filterStatus(){
+  function filterInput(c,placeholder){
+    var key=c.key;
+    var v=statusColumnFilters[key]||'';
+    return '<div class="status-filter-cell '+statusColClass(key)+'">'+statusFilterLabel(c)+'<div class="status-filter-control"><input type="text" list="status-dl-'+key+'" value="'+escHtml(v)+'" placeholder="'+escHtml(placeholder||'Filtrar')+'" onfocus="abrirSugestoesFiltroStatus(this)" oninput="updateStatusColumnFilter(\''+key+'\',this.value)" onclick="event.stopPropagation();abrirSugestoesFiltroStatus(this)" onpointerdown="event.stopPropagation()">'+filterOptionsHtml(key)+'</div></div>';
+  }
+  function filterStatus(c){
     var cur=statusColumnFilters.status||'';
-    return '<div class="status-filter-cell '+statusColClass('status')+'"><div class="status-filter-control"><input type="text" list="status-dl-status" value="'+escHtml(cur)+'" placeholder="Todos" onfocus="abrirSugestoesFiltroStatus(this)" oninput="updateStatusColumnFilter(\'status\',this.value)" onclick="event.stopPropagation();abrirSugestoesFiltroStatus(this)" onpointerdown="event.stopPropagation()">'+filterOptionsHtml('status')+'</div></div>';
+    return '<div class="status-filter-cell '+statusColClass('status')+'">'+statusFilterLabel(c)+'<div class="status-filter-control"><input type="text" list="status-dl-status" value="'+escHtml(cur)+'" placeholder="Todos" onfocus="abrirSugestoesFiltroStatus(this)" oninput="updateStatusColumnFilter(\'status\',this.value)" onclick="event.stopPropagation();abrirSugestoesFiltroStatus(this)" onpointerdown="event.stopPropagation()">'+filterOptionsHtml('status')+'</div></div>';
   }
   function statusHeaderHtml(){
     return STATUS_COLS.map(function(c){
@@ -7033,12 +7044,12 @@ function renderLotes(){
   }
   function statusFiltersHtml(){
     var placeholders={
-      status:'Todos',ano:'Ano',confinamento:'Confinamento',lote:'Lote',b3:'B3',qtd:'Qtd',
+      status:'Todos',ano:'Ano',confinamento:'Confinamento',origem:'Origem',lote:'Lote',b3:'B3',qtd:'Qtd',
       entrada:'Entrada',abate:'Abate',recebimento:'Receb.',faturamento:'R$',capital:'R$',
       lucro:'R$',rent:'%',rentmes:'%',eficiencia:'kg MS/@ origem',eficienciaChegada:'kg MS/@ cheg.'
     };
     return STATUS_COLS.map(function(c){
-      return c.key==='status'?filterStatus():filterInput(c.key,placeholders[c.key]||c.label);
+      return c.key==='status'?filterStatus(c):filterInput(c,placeholders[c.key]||c.label);
     }).join('');
   }
   function statusColumnPanelHtml(){
@@ -7054,16 +7065,7 @@ function renderLotes(){
   }
   function statusViewbarHtml(){
     return '<div class="status-viewbar">'
-      +'<div class="status-sort-tools">'
-        +'<span>Ordenar</span>'
-        +'<select id="status-sort-key" onchange="setStatusSort(this.value,document.getElementById(\'status-sort-dir\').value)">'
-          +STATUS_COLS.map(function(c){return '<option value="'+c.key+'" '+(statusSortState.key===c.key?'selected':'')+'>'+escHtml(c.label)+'</option>';}).join('')
-        +'</select>'
-        +'<select id="status-sort-dir" onchange="setStatusSort(document.getElementById(\'status-sort-key\').value,this.value)">'
-          +'<option value="asc" '+(statusSortState.dir==='asc'?'selected':'')+'>Crescente</option>'
-          +'<option value="desc" '+(statusSortState.dir==='desc'?'selected':'')+'>Decrescente</option>'
-        +'</select>'
-      +'</div>'
+      +'<div class="status-sort-tools"><span>Clique no título do filtro para ordenar ↑↓</span></div>'
       +'<div class="status-view-actions">'
         +'<button type="button" class="status-view-btn" onclick="toggleStatusColumnsPanel()">Colunas visíveis</button>'
         +'<button type="button" class="status-view-btn" onclick="resetStatusColumns()">Restaurar</button>'
@@ -7082,6 +7084,7 @@ function renderLotes(){
     var confinamento=(o&&o.precificacaoSnapshot&&o.precificacaoSnapshot.boitelNome)
       ||(o&&o.boitelSnapshot&&(o.boitelSnapshot.boitelNome||o.boitelSnapshot.nome))
       ||(o&&o.boitelNome)||l.boitelNome||'Manual / sem boitel';
+    var origemVal=(l.origemCompra||l.origem||(o&&(o.origemCompra_orc||o.origemCompra))||'—');
     var realDates=l.ajusteReal||l.apuracao||{};
     var entradaIso=realDates.dataEntradaReal||(l.confRecord&&l.confRecord.dataEntrada)||(o&&o.dataEntradaPrev)||'';
     var saidaIso=realDates.dataAbateReal||(l.confRecord&&l.confRecord.dataSaida?l.confRecord.dataSaida:'');
@@ -7106,6 +7109,7 @@ function renderLotes(){
     var lucroVal=o?fmt(lucro):'—';
     var rentVal=o?fmtPct(metric.rent):'—';
     var rentMesVal=o?fmtPct(metric.rentMes):'—';
+    var origemVal=(l.origemCompra||l.origem||(o&&(o.origemCompra_orc||o.origemCompra))||'—');
     var dataEntradaCurta=dataEntrada&&dataEntrada!=='—'?dataEntrada.slice(0,5):'—';
     var dataAbateCurta=dataAbate&&dataAbate!=='—'?dataAbate.slice(0,5):'—';
     var eficienciaVal=o&&metric.eficienciaBio?(fmtNum(metric.eficienciaBio,2)+' kg MS/@'):'—';
@@ -7122,6 +7126,7 @@ function renderLotes(){
       +' data-filter-status="'+escHtml(sc.label)+'"'
       +' data-filter-ano="'+escHtml(anoVal)+'"'
       +' data-filter-confinamento="'+escHtml(confinamento)+'"'
+      +' data-filter-origem="'+escHtml(origemVal)+'"'
       +' data-filter-lote="'+escHtml(filtroLote)+'"'
       +' data-filter-b3="'+escHtml(b3Val)+'"'
       +' data-filter-qtd="'+escHtml(qtdVal)+'"'
@@ -7138,6 +7143,7 @@ function renderLotes(){
       +' data-sort-status="'+STATUS_ORDER.indexOf(l.status||'embarque')+'"'
       +' data-sort-ano="'+escHtml(anoVal)+'"'
       +' data-sort-confinamento="'+escHtml(confinamento)+'"'
+      +' data-sort-origem="'+escHtml(origemVal)+'"'
       +' data-sort-lote="'+escHtml(cardTitle)+'"'
       +' data-sort-b3="'+escHtml(b3Val)+'"'
       +' data-sort-qtd="'+qtdRaw+'"'
@@ -7177,6 +7183,7 @@ function renderLotes(){
       +statusLabel
       +statusCell('ano',anoVal,'muted')
       +statusCell('confinamento',confinamento,'muted')
+      +statusCell('origem',origemVal,'muted')
       +loteCell
       +b3Cell
       +statusCell('qtd',qtdVal)
@@ -7221,6 +7228,7 @@ function renderLotes(){
     var confinamento=(o&&o.precificacaoSnapshot&&o.precificacaoSnapshot.boitelNome)
       ||(o&&o.boitelSnapshot&&(o.boitelSnapshot.boitelNome||o.boitelSnapshot.nome))
       ||(o&&o.boitelNome)||l.boitelNome||'Manual / sem boitel';
+    var origemVal=(l.origemCompra||l.origem||(o&&(o.origemCompra_orc||o.origemCompra))||'—');
     var realDates=l.ajusteReal||l.apuracao||{};
     var entradaIso=realDates.dataEntradaReal||(l.confRecord&&l.confRecord.dataEntrada)||(o&&o.dataEntradaPrev)||'';
     var saidaIso=realDates.dataAbateReal||(l.confRecord&&l.confRecord.dataSaida?l.confRecord.dataSaida:'');
@@ -7234,6 +7242,7 @@ function renderLotes(){
     addStatusFilterOption('status',sc.label);
     addStatusFilterOption('ano',statusYear(entradaIso,o));
     addStatusFilterOption('confinamento',confinamento);
+    addStatusFilterOption('origem',origemVal);
     addStatusFilterOption('lote',cardTitle);
     addStatusFilterOption('b3',metric.contratosB3?'Travado':'Sem trava');
     addStatusFilterOption('b3',textoCoberturaB3(l,o,metric,true));
@@ -7277,9 +7286,6 @@ function renderLotes(){
     +'</div>'
     +statusViewbarHtml()
     +'<div class="status-table-wrap"><div class="status-table">'
-    +'<div class="status-head" style="grid-template-columns:'+statusGridTemplate()+'">'
-      +statusHeaderHtml()
-    +'</div>'
     +'<div class="status-filter-row" style="grid-template-columns:'+statusGridTemplate()+'">'
       +statusFiltersHtml()
     +'</div>'
@@ -9868,11 +9874,11 @@ function buildHomeExportData(){
   return {tab:'Home',title:'Relatório Home',file:'VM_Agro_Home_'+exportDateFile(),filters:filters,sheets:[{name:'Resumo',rows:resumo},{name:'Lotes',rows:lotes}]};
 }
 function buildStatusLotRows(){
-  var rows=[['Status','Ano','Confinamento','Lote','B3','Qtd','Entrada','Abate','Recebimento','Faturamento','Capital','Lucro','% operação','% ao mês','Efic. origem','Efic. chegada']];
+  var rows=[['Status','Ano','Confinamento','Origem','Lote','B3','Qtd','Entrada','Abate','Recebimento','Faturamento','Capital','Lucro','% operação','% ao mês','Efic. origem','Efic. chegada']];
   [].forEach.call(document.querySelectorAll('#lote-list .status-row[data-lid]'),function(row){
     if(!exportVisible(row)||row.style.display==='none')return;
     rows.push([
-      row.dataset.filterStatus||'',row.dataset.filterAno||'',row.dataset.filterConfinamento||'',row.dataset.filterLote||'',row.dataset.filterB3||'',
+      row.dataset.filterStatus||'',row.dataset.filterAno||'',row.dataset.filterConfinamento||'',row.dataset.filterOrigem||'',row.dataset.filterLote||'',row.dataset.filterB3||'',
       row.dataset.filterQtd||'',row.dataset.filterEntrada||'',row.dataset.filterAbate||'',row.dataset.filterRecebimento||'',
       row.dataset.filterFaturamento||'',row.dataset.filterCapital||'',row.dataset.filterLucro||'',row.dataset.filterRent||'',row.dataset.filterRentmes||'',
       row.dataset.filterEficiencia||'',row.dataset.filterEficienciachegada||row.dataset.filterEficienciaChegada||''
