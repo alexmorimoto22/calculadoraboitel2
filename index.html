@@ -2515,10 +2515,14 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
       <div id="calc-orc-opts" style="display:none;margin-bottom:8px;">
         <div class="card calc-orc-card" style="padding:14px 16px 10px;border-left:3px solid var(--accent);">
           <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-3);margin-bottom:10px;">Dados Opcionais do Orçamento</div>
-          <div class="g2 calc-orc-grid">
+          <div class="g3 calc-orc-grid">
             <div class="field">
               <label>Nome / Referência <span style="font-size:9px;color:var(--text-3);font-weight:400;">(opcional)</span></label>
               <input type="text" id="orc-label" placeholder="Ex: Lote João · Nelore · Jun 2026">
+            </div>
+            <div class="field">
+              <label>Origem <span style="font-size:9px;color:var(--text-3);font-weight:400;">(opcional)</span></label>
+              <input type="text" id="orc-origem" placeholder="Cidade de origem da compra">
             </div>
             <div class="field">
               <label>Vendedor <span style="font-size:9px;color:var(--text-3);font-weight:400;">(opcional)</span></label>
@@ -7806,6 +7810,7 @@ function editarOrcamento(loteId,idx){
 
   var labelEl=document.getElementById('orc-label-main')||document.getElementById('orc-label');
   if(labelEl)labelEl.value=getLoteNomeReferencia(lote,o)||'';
+  _setCalcValue('orc-origem',_prefer(o.origemCompra_orc,lote.origemCompra,lote.origem,''));
   limparIndicadoresBiometriaCalc();
   var res=document.getElementById('resultado');if(res)res.style.display='none';
   var card=document.getElementById('orc-action-card');if(card)card.style.display='none';
@@ -8079,6 +8084,7 @@ function simularLote(id){
   populateCalcVendSelect();
   populateBoitelSelect('');
   _setCalcValue('orc-label',getLoteNomeReferencia(lote,null)||'');
+  _setCalcValue('orc-origem',lote.origemCompra||lote.origem||lote.origemCompra_orc||'');
   _setCalcValue('calc-vend',lote.vendedorId||'');
   document.getElementById('tipoAnimal').value=lote.tipoAnimal||'';
   _setCalcValue('tipoAnimalCustom',lote.tipoCustom||labelRaca(lote.tipoAnimal)||'');
@@ -8448,6 +8454,7 @@ function salvarResultadoNoLote(){
   var veioDeEdicaoDoStatus=calcMode==='lote'&&!!activeLoteId;
   var now=new Date();
   var loteNomeReferencia=((document.getElementById('orc-label-main')||{value:''}).value.trim()||(document.getElementById('orc-label')||{value:''}).value.trim())||'';
+  var origemCompra=((document.getElementById('orc-origem')||{value:''}).value||'').trim();
   var tipoVal=document.getElementById('tipoAnimal').value;
   var tipoCustom=(document.getElementById('tipoAnimalCustom')||{value:''}).value.trim();
   var valorKGCalc=_precoModeAt?(g('valorAt_compra')*(g('rendEntrada')/100)/15):g('valorKG');
@@ -8490,6 +8497,7 @@ function salvarResultadoNoLote(){
     precificacaoSnapshot:precificacaoSnapshot,
     boitelSnapshot:boitelIdAtual?Object.assign({id:boitelIdAtual,nome:boitelNomeCongelado},precificacaoSnapshot):null,
     vendedorId_orc:(document.getElementById('calc-vend')||{value:''}).value||null,
+    origemCompra_orc:origemCompra||null,
     label:loteNomeReferencia||null,
     dataEntradaPrev:(document.getElementById('dataEntradaPrev')||{value:''}).value||null,
     qtd:g('qtd'),pesoCom:g('pesoCom'),gmd:g('gmd'),dias:g('dias'),
@@ -8527,6 +8535,8 @@ function salvarResultadoNoLote(){
       arr[i].status=preservedStatus;
       statusDestino=preservedStatus;
       setLoteNomeReferencia(arr[i],loteNomeReferencia);
+      arr[i].origemCompra=origemCompra||null;
+      arr[i].origem=origemCompra||null;
       arr[i].vendedorId=calcVend||null;
       arr[i].tipoAnimal=tipoVal;
       arr[i].tipoCustom=tipoCustom||null;
@@ -8543,6 +8553,7 @@ function salvarResultadoNoLote(){
       id:'lote_'+Date.now(),dataCriacao:orc.data,criadoPor:currentUser,
       status:'embarque',vendedorId:calcVend,
       referenceName:loteNomeReferencia||null,label:loteNomeReferencia||null,
+      origemCompra:origemCompra||null,origem:origemCompra||null,
       tipoAnimal:tipoVal,tipoCustom:tipoCustom||null,
       qtd:g('qtd'),pesoMedio:g('pesoCom'),precoKg:valorKGCalc,distanciaKm:g('freteKm'),
       obs:'',relatorio:'',arquivos:[],videosEntrada:[],videosSaida:[],
@@ -8748,6 +8759,7 @@ function abrirCalcStandalone(opts){
   _setCalcValue('tipoAnimalCustom','');
   _setCalcValue('orc-label-main','');
   _setCalcValue('orc-label','');
+  _setCalcValue('orc-origem','');
   _setCalcValue('dataEntradaPrev','');
   _setCalcValue('dataAbatePrev','—');
   _setCalcValue('dataRecebimentoPrev','—');
@@ -9943,6 +9955,7 @@ function buildCalcExportData(){
   var dados=[
     ['Campo','Valor'],
     ['Nome/referência',exportVal('orc-label')],
+    ['Origem',exportVal('orc-origem')],
     ['Vendedor',exportVal('calc-vend')],
     ['Raça/categoria',exportVal('tipoCustom')],
     ['Quantidade de animais',exportVal('qtd')],
