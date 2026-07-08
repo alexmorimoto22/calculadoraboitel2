@@ -600,6 +600,9 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 .b3-lock-pill{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:4px 8px;font-size:9px;font-weight:850;letter-spacing:.6px;text-transform:uppercase;white-space:nowrap;}
 .b3-lock-pill.locked{background:rgba(107,112,86,.12);color:#4f8d13;}
 .b3-lock-pill.open{background:#eef3f6;color:var(--text-3);}
+.status-b3-cell{display:flex;align-items:center;gap:7px;min-width:0;white-space:nowrap;}
+.status-b3-cell .b3-lock-pill{flex:0 0 auto;}
+.b3-coverage-inline{font-size:11px;font-weight:900;color:var(--text);white-space:nowrap;line-height:1;}
   .b3-inline{margin-top:8px;background:rgba(13,27,42,.05);border:1px solid var(--border);border-radius:9px;padding:9px 10px;font-size:11px;color:var(--text-2);}
   .lc2-sub { font-size:10px; color:var(--text-3); margin-bottom:6px; }
   .lc2-orc-block { background:var(--surface2); border-radius:7px; padding:8px 10px; margin-bottom:8px; }
@@ -814,8 +817,8 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .status-total-value.neg{color:var(--red);}
   .status-total-sub{font-size:9px;color:var(--text-3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .status-table-wrap{background:#fff;border:1px solid var(--border);border-radius:14px;overflow-x:auto;box-shadow:0 6px 22px rgba(13,27,42,.07);width:100%;}
-  .status-table{width:100%;min-width:1320px;}
-.status-head,.status-filter-row,.status-row{display:grid;grid-template-columns:88px 48px 92px 112px minmax(220px,1.35fr) 128px 58px 82px 82px 92px minmax(104px,.95fr) minmax(104px,.95fr) minmax(94px,.85fr) 68px 68px 96px 96px;align-items:center;}
+  .status-table{width:100%;min-width:1420px;}
+.status-head,.status-filter-row,.status-row{display:grid;grid-template-columns:88px 48px 92px 112px 112px minmax(220px,1.35fr) 136px 58px 82px 82px 92px minmax(104px,.95fr) minmax(104px,.95fr) minmax(94px,.85fr) 68px 68px 96px 96px;align-items:center;}
   .status-head{background:#f6f9fb;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:2;}
   .status-head-cell{position:relative;padding:10px 9px;font-size:8.5px;font-weight:850;letter-spacing:.9px;text-transform:uppercase;color:var(--text-3);white-space:nowrap;cursor:pointer;user-select:none;}
   .status-head-cell:first-child{text-align:center;}
@@ -914,7 +917,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	  @media(max-width:1180px){
 	    #panel-lotes{width:calc(100vw - 28px);}
 	    .status-table{min-width:1420px;}
-	    .status-head,.status-filter-row,.status-row{grid-template-columns:86px 52px 112px 118px 160px 108px 54px 84px 84px 96px 112px 112px 102px 70px 70px 104px 104px;}
+	    .status-head,.status-filter-row,.status-row{grid-template-columns:86px 52px 112px 118px 112px 160px 118px 54px 84px 84px 96px 112px 112px 102px 70px 70px 104px 104px;}
 	    .status-head-cell{padding:9px 7px;font-size:8px;}
 	    .status-cell{padding:8px 7px;font-size:11.5px;}
 	  }
@@ -979,7 +982,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	    .status-total-value{font-size:14px;}
 	    .status-table-wrap{border-radius:12px;}
 	    .status-table{min-width:1440px;}
-	    .status-head,.status-filter-row,.status-row{grid-template-columns:86px 56px 132px 118px 170px 108px 54px 86px 86px 98px 116px 116px 106px 72px 72px 106px 106px;}
+	    .status-head,.status-filter-row,.status-row{grid-template-columns:86px 56px 132px 118px 112px 170px 118px 54px 86px 86px 98px 116px 116px 106px 72px 72px 106px 106px;}
 	    .status-head-cell{padding:9px 7px;font-size:8px;}
 	    .status-filter-cell{padding:5px;}
 	    .status-filter-control input{height:28px;font-size:10px;}
@@ -3306,10 +3309,10 @@ let activeLoteDetailId=null;
 let activeOrcEditIndex=null;
 let activeLoteReturnStatus=null;
 let pillFilter='';
-var statusColumnFilters={status:'',ano:'',confinamento:'',origem:'',lote:'',b3:'',qtd:'',entrada:'',abate:'',recebimento:'',faturamento:'',capital:'',lucro:'',rent:'',rentmes:'',eficiencia:'',eficienciaChegada:''};
+var statusColumnFilters={status:'',ano:'',confinamento:'',origem:'',vendedor:'',lote:'',b3:'',qtd:'',entrada:'',abate:'',recebimento:'',faturamento:'',capital:'',lucro:'',rent:'',rentmes:'',eficiencia:'',eficienciaChegada:''};
 var STATUS_COLS=[
   {key:'status',label:'Status',w:88},{key:'ano',label:'Ano',w:52},{key:'confinamento',label:'Confinamento',w:112},
-  {key:'origem',label:'Origem',w:118},{key:'lote',label:'Lote',w:230},{key:'b3',label:'B3',w:126},{key:'qtd',label:'Qtd',w:62},
+  {key:'origem',label:'Origem',w:118},{key:'vendedor',label:'Vendedor',w:112},{key:'lote',label:'Lote',w:230},{key:'b3',label:'B3',w:136},{key:'qtd',label:'Qtd',w:62},
   {key:'entrada',label:'Entrada',w:92},{key:'abate',label:'Abate',w:92},{key:'recebimento',label:'Recebimento',w:104},
   {key:'faturamento',label:'Fat. lote',w:126},{key:'capital',label:'Capital',w:126},{key:'lucro',label:'Lucro',w:116},
   {key:'rent',label:'% Oper.',w:76},{key:'rentmes',label:'% Mês',w:76},{key:'eficiencia',label:'Efic. Origem',w:116},{key:'eficienciaChegada',label:'Efic. Cheg.',w:116}
@@ -7044,7 +7047,7 @@ function renderLotes(){
   }
   function statusFiltersHtml(){
     var placeholders={
-      status:'Todos',ano:'Ano',confinamento:'Confinamento',origem:'Origem',lote:'Lote',b3:'B3',qtd:'Qtd',
+      status:'Todos',ano:'Ano',confinamento:'Confinamento',origem:'Origem',vendedor:'Vendedor',lote:'Lote',b3:'B3',qtd:'Qtd',
       entrada:'Entrada',abate:'Abate',recebimento:'Receb.',faturamento:'R$',capital:'R$',
       lucro:'R$',rent:'%',rentmes:'%',eficiencia:'kg MS/@ origem',eficienciaChegada:'kg MS/@ cheg.'
     };
@@ -7075,6 +7078,7 @@ function renderLotes(){
   }
   function buildStatusCard(l,idx){
     var vend=vends.find(function(v){return v.id===l.vendedorId;});
+    var vendedorVal=(vend&&vend.nome)?vend.nome:'A definir';
     var sc=STATUS_CFG[l.status]||STATUS_CFG.embarque;
     var o=l.orcamentos&&l.orcamentos[0];
     var barColor=STATUS_COLORS[l.status]||ST_COLORS[l.status]||'var(--border)';
@@ -7127,6 +7131,7 @@ function renderLotes(){
       +' data-filter-ano="'+escHtml(anoVal)+'"'
       +' data-filter-confinamento="'+escHtml(confinamento)+'"'
       +' data-filter-origem="'+escHtml(origemVal)+'"'
+      +' data-filter-vendedor="'+escHtml(vendedorVal)+'"'
       +' data-filter-lote="'+escHtml(filtroLote)+'"'
       +' data-filter-b3="'+escHtml(b3Val)+'"'
       +' data-filter-qtd="'+escHtml(qtdVal)+'"'
@@ -7144,6 +7149,7 @@ function renderLotes(){
       +' data-sort-ano="'+escHtml(anoVal)+'"'
       +' data-sort-confinamento="'+escHtml(confinamento)+'"'
       +' data-sort-origem="'+escHtml(origemVal)+'"'
+      +' data-sort-vendedor="'+escHtml(vendedorVal)+'"'
       +' data-sort-lote="'+escHtml(cardTitle)+'"'
       +' data-sort-b3="'+escHtml(b3Val)+'"'
       +' data-sort-qtd="'+qtdRaw+'"'
@@ -7162,12 +7168,11 @@ function renderLotes(){
       +'<span class="badge '+sc.cls+'">'+escHtml(sc.label)+'</span>'
     +'</div>';
     var loteCell='<div class="status-cell '+statusColClass('lote')+'"><span class="status-seq-pc">Lote '+((idx||0)+1)+'</span><span class="status-cell-title">'+escHtml(cardTitle)+'</span>'
-      +(vend?'<span class="status-cell-sub">'+escHtml(vend.nome)+'</span>':'')
       +(metric.real?'<span class="status-cell-sub" style="color:var(--green)">Realizado ajustado</span>':'')
     +'</div>';
-    var b3Cell='<div class="status-cell '+statusColClass('b3')+'" title="'+escHtml(b3Val)+'">'
+    var b3Cell='<div class="status-cell status-b3-cell '+statusColClass('b3')+'" title="'+escHtml(b3Val)+'">'
       +'<span class="b3-lock-pill '+(b3Estado==='Aberto'?'open':'locked')+'">'+escHtml(b3Estado)+'</span>'
-      +'<span class="status-cell-sub b3-coverage-main">'+escHtml(b3Cobertura)+'</span>'
+      +'<strong class="b3-coverage-inline">'+escHtml(b3Cobertura)+'</strong>'
     +'</div>';
     var mobileLine='<div class="status-mobile-line">'
       +'<span><em>Qtd</em>'+escHtml(qtdVal)+'</span>'
@@ -7184,6 +7189,7 @@ function renderLotes(){
       +statusCell('ano',anoVal,'muted')
       +statusCell('confinamento',confinamento,'muted')
       +statusCell('origem',origemVal,'muted')
+      +statusCell('vendedor',vendedorVal,'muted')
       +loteCell
       +b3Cell
       +statusCell('qtd',qtdVal)
@@ -7243,9 +7249,10 @@ function renderLotes(){
     addStatusFilterOption('ano',statusYear(entradaIso,o));
     addStatusFilterOption('confinamento',confinamento);
     addStatusFilterOption('origem',origemVal);
+    addStatusFilterOption('vendedor',(vend&&vend.nome)?vend.nome:'A definir');
     addStatusFilterOption('lote',cardTitle);
-    addStatusFilterOption('b3',metric.contratosB3?'Travado':'Sem trava');
-    addStatusFilterOption('b3',textoCoberturaB3(l,o,metric,true));
+    var b3Status=coberturaStatusB3(l,o,metric);
+    addStatusFilterOption('b3',(b3Status.estado||'Aberto')+' · '+b3Status.cobertura);
     addStatusFilterOption('qtd',statusQtd(l.qtd||(o&&o.qtd)));
     addStatusFilterOption('entrada',dataEntrada);
     addStatusFilterOption('abate',dataAbate);
@@ -9874,11 +9881,11 @@ function buildHomeExportData(){
   return {tab:'Home',title:'Relatório Home',file:'VM_Agro_Home_'+exportDateFile(),filters:filters,sheets:[{name:'Resumo',rows:resumo},{name:'Lotes',rows:lotes}]};
 }
 function buildStatusLotRows(){
-  var rows=[['Status','Ano','Confinamento','Origem','Lote','B3','Qtd','Entrada','Abate','Recebimento','Faturamento','Capital','Lucro','% operação','% ao mês','Efic. origem','Efic. chegada']];
+  var rows=[['Status','Ano','Confinamento','Origem','Vendedor','Lote','B3','Qtd','Entrada','Abate','Recebimento','Faturamento','Capital','Lucro','% operação','% ao mês','Efic. origem','Efic. chegada']];
   [].forEach.call(document.querySelectorAll('#lote-list .status-row[data-lid]'),function(row){
     if(!exportVisible(row)||row.style.display==='none')return;
     rows.push([
-      row.dataset.filterStatus||'',row.dataset.filterAno||'',row.dataset.filterConfinamento||'',row.dataset.filterOrigem||'',row.dataset.filterLote||'',row.dataset.filterB3||'',
+      row.dataset.filterStatus||'',row.dataset.filterAno||'',row.dataset.filterConfinamento||'',row.dataset.filterOrigem||'',row.dataset.filterVendedor||'',row.dataset.filterLote||'',row.dataset.filterB3||'',
       row.dataset.filterQtd||'',row.dataset.filterEntrada||'',row.dataset.filterAbate||'',row.dataset.filterRecebimento||'',
       row.dataset.filterFaturamento||'',row.dataset.filterCapital||'',row.dataset.filterLucro||'',row.dataset.filterRent||'',row.dataset.filterRentmes||'',
       row.dataset.filterEficiencia||'',row.dataset.filterEficienciachegada||row.dataset.filterEficienciaChegada||''
