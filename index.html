@@ -5767,6 +5767,8 @@ function renderEpVideos(tipo){
 function baixarArquivoLote(loteId,id){
   var lote=getLotes().find(function(l){return l.id===loteId;});
   if(!lote)return;
+  var numeroLote=getNumeroLote(lote)||'1';
+  var nomeLote=getLoteNomeReferencia(lote,lote.orcamentos&&lote.orcamentos[0])||'';
   var f=(lote.arquivos||[]).find(function(x){return x.id===id;});
   if(!f||!f.dataUrl)return;
   var a=document.createElement('a');
@@ -6091,7 +6093,7 @@ function openEditPanel(loteId, cardEl){
       +'<div class="ep-result-summary">'
         +'<div class="ep-rs-item">Modalidade<strong>'+calcModeloLabel(o.modeloConta||'msop')+'</strong></div>'
         +'<div class="ep-rs-item">Confinamento<strong>'+escHtml(simConfinamento)+'</strong></div>'
-        +'<div class="ep-rs-item">Lote<strong>'+escHtml(getLoteNomeReferencia(lote,o)||('Lote '+((o.qtd||lote.qtd||'')+' cab.')))+'</strong></div>'
+        +'<div class="ep-rs-item">Lote<strong>Lote '+escHtml(numeroLote)+(nomeLote?' · '+escHtml(nomeLote):'')+'</strong></div>'
         +'<div class="ep-rs-item">Qtd<strong>'+(o.qtd||lote.qtd||'—')+' cab.</strong></div>'
         +'<div class="ep-rs-item">Entrada prevista<strong>'+(simEntrada?_fmtDataBR(_addDias(simEntrada,0)):'—')+'</strong></div>'
         +'<div class="ep-rs-item">Abate previsto<strong>'+simAbate+'</strong></div>'
@@ -6214,6 +6216,11 @@ function openEditPanel(loteId, cardEl){
       +'<option value="abatido"'+(lote.status==='abatido'?' selected':'')+'>Abatido</option>'
       +'<option value="recebido"'+(lote.status==='recebido'?' selected':'')+'>Recebido</option>'
     +'</select>'
+    +'<div class="ep-section">Identificação do lote</div>'
+    +'<div class="ep-partial-grid" style="margin-bottom:10px;">'
+      +'<div class="field" style="margin:0"><label>Número do lote</label><input type="text" inputmode="numeric" pattern="[0-9]*" id="ep-lot-number" value="'+escHtml(numeroLote)+'" placeholder="Ex: 1"></div>'
+      +'<div class="field" style="margin:0"><label>Nome / Referência <span style="font-size:9px;color:var(--text-3);font-weight:400;">(opcional)</span></label><input type="text" id="ep-lot-name" value="'+escHtml(nomeLote)+'" placeholder="Ex: Murilo Duque"></div>'
+    +'</div>'
     +contratosPrecoHtml
     // Vendedor
     +'<div class="ep-section">Vendedor</div>'
@@ -6921,6 +6928,7 @@ function saveEditPanel(){
   var arr=getLotes();
   var i=arr.findIndex(function(l){return l.id===_editLoteId;});
   if(i<0)return;
+  if(!aplicarIdentificacaoLote(arr[i],arr))return;
   var newStatus=document.getElementById('ep-status').value;
   var newVend=document.getElementById('ep-vend').value;
   var newFrig=document.getElementById('ep-frig').value;
@@ -7409,7 +7417,9 @@ function renderLotes(){
   var vends=getVends();
   var isFA=FULL_ACCESS.includes(currentUser);
   var ST_COLORS={'embarque':'#C9A24E','confinando':'var(--green)','escalado':'var(--accent)','abatido':'#515640','recebido':'var(--text-3)'};
-  var lotes=getLotes().filter(function(l){
+  var todosLotes=getLotes();
+  if(garantirNumerosLote(todosLotes))saveLotes(todosLotes);
+  var lotes=todosLotes.filter(function(l){
     if(!isFA&&l.criadoPor&&l.criadoPor!==currentUser)return false;
     if(pillFilter&&l.status!==pillFilter)return false;
     if(fV&&l.vendedorId!==fV)return false;
@@ -7510,9 +7520,9 @@ function renderLotes(){
     var sc=STATUS_CFG[l.status]||STATUS_CFG.embarque;
     var o=l.orcamentos&&l.orcamentos[0];
     var barColor=STATUS_COLORS[l.status]||ST_COLORS[l.status]||'var(--border)';
-    var tipo=l.tipoAnimal&&TIPO_LABEL[l.tipoAnimal]?TIPO_LABEL[l.tipoAnimal]:(l.tipoCustom||'');
     var nomeReferencia=getLoteNomeReferencia(l,o);
-    var cardTitle=nomeReferencia||((vend?vend.nome:(tipo?tipo+' · '+l.qtd+' cab.':'Lote '+(l.qtd?l.qtd+' cab.':'sem vendedor'))));
+    var cardTitle=nomeReferencia;
+    var numeroLote=getNumeroLote(l)||'—';
     var confinamento=(o&&o.precificacaoSnapshot&&o.precificacaoSnapshot.boitelNome)
       ||(o&&o.boitelSnapshot&&(o.boitelSnapshot.boitelNome||o.boitelSnapshot.nome))
       ||(o&&o.boitelNome)||l.boitelNome||'Manual / sem boitel';
@@ -7553,7 +7563,7 @@ function renderLotes(){
     var b3Cobertura=b3Status.cobertura;
     var b3Estado=b3Status.estado||'Aberto';
     var b3Val=b3Estado+' · '+b3Cobertura;
-    var filtroLote=cardTitle+(vend?' '+vend.nome:'')+(tipo?' '+tipo:'')+(metric.real?' realizado':' simulado');
+    var filtroLote='Lote '+numeroLote+(cardTitle?' '+cardTitle:'')+(vend?' '+vend.nome:'')+(metric.real?' realizado':' simulado');
     var attrs=' data-qtd-raw="'+qtdRaw+'" data-faturamento-raw="'+(o?faturamento:0)+'" data-capital-raw="'+(o?capital:0)+'" data-lucro-raw="'+(o?lucro:0)+'" data-prazo-dias-raw="'+prazoDias+'"'
       +' data-filter-status="'+escHtml(sc.label)+'"'
       +' data-filter-ano="'+escHtml(anoVal)+'"'
@@ -7578,7 +7588,7 @@ function renderLotes(){
       +' data-sort-confinamento="'+escHtml(confinamento)+'"'
       +' data-sort-origem="'+escHtml(origemVal)+'"'
       +' data-sort-vendedor="'+escHtml(vendedorVal)+'"'
-      +' data-sort-lote="'+escHtml(cardTitle)+'"'
+      +' data-sort-lote="'+escHtml(numeroLote+' '+cardTitle)+'"'
       +' data-sort-b3="'+escHtml(b3Val)+'"'
       +' data-sort-qtd="'+qtdRaw+'"'
       +' data-sort-entrada="'+escHtml(entradaIso||'')+'"'
@@ -7596,7 +7606,7 @@ function renderLotes(){
       +'<span class="badge '+sc.cls+'">'+escHtml(sc.label)+'</span>'
     +'</div>';
     var realizadoStatus=statusRealizadoLote(l);
-    var loteCell='<div class="status-cell '+statusColClass('lote')+'"><span class="status-seq-pc">Lote '+((idx||0)+1)+'</span><span class="status-cell-title">'+escHtml(cardTitle)+'</span>'
+    var loteCell='<div class="status-cell '+statusColClass('lote')+'"><span class="status-seq-pc">Lote '+escHtml(numeroLote)+'</span>'+(cardTitle?'<span class="status-cell-title">'+escHtml(cardTitle)+'</span>':'')
       +'<span class="real-status-chip status-realized-chip '+realizadoStatus.key+'">'+escHtml(realizadoStatus.label)+'</span>'
     +'</div>';
     var b3Cell='<div class="status-cell status-b3-cell '+statusColClass('b3')+'" title="'+escHtml(b3Val)+'">'
@@ -7613,7 +7623,7 @@ function renderLotes(){
       +'<span class="profit"><em>Lucro</em>'+escHtml(fmtCompactMoney(lucro))+'</span>'
       +'<span class="rate"><em>% mês</em>'+escHtml(rentMesVal)+'</span>'
     +'</div>';
-    return '<div class="status-row" style="grid-template-columns:'+statusGridTemplate()+'" data-lid="'+l.id+'" data-lote-seq="'+((idx||0)+1)+'" data-status="'+(l.status||'embarque')+'" draggable="true"'+attrs+'>'
+    return '<div class="status-row" style="grid-template-columns:'+statusGridTemplate()+'" data-lid="'+l.id+'" data-lote-seq="'+escHtml(numeroLote)+'" data-status="'+(l.status||'embarque')+'" draggable="true"'+attrs+'>'
       +statusLabel
       +statusCell('ano',anoVal,'muted')
       +statusCell('confinamento',confinamento,'muted')
@@ -7657,9 +7667,9 @@ function renderLotes(){
     var vend=vends.find(function(v){return v.id===l.vendedorId;});
     var o=l.orcamentos&&l.orcamentos[0];
     var sc=STATUS_CFG[l.status]||STATUS_CFG.embarque;
-    var tipo=l.tipoAnimal&&TIPO_LABEL[l.tipoAnimal]?TIPO_LABEL[l.tipoAnimal]:(l.tipoCustom||'');
     var nomeReferencia=getLoteNomeReferencia(l,o);
-    var cardTitle=nomeReferencia||((vend?vend.nome:(tipo?tipo+' · '+l.qtd+' cab.':'Lote '+(l.qtd?l.qtd+' cab.':'sem vendedor'))));
+    var cardTitle=nomeReferencia;
+    var numeroLote=getNumeroLote(l)||'—';
     var confinamento=(o&&o.precificacaoSnapshot&&o.precificacaoSnapshot.boitelNome)
       ||(o&&o.boitelSnapshot&&(o.boitelSnapshot.boitelNome||o.boitelSnapshot.nome))
       ||(o&&o.boitelNome)||l.boitelNome||'Manual / sem boitel';
@@ -7679,7 +7689,7 @@ function renderLotes(){
     addStatusFilterOption('confinamento',confinamento);
     addStatusFilterOption('origem',origemVal);
     addStatusFilterOption('vendedor',(vend&&vend.nome)?vend.nome:'A definir');
-    addStatusFilterOption('lote',cardTitle);
+    addStatusFilterOption('lote','Lote '+numeroLote+(cardTitle?' '+cardTitle:''));
     var b3Status=coberturaStatusB3(l,o,metric);
     addStatusFilterOption('b3',(b3Status.estado||'Aberto')+' · '+b3Status.cobertura);
     addStatusFilterOption('qtd',statusQtd(l.qtd||(o&&o.qtd)));
@@ -8132,6 +8142,7 @@ function _prefer(){
 }
 function getLoteNomeReferencia(lote,orc){
   return (_prefer(
+    lote&&lote.lot_name,
     lote&&lote.referenceName,
     lote&&lote.label,
     lote&&lote.nomeReferencia,
@@ -8143,8 +8154,67 @@ function getLoteNomeReferencia(lote,orc){
 function setLoteNomeReferencia(lote,nome){
   if(!lote)return;
   var limpo=(nome||'').toString().trim();
+  lote.lot_name=limpo||null;
   lote.referenceName=limpo||null;
   lote.label=limpo||null;
+}
+function normalizarNumeroLote(valor){
+  var limpo=String(valor===undefined||valor===null?'':valor).trim().replace(/^lote\s*/i,'');
+  if(!/^\d+$/.test(limpo))return '';
+  var numero=parseInt(limpo,10);
+  return numero>0?String(numero):'';
+}
+function getNumeroLote(lote){
+  return normalizarNumeroLote(lote&&(lote.lot_number||lote.lotNumber||lote.numeroLote||lote.loteNumber));
+}
+function getConfinamentoLote(lote){
+  var o=lote&&lote.orcamentos&&lote.orcamentos[0];
+  return String((o&&o.precificacaoSnapshot&&o.precificacaoSnapshot.boitelNome)
+    ||(o&&o.boitelSnapshot&&(o.boitelSnapshot.boitelNome||o.boitelSnapshot.nome))
+    ||(o&&o.boitelNome)||lote&&lote.boitelNome||'Manual / sem boitel').trim();
+}
+function proximoNumeroLote(lotes,lote){
+  var chave=getConfinamentoLote(lote).toLowerCase();
+  var usados={};
+  (lotes||[]).forEach(function(item){
+    if(getConfinamentoLote(item).toLowerCase()!==chave)return;
+    var numero=getNumeroLote(item);
+    if(numero)usados[numero]=true;
+  });
+  var proximo=1;
+  while(usados[String(proximo)])proximo++;
+  return String(proximo);
+}
+function garantirNumerosLote(lotes){
+  var mudou=false;
+  (lotes||[]).forEach(function(lote){
+    if(getNumeroLote(lote))return;
+    lote.lot_number=proximoNumeroLote(lotes,lote);
+    mudou=true;
+  });
+  return mudou;
+}
+function aplicarIdentificacaoLote(lote,lotes){
+  var numeroEl=document.getElementById('ep-lot-number');
+  var nomeEl=document.getElementById('ep-lot-name');
+  if(!numeroEl&&!nomeEl)return true;
+  var numero=normalizarNumeroLote(numeroEl?numeroEl.value:getNumeroLote(lote));
+  if(!numero){
+    toast('⚠ Informe um número de lote válido.');
+    return false;
+  }
+  var confinamento=getConfinamentoLote(lote).toLowerCase();
+  var repetido=(lotes||[]).some(function(outro){
+    return outro.id!==lote.id&&getConfinamentoLote(outro).toLowerCase()===confinamento&&getNumeroLote(outro)===numero;
+  });
+  if(repetido&&!confirm('Já existe um Lote '+numero+' neste confinamento. Deseja manter mesmo assim?'))return false;
+  lote.lot_number=numero;
+  if(nomeEl){
+    var nome=nomeEl.value.trim();
+    setLoteNomeReferencia(lote,nome);
+    if(lote.orcamentos&&lote.orcamentos[0])lote.orcamentos[0].label=nome||null;
+  }
+  return true;
 }
 function _setCalcValue(id,val){
   if(val===undefined||val===null)return;
@@ -9002,13 +9072,14 @@ function salvarResultadoNoLote(){
     var novoLote={
       id:'lote_'+Date.now(),dataCriacao:orc.data,criadoPor:currentUser,
       status:'embarque',vendedorId:calcVend,
-      referenceName:loteNomeReferencia||null,label:loteNomeReferencia||null,
+      lot_number:null,lot_name:loteNomeReferencia||null,referenceName:loteNomeReferencia||null,label:loteNomeReferencia||null,
       origemCompra:origemCompra||null,origem:origemCompra||null,
       tipoAnimal:tipoVal,tipoCustom:tipoCustom||null,
       qtd:g('qtd'),pesoMedio:g('pesoCom'),precoKg:valorKGCalc,distanciaKm:g('freteKm'),
       obs:'',relatorio:'',arquivos:[],videosEntrada:[],videosSaida:[],
       orcamentos:[orc],confRecord:null,abateRecord:null,apuracao:null
     };
+    novoLote.lot_number=proximoNumeroLote(arr,novoLote);
     arr.unshift(novoLote);
     if(calcMode!=='lote')activeLoteId=null;
   }
