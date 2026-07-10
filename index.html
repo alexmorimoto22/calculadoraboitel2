@@ -847,7 +847,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .status-filter-control input{width:100%;height:30px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);padding:0 22px 0 8px;font-family:'Inter',sans-serif;font-size:11px;color:var(--text);outline:none;font-weight:650;}
   .status-filter-control input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 2px rgba(201,162,78,.12);}
   .status-filter-control::after{content:'⌄';position:absolute;right:7px;top:50%;transform:translateY(-54%);font-size:13px;font-weight:900;color:var(--taupe);pointer-events:none;line-height:1;}
-  .status-row{min-height:42px;border-bottom:1px solid var(--border);cursor:grab;background:#fff;transition:background .15s,box-shadow .15s,transform .15s;}
+  .status-row{min-height:42px;border-bottom:1px solid var(--border);cursor:pointer;background:#fff;transition:background .15s,box-shadow .15s,transform .15s;}
   .status-row:last-child{border-bottom:none;}
   .status-row:hover{background:#fbfdfe;box-shadow:inset 3px 0 0 var(--accent);}
   .status-row:active{cursor:grabbing;}
@@ -6051,8 +6051,12 @@ function renderResultadoFinalHtml(lote,orc){
     +'</div>';
 }
 
-function openEditPanel(loteId, cardEl){
-  if(_editLoteId===loteId){closeEditPanel();return;}
+function openEditPanel(loteId, cardEl, forceOpen){
+  if(_editLoteId===loteId){
+    if(forceOpen)return;
+    closeEditPanel();
+    return;
+  }
   _editLoteId=loteId;
   // Highlight card
   document.querySelectorAll('.sc,.status-row').forEach(function(c){c.classList.remove('active-edit');});
@@ -7743,12 +7747,13 @@ function renderLotes(){
   html+='<div class="status-table-note"><span id="status-filter-count"></span> · Clique em uma linha para editar. Para mudar o status, arraste a linha para um dos botões de status acima. <button type="button" onclick="limparStatusColumnFilters()" style="border:none;background:none;color:var(--accent);font-weight:800;cursor:pointer;font-family:Inter,sans-serif;font-size:10px;">Limpar filtros</button></div>';
   container.innerHTML=html;
   setupStatusDrag(container);
-  container.querySelectorAll('.status-row[data-lid]').forEach(function(el){
-    el.addEventListener('click',function(){
-      if(Date.now()<_statusDragSuppressUntil)return;
-      openEditPanel(el.dataset.lid,el);
-    });
-  });
+  container.onclick=function(evt){
+    var row=evt.target&&evt.target.closest?evt.target.closest('.status-row[data-lid]'):null;
+    if(!row||!container.contains(row))return;
+    if(Date.now()<_statusDragSuppressUntil)return;
+    if(evt.target&&evt.target.closest&&evt.target.closest('button,input,select,textarea,a,.status-col-resizer,.status-filter-control'))return;
+    openEditPanel(row.dataset.lid,row,true);
+  };
   sortStatusRows();
   applyStatusGridTemplate();
   applyStatusColumnFilters();
