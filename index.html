@@ -888,6 +888,27 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .btn-ep-detail{background:none;border:1px solid var(--border);color:var(--text-2);border-radius:7px;padding:9px 14px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;}
   .btn-ep-detail:hover{border-color:var(--accent);color:var(--accent);}
 	  .ep-result-summary{background:var(--surface2);border-radius:8px;padding:12px 14px;margin-bottom:4px;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+	  .pxr-wrap{border:1px solid var(--border);border-radius:10px;overflow:auto;background:#fff;margin-bottom:10px;}
+	  .pxr-table{width:100%;min-width:700px;border-collapse:collapse;font-size:11px;}
+	  .pxr-table th,.pxr-table td{padding:9px 10px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap;}
+	  .pxr-table th:first-child,.pxr-table td:first-child{text-align:left;font-weight:700;}
+	  .pxr-table tr:last-child td{border-bottom:0;}
+	  .pxr-diff.good{color:var(--green);font-weight:800;}
+	  .pxr-diff.bad{color:var(--red);font-weight:800;}
+	  .pxr-diff.neutral{color:var(--text-3);font-weight:700;}
+	  .final-mode-bar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:10px;}
+	  .final-mode-btn{border:1px solid var(--border);background:#fff;color:var(--text-2);border-radius:8px;padding:9px 8px;font-size:11px;font-weight:800;cursor:pointer;}
+	  .final-mode-btn.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+	  .final-result-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+	  .real-status-chip{display:inline-flex;align-items:center;border-radius:999px;padding:4px 9px;font-size:9px;font-weight:850;letter-spacing:.4px;background:var(--surface2);color:var(--text-2);}
+	  .real-status-chip.none{background:var(--surface2);color:var(--text-3);}
+	  .real-status-chip.complete{background:rgba(107,112,86,.12);color:var(--green);}
+	  .real-status-chip.partial{background:rgba(201,162,78,.14);color:#8a6a2f;}
+	  .real-status-chip.manually_adjusted{background:rgba(13,79,139,.12);color:#0D4F8B;}
+	  .status-realized-chip{margin-top:3px;width:max-content;max-width:100%;white-space:nowrap;}
+	  .final-history{margin-top:10px;border-top:1px solid var(--border);padding-top:8px;font-size:10px;color:var(--text-2);}
+	  .final-history-item{padding:6px 0;border-bottom:1px dashed var(--border);}
+	  @media(max-width:700px){.final-mode-bar{grid-template-columns:1fr}.final-result-grid{grid-template-columns:1fr}.pxr-table{min-width:620px}}
 	  .ep-rs-item{font-size:11px;color:var(--text-2);}
 	  .ep-rs-item strong{display:block;font-size:13px;color:var(--text);font-weight:700;margin-top:1px;}
 	  .ep-textarea{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:12px;color:var(--text);outline:none;resize:vertical;line-height:1.5;}
@@ -3359,7 +3380,9 @@ function resultadoStatusLote(lote,orc){
   lote=lote||{};
   orc=orc||(lote.orcamentos&&lote.orcamentos[0])||null;
   var real=lote.ajusteReal||lote.apuracao||null;
+  var finalMode=lote.finalResultMode||(real?'realized':'projected');
   var capital=orc?finNum(orc.investLote):0;
+  var custoTotal=capital+(orc?finNum(orc.custoOpLote):0);
   var lucro=orc?finNum(orc.lucroLote):0;
   var faturamento=orc?(capital+lucro):0;
   if(orc&&!capital&&!lucro&&orc.fatLiqLote)faturamento=finNum(orc.fatLiqLote);
@@ -3369,7 +3392,7 @@ function resultadoStatusLote(lote,orc){
   var eficienciaBio=bio&&(bio.eficOrigem||bio.efic)?(bio.eficOrigem||bio.efic):0;
   var eficienciaBioChegada=bio&&bio.efic?bio.efic:0;
   var origem='Simulado';
-  if(real){
+  if(real&&finalMode!=='projected'){
     var vendaRealBase=null;
     try{vendaRealBase=orc?vendaRealizadaEsperada(lote,orc,real):null;}catch(e){vendaRealBase=null;}
     var receitaBase=vendaRealBase&&vendaRealBase.liquido?vendaRealBase.liquido:faturamento;
@@ -3377,6 +3400,7 @@ function resultadoStatusLote(lote,orc){
     var realReceitaNum=normalizarValorRealizado(real.receitaReal,receitaBase);
     var realLucroNum=normalizarValorRealizado(real.lucroReal,realReceitaNum-realCustoNum);
     if(real.custoReal!==undefined&&real.custoReal!==null)capital=realCustoNum;
+    custoTotal=capital;
     if(real.lucroReal!==undefined&&real.lucroReal!==null)lucro=realLucroNum;
     if((real.lucroReal===undefined||real.lucroReal===null)&&real.receitaReal!==undefined&&real.receitaReal!==null){
       lucro=realReceitaNum-capital;
@@ -3397,7 +3421,23 @@ function resultadoStatusLote(lote,orc){
     rentMes=prazoB3>0?rent/(prazoB3/30):rentMes;
   }
   faturamento=capital+lucro;
-  return {capital:capital,lucro:lucro,faturamento:faturamento,rent:rent,rentMes:rentMes,eficienciaBio:eficienciaBio,eficienciaBioChegada:eficienciaBioChegada,resultadoB3:b3.resultado||0,contratosB3:b3.contratos||0,arrobasB3:b3.arrobas||0,b3VendaMedia:b3.vendaMedia||0,b3CompraMedia:b3.compraMedia||0,origem:origem,real:!!real};
+  if(finalMode==='manual'&&lote.manualFinalResult){
+    var manual=lote.manualFinalResult;
+    if(manual.capitalFinal!==undefined&&manual.capitalFinal!==null)capital=finNum(manual.capitalFinal);
+    if(manual.custoTotalFinal!==undefined&&manual.custoTotalFinal!==null)custoTotal=finNum(manual.custoTotalFinal);
+    if(manual.faturamentoFinal!==undefined&&manual.faturamentoFinal!==null)faturamento=finNum(manual.faturamentoFinal);
+    if(manual.lucroFinal!==undefined&&manual.lucroFinal!==null)lucro=finNum(manual.lucroFinal);
+    else lucro=faturamento-capital;
+    if(manual.rentFinal!==undefined&&manual.rentFinal!==null)rent=finNum(manual.rentFinal);
+    else rent=capital>0?lucro/capital:0;
+    if(manual.rentMesFinal!==undefined&&manual.rentMesFinal!==null)rentMes=finNum(manual.rentMesFinal);
+    else{
+      var prazoManual=prazoDiasResultadoLote(lote,orc);
+      rentMes=prazoManual>0?rent/(prazoManual/30):rentMes;
+    }
+    origem='Resultado ajustado';
+  }
+  return {capital:capital,custoTotal:custoTotal,lucro:lucro,faturamento:faturamento,rent:rent,rentMes:rentMes,eficienciaBio:eficienciaBio,eficienciaBioChegada:eficienciaBioChegada,resultadoB3:b3.resultado||0,contratosB3:b3.contratos||0,arrobasB3:b3.arrobas||0,b3VendaMedia:b3.vendaMedia||0,b3CompraMedia:b3.compraMedia||0,origem:origem,real:!!real,finalMode:finalMode};
 }
 function prazoDiasResultadoLote(lote,orc){
   lote=lote||{};
@@ -3458,17 +3498,22 @@ function zootecRealCalc(lote,orc,aj){
   var quebra=finNum(orc.quebra_pct)/100;
   var rendE=finNum(orc.rendE_pct)/100;
   var consPC=finNum(orc.consPC_pct)/100;
-  var pesoEntrada=pesoCom*(1-quebra);
-  var pesoSaida=pesoEntrada+(gmd*dias);
+  var pesoEntradaCalculado=pesoCom*(1-quebra);
+  var pesoEntrada=(aj.pesoEntradaReal!==undefined&&aj.pesoEntradaReal!==null&&String(aj.pesoEntradaReal)!=='')?finNum(aj.pesoEntradaReal):pesoEntradaCalculado;
+  var pesoSaidaCalculado=pesoEntrada+(gmd*dias);
+  var pesoSaida=(aj.pesoSaidaReal!==undefined&&aj.pesoSaidaReal!==null&&String(aj.pesoSaidaReal)!=='')?finNum(aj.pesoSaidaReal):pesoSaidaCalculado;
   var atEntradaOrigem=rendE>0?pesoCom*rendE/15:0;
   var atEntrada=rendE>0?pesoEntrada*rendE/15:0;
   var atAbate=rendA>0?pesoSaida*(rendA/100)/15:0;
   var atProdOrigem=atAbate-atEntradaOrigem;
-  var atProd=atAbate-atEntrada;
-  var consumoTotal=((pesoEntrada+pesoSaida)/2)*consPC*dias;
+  var atProdCalculado=atAbate-atEntrada;
+  var atProd=(aj.arrobasProduzidasReal!==undefined&&aj.arrobasProduzidasReal!==null&&String(aj.arrobasProduzidasReal)!=='')?finNum(aj.arrobasProduzidasReal):atProdCalculado;
+  var consumoCalculado=((pesoEntrada+pesoSaida)/2)*consPC*dias;
+  var consumoTotal=(aj.consumoMSTotalReal!==undefined&&aj.consumoMSTotalReal!==null&&String(aj.consumoMSTotalReal)!=='')?finNum(aj.consumoMSTotalReal):consumoCalculado;
   var eficOrigem=atProdOrigem>0&&consumoTotal>0?consumoTotal/atProdOrigem:0;
   var efic=atProd>0&&consumoTotal>0?consumoTotal/atProd:0;
-  return {gmd:gmd,rendA:rendA,dias:dias,pesoSaida:pesoSaida,consumoTotal:consumoTotal,efic:efic,eficOrigem:eficOrigem,atProd:atProd,atProdOrigem:atProdOrigem,atAbate:atAbate};
+  var custoAtReal=(aj.custoArrobaProduzidaReal!==undefined&&aj.custoArrobaProduzidaReal!==null&&String(aj.custoArrobaProduzidaReal)!=='')?finNum(aj.custoArrobaProduzidaReal):0;
+  return {gmd:gmd,rendA:rendA,dias:dias,pesoEntrada:pesoEntrada,pesoSaida:pesoSaida,consumoTotal:consumoTotal,efic:efic,eficOrigem:eficOrigem,atProd:atProd,atProdOrigem:atProdOrigem,atAbate:atAbate,custoAtReal:custoAtReal};
 }
 function valorAjustePorArroba(base,val,mode){
   base=finNum(base);
@@ -3517,7 +3562,42 @@ function vendaRealizadaEsperada(lote,orc,aj){
   var bonusVal=finNum((aj.bonusVendaReal!==undefined&&aj.bonusVendaReal!==null)?aj.bonusVendaReal:(orc?orc.bonus:0));
   var descVal=finNum((aj.descontoVendaReal!==undefined&&aj.descontoVendaReal!==null)?aj.descontoVendaReal:(orc?orc.desconto:0));
   var senarPct=finNum((aj.senarPctReal!==undefined&&aj.senarPctReal!==null)?aj.senarPctReal:((orc&&orc.funrural_pct!==undefined)?orc.funrural_pct:paramsReal.funrural||0));
-  return vendaRealCalc(orc&&orc.qtd?orc.qtd:lote.qtd,zoo,valorAt,valorAjustePorArroba(valorAt,bonusVal,bonusMode),valorAjustePorArroba(valorAt,descVal,descMode),senarPct);
+  var qtdReal=(aj.qtdReal!==undefined&&aj.qtdReal!==null&&String(aj.qtdReal)!=='')?finNum(aj.qtdReal):(orc&&orc.qtd?orc.qtd:lote.qtd);
+  return vendaRealCalc(qtdReal,zoo,valorAt,valorAjustePorArroba(valorAt,bonusVal,bonusMode),valorAjustePorArroba(valorAt,descVal,descMode),senarPct);
+}
+function resultadoProjetadoLote(lote,orc){
+  lote=lote||{};
+  orc=orc||(lote.orcamentos&&lote.orcamentos[0])||{};
+  var capital=finNum(orc.investLote);
+  var custoTotal=capital+finNum(orc.custoOpLote);
+  var lucro=finNum(orc.lucroLote);
+  var faturamento=capital+lucro;
+  var bio=biometriaSimuladaOrc(orc);
+  return {capital:capital,custoTotal:custoTotal,lucro:lucro,faturamento:faturamento,rent:finNum(orc.rent),rentMes:finNum(orc.rentMes),qtd:finNum(orc.qtd||lote.qtd),pesoEntrada:bio.pesoEntrada||0,pesoAbate:bio.pesoAbate||0,gmd:finNum(orc.gmd),dias:finNum(orc.dias),rendA:finNum(orc.rendA_pct),efic:bio.efic||0,arrobasProduzidas:bio.atProd||0,custoArroba:finNum(orc.custoAtProd||orc.custoArrobaProduzida||0),consumoMS:bio.consumoTotal||0};
+}
+function resultadoRealizadoLote(lote,orc,aj){
+  lote=lote||{};
+  orc=orc||(lote.orcamentos&&lote.orcamentos[0])||{};
+  aj=aj||lote.ajusteReal||lote.apuracao||{};
+  if(!aj||!Object.keys(aj).length)return null;
+  var zoo=zootecRealCalc(lote,orc,aj);
+  var venda=vendaRealizadaEsperada(lote,orc,aj);
+  var capital=aj.custoReal!==undefined&&aj.custoReal!==null?finNum(aj.custoReal):finNum(orc.investLote);
+  var faturamento=aj.receitaReal!==undefined&&aj.receitaReal!==null?finNum(aj.receitaReal):venda.liquido;
+  var lucro=aj.lucroReal!==undefined&&aj.lucroReal!==null?finNum(aj.lucroReal):(faturamento-capital);
+  var rent=capital>0?lucro/capital:0;
+  var prazo=prazoDiasResultadoLote(lote,orc);
+  var qtd=aj.qtdReal!==undefined&&aj.qtdReal!==null?finNum(aj.qtdReal):finNum(orc.qtd||lote.qtd);
+  return {capital:capital,custoTotal:capital,lucro:lucro,faturamento:faturamento,rent:rent,rentMes:prazo>0?rent/(prazo/30):0,qtd:qtd,pesoEntrada:zoo.pesoEntrada||0,pesoAbate:zoo.pesoSaida||0,gmd:zoo.gmd||0,dias:zoo.dias||0,rendA:zoo.rendA||0,efic:zoo.efic||0,arrobasProduzidas:zoo.atProd||0,custoArroba:zoo.custoAtReal||0,consumoMS:zoo.consumoTotal||0};
+}
+function statusRealizadoLote(lote){
+  if(!lote)return {key:'none',label:'Sem realizado'};
+  if(lote.finalResultMode==='manual'&&lote.manualFinalResult)return {key:'manually_adjusted',label:'Resultado ajustado'};
+  var aj=lote.ajusteReal||lote.apuracao;
+  if(!aj)return {key:'none',label:'Sem realizado'};
+  var required=['dataEntradaReal','dataAbateReal','dataRecebimentoReal','qtdReal','pesoEntradaReal','pesoSaidaReal','receitaReal','custoReal'];
+  var complete=required.every(function(k){return aj[k]!==undefined&&aj[k]!==null&&String(aj[k]).trim()!=='';});
+  return complete?{key:'complete',label:'Realizado completo'}:{key:'partial',label:'Realizado parcial'};
 }
 function labelRaca(key){if(!key)return null;var r=getRacas()[key];return r?r.nome:({nelore:'Nelore',anelorado:'Anelorado',cruzadof1:'Cruzado F1',leiteiro:'Leiteiro',misto:'Variado'}[key]||key);}
 const TIPO_LABEL=new Proxy({},{get:function(t,k){return labelRaca(k);},has:function(){return true;}});
@@ -5880,6 +5960,95 @@ function removerEpVideo(tipo,idx){
   toast('✓ Vídeo removido');
 }
 
+function renderComparativoRealizadoHtml(lote,orc,aj){
+  var proj=resultadoProjetadoLote(lote,orc);
+  var real=resultadoRealizadoLote(lote,orc,aj);
+  var status=statusRealizadoLote(Object.assign({},lote,{ajusteReal:aj||null}));
+  function cell(v,kind){
+    if(v===null||v===undefined||!isFinite(v))return '—';
+    if(kind==='money')return fmt(v);
+    if(kind==='pct')return (v*100).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
+    if(kind==='pp')return (v*100).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+' pp';
+    if(kind==='kg')return brNum(v,2)+' kg';
+    if(kind==='gmd')return brNum(v,2)+' kg/dia';
+    if(kind==='efic')return brNum(v,2)+' kg MS/@';
+    if(kind==='arroba')return brNum(v,2)+' @';
+    if(kind==='cab')return brNum(v,0)+' cab.';
+    if(kind==='dias')return brNum(v,0)+' dias';
+    return brNum(v,2);
+  }
+  function row(label,key,kind,higherBetter){
+    var pv=proj[key];
+    var rv=real?real[key]:null;
+    var hasReal=rv!==null&&rv!==undefined&&isFinite(rv);
+    var diff=hasReal?rv-pv:null;
+    var cls='neutral';
+    if(diff!==null&&Math.abs(diff)>0.000001)cls=((higherBetter?diff>0:diff<0)?'good':'bad');
+    var diffKind=kind==='pct'?'pp':kind;
+    var diffText=diff===null?'—':((diff>0?'+':'')+cell(diff,diffKind));
+    return '<tr><td>'+escHtml(label)+'</td><td>'+cell(pv,kind)+'</td><td>'+cell(rv,kind)+'</td><td class="pxr-diff '+cls+'">'+diffText+'</td></tr>';
+  }
+  return '<div class="ep-section">Projetado x Realizado <span class="real-status-chip '+status.key+'">'+status.label+'</span></div>'
+    +'<div class="pxr-wrap"><table class="pxr-table"><thead><tr><th>Indicador</th><th>Projetado</th><th>Realizado</th><th>Diferença</th></tr></thead><tbody>'
+    +row('Quantidade de animais','qtd','cab',true)
+    +row('Peso de entrada','pesoEntrada','kg',true)
+    +row('Peso de abate','pesoAbate','kg',true)
+    +row('GMD','gmd','gmd',true)
+    +row('Dias de confinamento','dias','dias',false)
+    +row('Rendimento de carcaça','rendA','pct',true)
+    +row('Eficiência biológica','efic','efic',false)
+    +row('Arrobas produzidas','arrobasProduzidas','arroba',true)
+    +row('Custo por @ produzida','custoArroba','money',false)
+    +row('Faturamento','faturamento','money',true)
+    +row('Capital','capital','money',false)
+    +row('Custo total','custoTotal','money',false)
+    +row('Lucro líquido','lucro','money',true)
+    +row('% lucro operação','rent','pct',true)
+    +row('% lucro ao mês','rentMes','pct',true)
+    +'</tbody></table></div>';
+}
+function resultadoFinalBasePorModo(lote,orc,mode){
+  var clone=Object.assign({},lote,{finalResultMode:mode});
+  if(mode!=='manual')clone.manualFinalResult=null;
+  return resultadoStatusLote(clone,orc);
+}
+function renderResultadoFinalHtml(lote,orc){
+  var mode=lote.finalResultMode||((lote.ajusteReal||lote.apuracao)?'realized':'projected');
+  var result=resultadoFinalBasePorModo(lote,orc,mode);
+  var manual=lote.manualFinalResult||{};
+  var qtd=finNum((lote.ajusteReal&&lote.ajusteReal.qtdReal)||(orc&&orc.qtd)||lote.qtd);
+  var zoo=resultadoRealizadoLote(lote,orc,lote.ajusteReal||lote.apuracao)||resultadoProjetadoLote(lote,orc);
+  var arrobasTotais=(zoo.arrobasProduzidas||0)*qtd;
+  var lucroAnimal=manual.lucroAnimalFinal!==undefined?finNum(manual.lucroAnimalFinal):(qtd>0?result.lucro/qtd:0);
+  var lucroArroba=manual.lucroArrobaFinal!==undefined?finNum(manual.lucroArrobaFinal):(arrobasTotais>0?result.lucro/arrobasTotais:0);
+  var hist=(lote.manualAdjustmentHistory||[]).slice(-3).reverse();
+  return '<div class="ep-section">Resultado Final</div>'
+    +'<div style="border:1px solid var(--border);border-radius:10px;padding:12px;background:#fff;margin-bottom:10px;">'
+      +'<div class="final-mode-bar">'
+        +'<button type="button" class="final-mode-btn '+(mode==='projected'?'active':'')+'" data-mode="projected" onclick="setResultadoFinalMode(\'projected\')">Usar projetado</button>'
+        +'<button type="button" class="final-mode-btn '+(mode==='realized'?'active':'')+'" data-mode="realized" onclick="setResultadoFinalMode(\'realized\')" '+(!(lote.ajusteReal||lote.apuracao)?'disabled':'')+'>Usar realizado</button>'
+        +'<button type="button" class="final-mode-btn '+(mode==='manual'?'active':'')+'" data-mode="manual" onclick="setResultadoFinalMode(\'manual\')">Ajustar manualmente</button>'
+      +'</div>'
+      +'<input type="hidden" id="ep-final-mode" value="'+mode+'">'
+      +'<div class="final-result-grid">'
+        +'<div class="field" style="margin:0"><label>Faturamento final</label><input type="text" inputmode="decimal" id="ep-final-fat" value="'+brNum(result.faturamento,2)+'"></div>'
+        +'<div class="field" style="margin:0"><label>Capital final</label><input type="text" inputmode="decimal" id="ep-final-capital" value="'+brNum(result.capital,2)+'"></div>'
+        +'<div class="field" style="margin:0"><label>Custo total final</label><input type="text" inputmode="decimal" id="ep-final-custo" value="'+brNum(manual.custoTotalFinal!==undefined?manual.custoTotalFinal:result.custoTotal,2)+'"></div>'
+        +'<div class="field" style="margin:0"><label>Lucro líquido final</label><input type="text" inputmode="decimal" id="ep-final-lucro" value="'+brNum(result.lucro,2)+'"></div>'
+        +'<div class="field" style="margin:0"><label>Lucro por animal final</label><input type="text" inputmode="decimal" id="ep-final-lucro-animal" value="'+brNum(lucroAnimal,2)+'"></div>'
+        +'<div class="field" style="margin:0"><label>Lucro por arroba final</label><input type="text" inputmode="decimal" id="ep-final-lucro-arroba" value="'+brNum(lucroArroba,2)+'"></div>'
+        +'<div class="field" style="margin:0"><label>% lucro operação final</label><input type="text" inputmode="decimal" id="ep-final-rent" value="'+brNum(result.rent*100,2)+'"></div>'
+        +'<div class="field" style="margin:0"><label>% lucro ao mês final</label><input type="text" inputmode="decimal" id="ep-final-rentmes" value="'+brNum(result.rentMes*100,2)+'"></div>'
+      +'</div>'
+      +'<div class="field" style="margin-top:8px"><label>Observação do ajuste manual</label><textarea id="ep-final-note" rows="2" placeholder="Ex: ajuste de desconto final do frigorífico">'+escHtml(manual.note||'')+'</textarea></div>'
+      +(hist.length?'<div class="final-history"><strong>Últimos ajustes</strong>'+hist.map(function(h){
+        var ant=h.previous&&h.previous.lucroFinal!==undefined?fmt(h.previous.lucroFinal):'—';
+        var novo=h.next&&h.next.lucroFinal!==undefined?fmt(h.next.lucroFinal):'—';
+        return '<div class="final-history-item">'+escHtml(h.at||'')+' · '+escHtml(h.user||'Usuário')+' · Lucro '+escHtml(ant)+' → '+escHtml(novo)+(h.note?' · '+escHtml(h.note):'')+'</div>';
+      }).join('')+'</div>':'')
+    +'</div>';
+}
+
 function openEditPanel(loteId, cardEl){
   if(_editLoteId===loteId){closeEditPanel();return;}
   _editLoteId=loteId;
@@ -5948,7 +6117,9 @@ function openEditPanel(loteId, cardEl){
   var videosSaidaHtml=renderEpVideosHtml(lote,'saida');
   var contratosPrecoHtml=renderContratosPrecoStatusHtml(lote);
   var realHtml='';
-  if(['abatido','recebido'].indexOf(lote.status)>=0){
+  var comparativoHtml='';
+  var resultadoFinalHtml='';
+  if(['escalado','abatido','recebido'].indexOf(lote.status)>=0){
     var metric=resultadoStatusLote(lote,o);
     var aj=lote.ajusteReal||lote.apuracao||{};
     var paramsReal=getParams();
@@ -5965,20 +6136,30 @@ function openEditPanel(loteId, cardEl){
     var vendaBonusAt=valorAjustePorArroba(vendaValorAt,vendaBonusVal,vendaBonusMode);
     var vendaDescAt=valorAjustePorArroba(vendaValorAt,vendaDescVal,vendaDescMode);
     var vendaSenarPct=finNum((aj.senarPctReal!==undefined&&aj.senarPctReal!==null)?aj.senarPctReal:((o&&o.funrural_pct!==undefined)?o.funrural_pct:paramsReal.funrural||0));
-    var vendaReal=vendaRealCalc(o&&o.qtd?o.qtd:lote.qtd,realZoo,vendaValorAt,vendaBonusAt,vendaDescAt,vendaSenarPct);
+    var realQtdVal=(aj.qtdReal!==undefined&&aj.qtdReal!==null)?finNum(aj.qtdReal):finNum(o&&o.qtd?o.qtd:lote.qtd);
+    var realPesoEntradaVal=(aj.pesoEntradaReal!==undefined&&aj.pesoEntradaReal!==null)?finNum(aj.pesoEntradaReal):realZoo.pesoEntrada;
+    var realPesoSaidaVal=(aj.pesoSaidaReal!==undefined&&aj.pesoSaidaReal!==null)?finNum(aj.pesoSaidaReal):realZoo.pesoSaida;
+    var realConsumoVal=(aj.consumoMSTotalReal!==undefined&&aj.consumoMSTotalReal!==null)?finNum(aj.consumoMSTotalReal):realZoo.consumoTotal;
+    var realArrobasProdVal=(aj.arrobasProduzidasReal!==undefined&&aj.arrobasProduzidasReal!==null)?finNum(aj.arrobasProduzidasReal):realZoo.atProd;
+    var realCustoArrobaVal=(aj.custoArrobaProduzidaReal!==undefined&&aj.custoArrobaProduzidaReal!==null)?finNum(aj.custoArrobaProduzidaReal):realZoo.custoAtReal;
+    var vendaReal=vendaRealCalc(realQtdVal,realZoo,vendaValorAt,vendaBonusAt,vendaDescAt,vendaSenarPct);
     var realFatManual=aj.receitaReal!==undefined&&aj.receitaReal!==null&&String(aj.receitaReal).trim()!=='';
     var realFatVal=realFatManual?finNum(aj.receitaReal):vendaReal.liquido;
     var realLucroVal=realFatVal-realCapitalVal;
     var realRentVal=realCapitalVal>0?realLucroVal/realCapitalVal:0;
     var realPrazo=prazoDiasResultadoLote(lote,o);
     var realRentMesVal=realPrazo>0?realRentVal/(realPrazo/30):metric.rentMes;
-    realHtml='<div class="ep-section">Calculadora do realizado</div>'
+    var realizedPanelStatus=statusRealizadoLote(lote);
+    realHtml='<div class="ep-section">'+((lote.ajusteReal||lote.apuracao)?'Editar realizado':'Lançar realizado')+' <span class="real-status-chip '+realizedPanelStatus.key+'">'+realizedPanelStatus.label+'</span></div>'
       +'<div style="background:rgba(13,27,42,.05);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;">'
         +'<div style="font-size:11px;color:var(--text-2);line-height:1.45;margin-bottom:10px;">Calcule o realizado com dados resumidos de venda. Se o faturamento real vier diferente da conta, ajuste manualmente; lucro e rentabilidade serão recalculados.</div>'
         +'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-bottom:10px;">'
           +'<div class="field" style="margin:0"><label style="font-size:10px">Data entrada</label><input type="date" id="ep-real-entrada" value="'+(realEntradaVal||'')+'" oninput="atualizarRealizadoPainel()"></div>'
           +'<div class="field" style="margin:0"><label style="font-size:10px">Data abate</label><input type="date" id="ep-real-abate" value="'+(realAbateVal||'')+'" oninput="atualizarRealizadoPainel()"></div>'
           +'<div class="field" style="margin:0"><label style="font-size:10px">Data recebimento</label><input type="date" id="ep-real-receb" value="'+(realRecebVal||'')+'" oninput="atualizarRealizadoPainel()"></div>'
+          +'<div class="field" style="margin:0"><label style="font-size:10px">Quantidade real de animais</label><input type="text" inputmode="numeric" id="ep-real-qtd" value="'+brNum(realQtdVal,0)+'" oninput="atualizarRealizadoPainel()"></div>'
+          +'<div class="field" style="margin:0"><label style="font-size:10px">Peso real de entrada (kg)</label><input type="text" inputmode="decimal" id="ep-real-peso-entrada" value="'+brNum(realPesoEntradaVal,2)+'" oninput="atualizarRealizadoPainel()"></div>'
+          +'<div class="field" style="margin:0"><label style="font-size:10px">Peso real de abate (kg)</label><input type="text" inputmode="decimal" id="ep-real-peso-abate" value="'+brNum(realPesoSaidaVal,2)+'" oninput="atualizarRealizadoPainel()"></div>'
         +'</div>'
         +'<div class="ep-section" style="margin-top:14px">Venda realizada</div>'
         +'<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">'
@@ -6003,6 +6184,9 @@ function openEditPanel(loteId, cardEl){
           +'<div class="field" style="margin:0"><label style="font-size:10px">Peso de saída (kg)</label><input type="text" id="ep-real-peso-saida" value="'+brNum(realZoo.pesoSaida,1)+' kg" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.pesoSaida+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);cursor:not-allowed;"><div class="hint">Calculado por peso de entrada + GMD × dias.</div></div>'
           +'<div class="field" style="margin:0"><label style="font-size:10px">Eficiência bio. chegada</label><input type="text" id="ep-real-efic" value="'+(realZoo.efic?brNum(realZoo.efic,2)+' kg MS/@':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.efic+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);cursor:not-allowed;"></div>'
           +'<div class="field" style="margin:0"><label style="font-size:10px">Eficiência bio. origem</label><input type="text" id="ep-real-efic-origem" value="'+(realZoo.eficOrigem?brNum(realZoo.eficOrigem,2)+' kg MS/@':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.eficOrigem+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);cursor:not-allowed;"></div>'
+          +'<div class="field" style="margin:0"><label style="font-size:10px">Consumo real de MS (kg/animal)</label><input type="text" inputmode="decimal" id="ep-real-consumo-ms" value="'+brNum(realConsumoVal,2)+'" oninput="atualizarRealizadoPainel()"></div>'
+          +'<div class="field" style="margin:0"><label style="font-size:10px">Arrobas reais produzidas / animal</label><input type="text" inputmode="decimal" id="ep-real-at-prod" value="'+brNum(realArrobasProdVal,3)+'" oninput="atualizarRealizadoPainel()"></div>'
+          +'<div class="field" style="margin:0"><label style="font-size:10px">Custo real por @ produzida</label><input type="text" inputmode="decimal" id="ep-real-custo-at" value="'+brNum(realCustoArrobaVal,2)+'" oninput="atualizarRealizadoPainel()"></div>'
         +'</div>'
         +'<div class="field" style="margin-top:10px"><label style="font-size:10px">Obs. do confinamento</label>'
           +'<textarea id="ep-real-conf-obs" rows="3" class="ep-textarea" placeholder="Observações do confinamento, manejo, ocorrências, qualidade do lote...">'+escHtml((lote.confRecord&&lote.confRecord.obs)||'')+'</textarea>'
@@ -6011,6 +6195,8 @@ function openEditPanel(loteId, cardEl){
           +(lote.ajusteReal?'<button type="button" class="btn-ep-danger" data-action="clear-real">Limpar realizado</button>':'')
         +'</div>'
       +'</div>';
+    comparativoHtml='<div id="ep-comparativo">'+renderComparativoRealizadoHtml(lote,o,aj)+'</div>';
+    resultadoFinalHtml='<div id="ep-resultado-final">'+renderResultadoFinalHtml(lote,o)+'</div>';
   }
   if(!ep)return;
   ep.style.display='block';
@@ -6074,8 +6260,10 @@ function openEditPanel(loteId, cardEl){
     +'<div class="ep-video-add"><input type="url" id="ep-video-saida" placeholder="Cole o link do YouTube da saída"><button type="button" data-action="add-video-saida">Adicionar</button></div>'
     +'<div id="ep-videos-saida-list">'+videosSaidaHtml+'</div>'
     +confHtml
-    +realHtml
     +resSummary
+    +realHtml
+    +comparativoHtml
+    +resultadoFinalHtml
     +'<div class="ep-section">Parcial / Exclusão</div>'
     +'<div class="ep-partial-box">'
       +'<div class="ep-partial-grid">'
@@ -6101,6 +6289,8 @@ function openEditPanel(loteId, cardEl){
       +'<button class="btn-ep-detail" data-action="open-detail">Ver Detalhe Completo →</button>'
     +'</div>'
   +'</div>';
+  var finalModeInitial=document.getElementById('ep-final-mode');
+  if(finalModeInitial)setResultadoFinalMode(finalModeInitial.value,true);
   ep.scrollIntoView&&ep.scrollIntoView({behavior:'smooth',block:'nearest'});
   // Event delegation for quick-add buttons
   ep.onclick=function(evt){
@@ -6375,19 +6565,27 @@ function aplicarRealizadoPainel(lote){
   var bonusVendaMode=getRealVendaMode('bonus');
   var descontoVendaMode=getRealVendaMode('desconto');
   var senarPct=_parseOptionalNumber('ep-real-senar');
-  var zoo=zootecRealCalc(lote,lote.orcamentos&&lote.orcamentos[0],{
+  var realDraft={
     gmdReal:_parseOptionalNumber('ep-real-gmd'),
     rendCarcacaReal:_parseOptionalNumber('ep-real-rend'),
+    qtdReal:_parseOptionalNumber('ep-real-qtd'),
+    pesoEntradaReal:_parseOptionalNumber('ep-real-peso-entrada'),
+    pesoSaidaReal:_parseOptionalNumber('ep-real-peso-abate'),
+    consumoMSTotalReal:_parseOptionalNumber('ep-real-consumo-ms'),
+    arrobasProduzidasReal:_parseOptionalNumber('ep-real-at-prod'),
+    custoArrobaProduzidaReal:_parseOptionalNumber('ep-real-custo-at'),
     dataEntradaReal:dataEntradaReal,
     dataAbateReal:dataAbateReal
-  });
+  };
+  var zoo=zootecRealCalc(lote,lote.orcamentos&&lote.orcamentos[0],realDraft);
   if(valorAtVenda===null)valorAtVenda=0;
   if(bonusVenda===null)bonusVenda=0;
   if(descontoVenda===null)descontoVenda=0;
   if(senarPct===null)senarPct=0;
   var bonusVendaAt=valorAjustePorArroba(valorAtVenda,bonusVenda,bonusVendaMode);
   var descontoVendaAt=valorAjustePorArroba(valorAtVenda,descontoVenda,descontoVendaMode);
-  var venda=vendaRealCalc(lote.orcamentos&&lote.orcamentos[0]&&lote.orcamentos[0].qtd?lote.orcamentos[0].qtd:lote.qtd,zoo,valorAtVenda,bonusVendaAt,descontoVendaAt,senarPct);
+  var qtdReal=realDraft.qtdReal!==null?realDraft.qtdReal:(lote.orcamentos&&lote.orcamentos[0]&&lote.orcamentos[0].qtd?lote.orcamentos[0].qtd:lote.qtd);
+  var venda=vendaRealCalc(qtdReal,zoo,valorAtVenda,bonusVendaAt,descontoVendaAt,senarPct);
   var fatEl=document.getElementById('ep-real-fat');
   var fatManual=fatEl&&fatEl.dataset.manual==='1';
   var fatInput=_parseOptionalNumber('ep-real-fat');
@@ -6406,10 +6604,14 @@ function aplicarRealizadoPainel(lote){
     rentMesReal:rentMesReal,
     gmdReal:zoo.gmd,
     rendCarcacaReal:zoo.rendA,
+    qtdReal:qtdReal,
+    pesoEntradaReal:zoo.pesoEntrada,
     pesoSaidaReal:zoo.pesoSaida,
     consumoMSTotalReal:zoo.consumoTotal,
     eficienciaBioReal:zoo.efic,
     eficienciaBioOrigemReal:zoo.eficOrigem,
+    arrobasProduzidasReal:zoo.atProd,
+    custoArrobaProduzidaReal:realDraft.custoArrobaProduzidaReal,
     valorAtVendaReal:valorAtVenda,
     bonusVendaReal:bonusVenda,
     bonusVendaModeReal:bonusVendaMode,
@@ -6425,8 +6627,12 @@ function aplicarRealizadoPainel(lote){
     dataEntradaReal:dataEntradaReal,
     dataAbateReal:dataAbateReal,
     dataRecebimentoReal:dataRecebimentoReal,
-    dataApuracao:new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'})
+    dataApuracao:new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}),
+    updatedAt:new Date().toISOString()
   };
+  lote.realizedUpdatedAt=lote.ajusteReal.updatedAt;
+  lote.realizedStatus=statusRealizadoLote(lote).key;
+  aplicarResultadoFinalPainel(lote);
 }
 function atualizarRealizadoPainel(){
   var capital=_parseOptionalNumber('ep-real-capital');
@@ -6460,12 +6666,20 @@ function atualizarRealizadoPainel(){
     var zooTmp=zootecRealCalc(lote,lote.orcamentos&&lote.orcamentos[0],{
       gmdReal:_parseOptionalNumber('ep-real-gmd'),
       rendCarcacaReal:_parseOptionalNumber('ep-real-rend'),
+      qtdReal:_parseOptionalNumber('ep-real-qtd'),
+      pesoEntradaReal:_parseOptionalNumber('ep-real-peso-entrada'),
+      pesoSaidaReal:_parseOptionalNumber('ep-real-peso-abate'),
+      consumoMSTotalReal:_parseOptionalNumber('ep-real-consumo-ms'),
+      arrobasProduzidasReal:_parseOptionalNumber('ep-real-at-prod'),
+      custoArrobaProduzidaReal:_parseOptionalNumber('ep-real-custo-at'),
       dataEntradaReal:dataEntradaReal,
       dataAbateReal:(document.getElementById('ep-real-abate')||{value:''}).value||''
     });
     var bonusVendaAt=valorAjustePorArroba(valorAtVenda,bonusVenda,bonusVendaMode);
     var descontoVendaAt=valorAjustePorArroba(valorAtVenda,descontoVenda,descontoVendaMode);
-    venda=vendaRealCalc(lote.orcamentos&&lote.orcamentos[0]&&lote.orcamentos[0].qtd?lote.orcamentos[0].qtd:lote.qtd,zooTmp,valorAtVenda,bonusVendaAt,descontoVendaAt,senarPct);
+    var qtdTmp=_parseOptionalNumber('ep-real-qtd');
+    if(qtdTmp===null)qtdTmp=lote.orcamentos&&lote.orcamentos[0]&&lote.orcamentos[0].qtd?lote.orcamentos[0].qtd:lote.qtd;
+    venda=vendaRealCalc(qtdTmp,zooTmp,valorAtVenda,bonusVendaAt,descontoVendaAt,senarPct);
     var fatCalc=(fatManual&&fatManualVal!==null)?fatManualVal:venda.liquido;
     lucro=fatCalc-capital;
     rent=capital>0?lucro/capital:0;
@@ -6500,6 +6714,12 @@ function atualizarRealizadoPainel(){
     var zoo=zootecRealCalc(lote,lote.orcamentos&&lote.orcamentos[0],{
       gmdReal:_parseOptionalNumber('ep-real-gmd'),
       rendCarcacaReal:_parseOptionalNumber('ep-real-rend'),
+      qtdReal:_parseOptionalNumber('ep-real-qtd'),
+      pesoEntradaReal:_parseOptionalNumber('ep-real-peso-entrada'),
+      pesoSaidaReal:_parseOptionalNumber('ep-real-peso-abate'),
+      consumoMSTotalReal:_parseOptionalNumber('ep-real-consumo-ms'),
+      arrobasProduzidasReal:_parseOptionalNumber('ep-real-at-prod'),
+      custoArrobaProduzidaReal:_parseOptionalNumber('ep-real-custo-at'),
       dataEntradaReal:dataEntradaReal,
       dataAbateReal:(document.getElementById('ep-real-abate')||{value:''}).value||''
     });
@@ -6510,6 +6730,117 @@ function atualizarRealizadoPainel(){
     if(eficEl){eficEl.value=zoo.efic?brNum(zoo.efic,2)+' kg MS/@':'—';eficEl.dataset.raw=zoo.efic;}
     if(eficOrigemEl){eficOrigemEl.value=zoo.eficOrigem?brNum(zoo.eficOrigem,2)+' kg MS/@':'—';eficOrigemEl.dataset.raw=zoo.eficOrigem;}
   }
+  atualizarComparativoPainel();
+  var finalModeEl=document.getElementById('ep-final-mode');
+  if(finalModeEl&&finalModeEl.value!=='manual')setResultadoFinalMode(finalModeEl.value,false);
+}
+function getRealizadoDraftPainel(lote){
+  var atual=Object.assign({},(lote&&lote.ajusteReal)||(lote&&lote.apuracao)||{});
+  function val(id,key){var n=_parseOptionalNumber(id);if(n!==null)atual[key]=n;}
+  val('ep-real-qtd','qtdReal');
+  val('ep-real-peso-entrada','pesoEntradaReal');
+  val('ep-real-peso-abate','pesoSaidaReal');
+  val('ep-real-gmd','gmdReal');
+  val('ep-real-rend','rendCarcacaReal');
+  val('ep-real-consumo-ms','consumoMSTotalReal');
+  val('ep-real-at-prod','arrobasProduzidasReal');
+  val('ep-real-custo-at','custoArrobaProduzidaReal');
+  val('ep-real-fat','receitaReal');
+  val('ep-real-capital','custoReal');
+  var lucro=document.getElementById('ep-real-lucro');
+  var rent=document.getElementById('ep-real-rent');
+  var rentMes=document.getElementById('ep-real-rentmes');
+  if(lucro&&lucro.dataset.raw!=='')atual.lucroReal=finNum(lucro.dataset.raw);
+  if(rent&&rent.dataset.raw!=='')atual.rentReal=finNum(rent.dataset.raw);
+  if(rentMes&&rentMes.dataset.raw!=='')atual.rentMesReal=finNum(rentMes.dataset.raw);
+  atual.dataEntradaReal=(document.getElementById('ep-real-entrada')||{value:''}).value||null;
+  atual.dataAbateReal=(document.getElementById('ep-real-abate')||{value:''}).value||null;
+  atual.dataRecebimentoReal=(document.getElementById('ep-real-receb')||{value:''}).value||null;
+  return atual;
+}
+function atualizarComparativoPainel(){
+  var el=document.getElementById('ep-comparativo');
+  if(!el||!_editLoteId)return;
+  var lote=getLotes().find(function(l){return l.id===_editLoteId;});
+  if(!lote)return;
+  var orc=lote.orcamentos&&lote.orcamentos[0];
+  el.innerHTML=renderComparativoRealizadoHtml(lote,orc,getRealizadoDraftPainel(lote));
+}
+function setResultadoFinalMode(mode,initial){
+  if(['projected','realized','manual'].indexOf(mode)<0)return;
+  var hidden=document.getElementById('ep-final-mode');
+  if(!hidden)return;
+  hidden.value=mode;
+  document.querySelectorAll('.final-mode-btn').forEach(function(btn){btn.classList.toggle('active',btn.dataset.mode===mode);});
+  var lote=_editLoteId?getLotes().find(function(l){return l.id===_editLoteId;}):null;
+  if(!lote)return;
+  var orc=lote.orcamentos&&lote.orcamentos[0];
+  var result=resultadoFinalBasePorModo(lote,orc,mode==='manual'?(lote.ajusteReal?'realized':'projected'):mode);
+  var qtd=finNum((lote.ajusteReal&&lote.ajusteReal.qtdReal)||(orc&&orc.qtd)||lote.qtd);
+  var realZoo=resultadoRealizadoLote(lote,orc,lote.ajusteReal||lote.apuracao)||resultadoProjetadoLote(lote,orc);
+  var arrobas=(realZoo.arrobasProduzidas||0)*qtd;
+  var map={
+    'ep-final-fat':result.faturamento,
+    'ep-final-capital':result.capital,
+    'ep-final-custo':result.custoTotal,
+    'ep-final-lucro':result.lucro,
+    'ep-final-lucro-animal':qtd>0?result.lucro/qtd:0,
+    'ep-final-lucro-arroba':arrobas>0?result.lucro/arrobas:0,
+    'ep-final-rent':result.rent*100,
+    'ep-final-rentmes':result.rentMes*100
+  };
+  var manual=lote.manualFinalResult||{};
+  if(mode==='manual'&&Object.keys(manual).length){
+    map['ep-final-fat']=manual.faturamentoFinal!==undefined?manual.faturamentoFinal:map['ep-final-fat'];
+    map['ep-final-capital']=manual.capitalFinal!==undefined?manual.capitalFinal:map['ep-final-capital'];
+    map['ep-final-custo']=manual.custoTotalFinal!==undefined?manual.custoTotalFinal:map['ep-final-custo'];
+    map['ep-final-lucro']=manual.lucroFinal!==undefined?manual.lucroFinal:map['ep-final-lucro'];
+    map['ep-final-lucro-animal']=manual.lucroAnimalFinal!==undefined?manual.lucroAnimalFinal:map['ep-final-lucro-animal'];
+    map['ep-final-lucro-arroba']=manual.lucroArrobaFinal!==undefined?manual.lucroArrobaFinal:map['ep-final-lucro-arroba'];
+    map['ep-final-rent']=manual.rentFinal!==undefined?manual.rentFinal*100:map['ep-final-rent'];
+    map['ep-final-rentmes']=manual.rentMesFinal!==undefined?manual.rentMesFinal*100:map['ep-final-rentmes'];
+  }
+  Object.keys(map).forEach(function(id){
+    var input=document.getElementById(id);
+    if(!input)return;
+    if(!initial||mode!=='manual'||!Object.keys(manual).length)input.value=brNum(map[id],2);
+    input.disabled=mode!=='manual';
+    input.style.background=mode==='manual'?'var(--input-bg)':'#fff';
+  });
+  var note=document.getElementById('ep-final-note');
+  if(note){note.disabled=mode!=='manual';note.style.background=mode==='manual'?'var(--input-bg)':'#fff';}
+}
+function aplicarResultadoFinalPainel(lote){
+  var modeEl=document.getElementById('ep-final-mode');
+  if(!lote||!modeEl)return;
+  var mode=modeEl.value||'projected';
+  lote.finalResultMode=mode;
+  lote.finalResultUpdatedAt=new Date().toISOString();
+  if(mode!=='manual'){
+    lote.realizedStatus=statusRealizadoLote(lote).key;
+    return;
+  }
+  var novo={
+    faturamentoFinal:_parseOptionalNumber('ep-final-fat'),
+    capitalFinal:_parseOptionalNumber('ep-final-capital'),
+    custoTotalFinal:_parseOptionalNumber('ep-final-custo'),
+    lucroFinal:_parseOptionalNumber('ep-final-lucro'),
+    lucroAnimalFinal:_parseOptionalNumber('ep-final-lucro-animal'),
+    lucroArrobaFinal:_parseOptionalNumber('ep-final-lucro-arroba'),
+    rentFinal:(_parseOptionalNumber('ep-final-rent')||0)/100,
+    rentMesFinal:(_parseOptionalNumber('ep-final-rentmes')||0)/100,
+    note:(document.getElementById('ep-final-note')||{value:''}).value.trim(),
+    updatedAt:new Date().toISOString(),
+    updatedBy:currentUser||''
+  };
+  var anterior=lote.manualFinalResult||null;
+  var mudou=!anterior||['faturamentoFinal','capitalFinal','custoTotalFinal','lucroFinal','lucroAnimalFinal','lucroArrobaFinal','rentFinal','rentMesFinal','note'].some(function(k){return String(anterior[k]??'')!==String(novo[k]??'');});
+  if(mudou){
+    lote.manualAdjustmentHistory=lote.manualAdjustmentHistory||[];
+    lote.manualAdjustmentHistory.push({at:new Date().toLocaleString('pt-BR'),user:currentUser||'',note:novo.note,previous:anterior?JSON.parse(JSON.stringify(anterior)):null,next:JSON.parse(JSON.stringify(novo))});
+  }
+  lote.manualFinalResult=novo;
+  lote.realizedStatus='manually_adjusted';
 }
 function limparRealizadoPainel(){
   if(!_editLoteId)return;
@@ -6517,6 +6848,8 @@ function limparRealizadoPainel(){
   var i=arr.findIndex(function(l){return l.id===_editLoteId;});
   if(i<0)return;
   delete arr[i].ajusteReal;
+  arr[i].finalResultMode='projected';
+  arr[i].realizedStatus='none';
   saveLotes(arr);
   var editingId=_editLoteId;
   closeEditPanel();
@@ -7262,8 +7595,9 @@ function renderLotes(){
       +'<span class="status-drag-dot" style="background:'+(barColor||'var(--border)')+'"></span>'
       +'<span class="badge '+sc.cls+'">'+escHtml(sc.label)+'</span>'
     +'</div>';
+    var realizadoStatus=statusRealizadoLote(l);
     var loteCell='<div class="status-cell '+statusColClass('lote')+'"><span class="status-seq-pc">Lote '+((idx||0)+1)+'</span><span class="status-cell-title">'+escHtml(cardTitle)+'</span>'
-      +(metric.real?'<span class="status-cell-sub" style="color:var(--green)">Realizado ajustado</span>':'')
+      +'<span class="real-status-chip status-realized-chip '+realizadoStatus.key+'">'+escHtml(realizadoStatus.label)+'</span>'
     +'</div>';
     var b3Cell='<div class="status-cell status-b3-cell '+statusColClass('b3')+'" title="'+escHtml(b3Val)+'">'
       +'<span class="b3-lock-pill '+(b3Estado==='Aberto'?'open':'locked')+'">'+escHtml(b3Estado)+'</span>'
@@ -10003,10 +10337,82 @@ function buildStatusSummaryRows(){
   });
   return rows;
 }
+function statusExportLotesFiltrados(){
+  var all=getLotes();
+  var ids=[];
+  [].forEach.call(document.querySelectorAll('#lote-list .status-row[data-lid]'),function(row){
+    if(!exportVisible(row)||row.style.display==='none')return;
+    ids.push(row.dataset.lid);
+  });
+  return ids.map(function(id){return all.find(function(l){return l.id===id;});}).filter(Boolean);
+}
+function exportRealValue(v,kind){
+  if(v===null||v===undefined||!isFinite(v))return '—';
+  if(kind==='money')return fmt(v);
+  if(kind==='pct')return fmtPct(v);
+  if(kind==='kg')return brNum(v,2)+' kg';
+  if(kind==='gmd')return brNum(v,2)+' kg/dia';
+  if(kind==='efic')return brNum(v,2)+' kg MS/@';
+  if(kind==='arroba')return brNum(v,2)+' @';
+  if(kind==='cab')return brNum(v,0)+' cab.';
+  if(kind==='dias')return brNum(v,0)+' dias';
+  return brNum(v,2);
+}
+function buildProjectedExportRows(lotes){
+  var rows=[['Lote','Qtd','Peso entrada','Peso abate','GMD','Dias','Rend. carcaça','Eficiência biológica','@ produzidas','Custo/@ produzida','Faturamento','Capital','Custo total','Lucro','% operação','% ao mês']];
+  lotes.forEach(function(l){
+    var o=l.orcamentos&&l.orcamentos[0];if(!o)return;
+    var p=resultadoProjetadoLote(l,o);
+    rows.push([getLoteNomeReferencia(l,o)||l.id,exportRealValue(p.qtd,'cab'),exportRealValue(p.pesoEntrada,'kg'),exportRealValue(p.pesoAbate,'kg'),exportRealValue(p.gmd,'gmd'),exportRealValue(p.dias,'dias'),brNum(p.rendA,2)+'%',exportRealValue(p.efic,'efic'),exportRealValue(p.arrobasProduzidas,'arroba'),exportRealValue(p.custoArroba,'money'),exportRealValue(p.faturamento,'money'),exportRealValue(p.capital,'money'),exportRealValue(p.custoTotal,'money'),exportRealValue(p.lucro,'money'),exportRealValue(p.rent,'pct'),exportRealValue(p.rentMes,'pct')]);
+  });
+  return rows;
+}
+function buildRealizedExportRows(lotes){
+  var rows=[['Lote','Situação realizado','Qtd','Peso entrada','Peso abate','GMD','Dias','Rend. carcaça','Eficiência biológica','@ produzidas','Custo/@ produzida','Faturamento','Capital','Custo total','Lucro','% operação','% ao mês','Atualizado em']];
+  lotes.forEach(function(l){
+    var o=l.orcamentos&&l.orcamentos[0];if(!o)return;
+    var r=resultadoRealizadoLote(l,o,l.ajusteReal||l.apuracao);
+    var st=statusRealizadoLote(l);
+    rows.push([getLoteNomeReferencia(l,o)||l.id,st.label,r?exportRealValue(r.qtd,'cab'):'—',r?exportRealValue(r.pesoEntrada,'kg'):'—',r?exportRealValue(r.pesoAbate,'kg'):'—',r?exportRealValue(r.gmd,'gmd'):'—',r?exportRealValue(r.dias,'dias'):'—',r?brNum(r.rendA,2)+'%':'—',r?exportRealValue(r.efic,'efic'):'—',r?exportRealValue(r.arrobasProduzidas,'arroba'):'—',r?exportRealValue(r.custoArroba,'money'):'—',r?exportRealValue(r.faturamento,'money'):'—',r?exportRealValue(r.capital,'money'):'—',r?exportRealValue(r.custoTotal,'money'):'—',r?exportRealValue(r.lucro,'money'):'—',r?exportRealValue(r.rent,'pct'):'—',r?exportRealValue(r.rentMes,'pct'):'—',(l.ajusteReal&&l.ajusteReal.updatedAt)||'']);
+  });
+  return rows;
+}
+function buildComparisonExportRows(lotes){
+  var rows=[['Lote','Indicador','Projetado','Realizado','Diferença']];
+  var defs=[['Quantidade','qtd','cab'],['Peso entrada','pesoEntrada','kg'],['Peso abate','pesoAbate','kg'],['GMD','gmd','gmd'],['Dias de confinamento','dias','dias'],['Rendimento de carcaça','rendA','number'],['Eficiência biológica','efic','efic'],['Arrobas produzidas','arrobasProduzidas','arroba'],['Custo/@ produzida','custoArroba','money'],['Faturamento','faturamento','money'],['Capital','capital','money'],['Custo total','custoTotal','money'],['Lucro líquido','lucro','money'],['% lucro operação','rent','pct'],['% lucro ao mês','rentMes','pct']];
+  lotes.forEach(function(l){
+    var o=l.orcamentos&&l.orcamentos[0];if(!o)return;
+    var p=resultadoProjetadoLote(l,o),r=resultadoRealizadoLote(l,o,l.ajusteReal||l.apuracao),nome=getLoteNomeReferencia(l,o)||l.id;
+    defs.forEach(function(d){
+      var pv=p[d[1]],rv=r?r[d[1]]:null,diff=rv===null||rv===undefined?null:rv-pv;
+      var kind=d[2],pTxt=kind==='number'?brNum(pv,2)+'%':exportRealValue(pv,kind),rTxt=rv===null||rv===undefined?'—':(kind==='number'?brNum(rv,2)+'%':exportRealValue(rv,kind));
+      var diffTxt=diff===null?'—':((diff>0?'+':'')+(kind==='number'?brNum(diff,2)+' pp':exportRealValue(diff,kind)));
+      rows.push([nome,d[0],pTxt,rTxt,diffTxt]);
+    });
+  });
+  return rows;
+}
+function buildFinalResultExportRows(lotes){
+  var rows=[['Lote','Resultado usado','Faturamento final','Capital final','Custo total final','Lucro final','Lucro/animal','% operação','% ao mês','Ajuste manual','Observação','Atualizado em']];
+  lotes.forEach(function(l){
+    var o=l.orcamentos&&l.orcamentos[0];if(!o)return;
+    var f=resultadoStatusLote(l,o),qtd=finNum((l.ajusteReal&&l.ajusteReal.qtdReal)||o.qtd||l.qtd),manual=l.manualFinalResult||{},modo={projected:'Projetado',realized:'Realizado',manual:'Ajustado manualmente'}[f.finalMode]||f.finalMode;
+    rows.push([getLoteNomeReferencia(l,o)||l.id,modo,fmt(f.faturamento),fmt(f.capital),fmt(f.custoTotal),fmt(f.lucro),fmt(qtd>0?f.lucro/qtd:0),fmtPct(f.rent),fmtPct(f.rentMes),f.finalMode==='manual'?'Sim':'Não',manual.note||'',l.finalResultUpdatedAt||'']);
+  });
+  return rows;
+}
 function buildStatusExportData(){
   var filters=[['Status',document.querySelector('.status-pills .pill.active')?exportText(document.querySelector('.status-pills .pill.active')):'Todos']];
   document.querySelectorAll('#panel-lotes .status-filter-control input').forEach(function(i){if(i.value)filters.push([i.getAttribute('placeholder')||'Filtro',i.value]);});
-  return {tab:'Status',title:'Relatório por Status',file:'VM_Agro_Status_'+exportDateFile(),filters:filters,sheets:[{name:'Resumo por Status',rows:buildStatusSummaryRows()},{name:'Lotes por Status',rows:buildStatusLotRows()}]};
+  var lotes=statusExportLotesFiltrados();
+  return {tab:'Status',title:'Relatório por Status',file:'VM_Agro_Status_'+exportDateFile(),filters:filters,sheets:[
+    {name:'Resumo por Status',rows:buildStatusSummaryRows()},
+    {name:'Lotes por Status',rows:buildStatusLotRows()},
+    {name:'Projetado',rows:buildProjectedExportRows(lotes)},
+    {name:'Realizado',rows:buildRealizedExportRows(lotes)},
+    {name:'Comparativo',rows:buildComparisonExportRows(lotes)},
+    {name:'Resultado Final',rows:buildFinalResultExportRows(lotes)}
+  ]};
 }
 function buildB3ExportData(){
   var filters=[
