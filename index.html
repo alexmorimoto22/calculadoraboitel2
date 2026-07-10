@@ -3744,40 +3744,40 @@ function getFinFreights(){try{return JSON.parse(localStorage.getItem(FIN_FREIGHT
 function saveFinFreights(a){localStorage.setItem(FIN_FREIGHT_KEY,JSON.stringify(a||[]));}
 function finId(prefix){return (prefix||'fin')+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);}
 function finHoje(){return _isoDate(new Date());}
-function finNum(v){
-  if(typeof v==='number')return isFinite(v)?v:0;
-  var s=String(v||'').trim();
-  if(!s)return 0;
-  s=s.replace(/\s+/g,'').replace(/[^\d,.\-+]/g,'');
-  if(!s)return 0;
+/* Valores monetários brasileiros: ponto é milhar e vírgula é decimal. */
+function parseBRMoney(value){
+  if(value===null||value===undefined)return 0;
+  if(typeof value==='number')return isFinite(value)?value:0;
+  var str=String(value).trim();
+  if(!str)return 0;
+  str=str.replace(/\s/g,'').replace(/R\$/gi,'').replace(/[^\d,.-]/g,'');
+  if(!str)return 0;
   var sign='';
-  if(s[0]==='-'||s[0]==='+'){
-    sign=s[0]==='-'?'-':'';
-    s=s.slice(1);
+  if(str.charAt(0)==='-'||str.charAt(0)==='+'){
+    sign=str.charAt(0)==='-'?'-':'';
+    str=str.slice(1).replace(/[+-]/g,'');
   }
-  s=s.replace(/[+\-]/g,'');
-  if(!s)return 0;
-  var hasComma=s.indexOf(',')>=0;
-  var hasDot=s.indexOf('.')>=0;
-  if(hasComma&&hasDot){
-    if(s.lastIndexOf(',')>s.lastIndexOf('.')){
-      s=s.replace(/\./g,'').replace(/,/g,'.');
-    }else{
-      s=s.replace(/,/g,'');
-    }
-  }else if(hasComma){
-    s=s.replace(/\./g,'').replace(/,/g,'.');
+  if(!str)return 0;
+  var hasComma=str.indexOf(',')>=0;
+  var hasDot=str.indexOf('.')>=0;
+  if(hasComma){
+    /* 900.000,00 -> 900000.00 | 1.234.567,89 -> 1234567.89 */
+    var comma=str.lastIndexOf(',');
+    str=str.slice(0,comma).replace(/[.,]/g,'')+'.'+str.slice(comma+1).replace(/[.,]/g,'');
   }else if(hasDot){
-    var dots=(s.match(/\./g)||[]).length;
-    if(dots>1){
-      s=s.replace(/\./g,'');
-    }else if(/^\d{1,3}\.\d{3}$/.test(s)){
-      s=s.replace('.','');
-    }
+    var parts=str.split('.');
+    var lastPart=parts[parts.length-1];
+    /* 900.000 e 1.234.567: pontos são milhares. */
+    if(lastPart.length===3&&parts.length>1)str=str.replace(/\./g,'');
   }
-  var n=parseFloat(sign+s);
-  return isFinite(n)?n:0;
+  var number=Number(sign+str);
+  return isFinite(number)?number:0;
 }
+function formatBRMoney(value){
+  return (Number(value)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+}
+/* Mantém os leitores existentes centralizados na conversão brasileira. */
+function finNum(v){return parseBRMoney(v);}
 function finInputNum(id){var el=document.getElementById(id);return el?finNum(el.value):0;}
 function finText(id){var el=document.getElementById(id);return el?String(el.value||'').trim():'';}
 function finSet(id,val){var el=document.getElementById(id);if(el)el.value=(val===undefined||val===null)?'':val;}
@@ -9709,35 +9709,26 @@ function aplicarTecladoNumerico(root){
       el.dataset.numericMaskReady='1';
       el.addEventListener('beforeinput',function(ev){
         if(el.getAttribute('inputmode')!=='decimal')return;
+        /* Mantém pontos de milhar digitados, como em 900.000,00. */
         if(ev.data!=='.')return;
-        ev.preventDefault();
-        var start=el.selectionStart==null?el.value.length:el.selectionStart;
-        var end=el.selectionEnd==null?start:el.selectionEnd;
-        var next=el.value.slice(0,start)+','+el.value.slice(end);
-        var first=next.indexOf(',');
-        if(first>=0)next=next.slice(0,first+1)+next.slice(first+1).replace(/[,.]/g,'');
-        el.value=next;
-        try{el.setSelectionRange(start+1,start+1);}catch(e){}
-        el.dispatchEvent(new Event('input',{bubbles:true}));
       });
       el.addEventListener('input',function(){
-      var start=el.selectionStart;
-      var before=el.value;
-      var next=before;
-      if(el.getAttribute('inputmode')==='decimal'){
-        next=next.replace(/\./g,',');
-        var first=next.indexOf(',');
-        if(first>=0)next=next.slice(0,first+1)+next.slice(first+1).replace(/,/g,'');
-      }else{
-        next=next.replace(/[,.]/g,'');
-      }
-      if(next!==before){
-        el.value=next;
-        try{el.setSelectionRange(Math.max(0,(start||next.length)-(before.length-next.length)),Math.max(0,(start||next.length)-(before.length-next.length)));}catch(e){}
-      }
-      });
-      el.addEventListener('blur',function(){
-        if(el.getAttribute('inputmode')==='decimal')el.value=String(el.value||'').replace(/\./g,',');
+        var start=el.selectionStart;
+        var before=el.value;
+        var next=before;
+        if(el.getAttribute('inputmode')==='decimal'){
+          var sign=next.charAt(0)==='-'?'-':'';
+          next=next.replace(/[^\d,.-]/g,'').replace(/-/g,'');
+          if(sign)next='-'+next;
+          var first=next.indexOf(',');
+          if(first>=0)next=next.slice(0,first+1)+next.slice(first+1).replace(/,/g,'');
+        }else{
+          next=next.replace(/[,.]/g,'');
+        }
+        if(next!==before){
+          el.value=next;
+          try{el.setSelectionRange(Math.max(0,(start||next.length)-(before.length-next.length)),Math.max(0,(start||next.length)-(before.length-next.length)));}catch(e){}
+        }
       });
     }
   });
