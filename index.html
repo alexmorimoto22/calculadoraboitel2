@@ -3359,20 +3359,23 @@ function resultadoStatusLote(lote,orc){
   lote=lote||{};
   orc=orc||(lote.orcamentos&&lote.orcamentos[0])||null;
   var real=lote.ajusteReal||lote.apuracao||null;
-  var capital=orc?(parseFloat(orc.investLote)||0):0;
-  var lucro=orc?(parseFloat(orc.lucroLote)||0):0;
+  var capital=orc?finNum(orc.investLote):0;
+  var lucro=orc?finNum(orc.lucroLote):0;
   var faturamento=orc?(capital+lucro):0;
-  if(orc&&!capital&&!lucro&&orc.fatLiqLote)faturamento=parseFloat(orc.fatLiqLote)||0;
-  var rent=orc?(parseFloat(orc.rent)||0):0;
-  var rentMes=orc?(parseFloat(orc.rentMes)||0):0;
+  if(orc&&!capital&&!lucro&&orc.fatLiqLote)faturamento=finNum(orc.fatLiqLote);
+  var rent=orc?finNum(orc.rent):0;
+  var rentMes=orc?finNum(orc.rentMes):0;
   var bio=orc?biometriaSimuladaOrc(orc):{efic:0,eficOrigem:0};
   var eficienciaBio=bio&&(bio.eficOrigem||bio.efic)?(bio.eficOrigem||bio.efic):0;
   var eficienciaBioChegada=bio&&bio.efic?bio.efic:0;
   var origem='Simulado';
   if(real){
-    var realCustoNum=finNum(real.custoReal);
-    var realLucroNum=finNum(real.lucroReal);
-    var realReceitaNum=finNum(real.receitaReal);
+    var vendaRealBase=null;
+    try{vendaRealBase=orc?vendaRealizadaEsperada(lote,orc,real):null;}catch(e){vendaRealBase=null;}
+    var receitaBase=vendaRealBase&&vendaRealBase.liquido?vendaRealBase.liquido:faturamento;
+    var realCustoNum=normalizarValorRealizado(real.custoReal,capital);
+    var realReceitaNum=normalizarValorRealizado(real.receitaReal,receitaBase);
+    var realLucroNum=normalizarValorRealizado(real.lucroReal,realReceitaNum-realCustoNum);
     if(real.custoReal!==undefined&&real.custoReal!==null)capital=realCustoNum;
     if(real.lucroReal!==undefined&&real.lucroReal!==null)lucro=realLucroNum;
     if((real.lucroReal===undefined||real.lucroReal===null)&&real.receitaReal!==undefined&&real.receitaReal!==null){
@@ -3484,6 +3487,37 @@ function vendaRealCalc(qtd,zoo,valorAt,bonusAt,descontoAt,senarPct){
   var senar=bruto*(senarPct/100);
   var liquido=bruto-senar;
   return {arrobas:arrobas,precoLiquidoAt:precoLiquidoAt,bruto:bruto,senar:senar,liquido:liquido};
+}
+function valorRealizadoForaDaEscala(valor,referencia){
+  if(valor===undefined||valor===null||String(valor).trim()==='')return false;
+  var n=finNum(valor);
+  var ref=finNum(referencia);
+  if(!isFinite(n)||!isFinite(ref)||Math.abs(ref)<1000||Math.abs(n)===0)return false;
+  return Math.abs(n)<Math.abs(ref)*0.01;
+}
+function normalizarValorRealizado(valor,referencia){
+  var n=finNum(valor);
+  var ref=finNum(referencia);
+  if(valorRealizadoForaDaEscala(valor,referencia))return ref;
+  return isFinite(n)?n:(isFinite(ref)?ref:0);
+}
+function realizadoManualValido(valor,referencia){
+  if(valor===undefined||valor===null||String(valor).trim()==='')return false;
+  return !valorRealizadoForaDaEscala(valor,referencia);
+}
+function vendaRealizadaEsperada(lote,orc,aj){
+  lote=lote||{};
+  orc=orc||{};
+  aj=aj||{};
+  var paramsReal=getParams();
+  var zoo=zootecRealCalc(lote,orc,aj);
+  var valorAt=finNum((aj.valorAtVendaReal!==undefined&&aj.valorAtVendaReal!==null)?aj.valorAtVendaReal:((orc&&orc.valorAt)||paramsReal.valorAt||0));
+  var bonusMode=aj.bonusVendaModeReal||(orc&&orc.bonusMode)||'val';
+  var descMode=aj.descontoVendaModeReal||(orc&&orc.descontoMode)||'val';
+  var bonusVal=finNum((aj.bonusVendaReal!==undefined&&aj.bonusVendaReal!==null)?aj.bonusVendaReal:(orc?orc.bonus:0));
+  var descVal=finNum((aj.descontoVendaReal!==undefined&&aj.descontoVendaReal!==null)?aj.descontoVendaReal:(orc?orc.desconto:0));
+  var senarPct=finNum((aj.senarPctReal!==undefined&&aj.senarPctReal!==null)?aj.senarPctReal:((orc&&orc.funrural_pct!==undefined)?orc.funrural_pct:paramsReal.funrural||0));
+  return vendaRealCalc(orc&&orc.qtd?orc.qtd:lote.qtd,zoo,valorAt,valorAjustePorArroba(valorAt,bonusVal,bonusMode),valorAjustePorArroba(valorAt,descVal,descMode),senarPct);
 }
 function labelRaca(key){if(!key)return null;var r=getRacas()[key];return r?r.nome:({nelore:'Nelore',anelorado:'Anelorado',cruzadof1:'Cruzado F1',leiteiro:'Leiteiro',misto:'Variado'}[key]||key);}
 const TIPO_LABEL=new Proxy({},{get:function(t,k){return labelRaca(k);},has:function(){return true;}});
@@ -3714,15 +3748,34 @@ function finNum(v){
   if(typeof v==='number')return isFinite(v)?v:0;
   var s=String(v||'').trim();
   if(!s)return 0;
-  s=s.replace(/[^\d,.-]/g,'');
+  s=s.replace(/\s+/g,'').replace(/[^\d,.\-+]/g,'');
   if(!s)return 0;
-  if(s.indexOf(',')>=0){
-    s=s.replace(/\./g,'').replace(',', '.');
-  }else{
-    var parts=s.split('.');
-    if(parts.length>2)s=parts.join('');
+  var sign='';
+  if(s[0]==='-'||s[0]==='+'){
+    sign=s[0]==='-'?'-':'';
+    s=s.slice(1);
   }
-  var n=parseFloat(s);
+  s=s.replace(/[+\-]/g,'');
+  if(!s)return 0;
+  var hasComma=s.indexOf(',')>=0;
+  var hasDot=s.indexOf('.')>=0;
+  if(hasComma&&hasDot){
+    if(s.lastIndexOf(',')>s.lastIndexOf('.')){
+      s=s.replace(/\./g,'').replace(/,/g,'.');
+    }else{
+      s=s.replace(/,/g,'');
+    }
+  }else if(hasComma){
+    s=s.replace(/\./g,'').replace(/,/g,'.');
+  }else if(hasDot){
+    var dots=(s.match(/\./g)||[]).length;
+    if(dots>1){
+      s=s.replace(/\./g,'');
+    }else if(/^\d{1,3}\.\d{3}$/.test(s)){
+      s=s.replace('.','');
+    }
+  }
+  var n=parseFloat(sign+s);
   return isFinite(n)?n:0;
 }
 function finInputNum(id){var el=document.getElementById(id);return el?finNum(el.value):0;}
@@ -5860,8 +5913,8 @@ function openEditPanel(loteId, cardEl){
     var simEntrada=o.dataEntradaPrev||'';
     var simAbate=simEntrada&&o.dias?_fmtDataBR(_addDias(simEntrada,o.dias)):'—';
     var simReceb=simEntrada&&(o.dias||o.prazoPag)?_fmtDataBR(_addDias(simEntrada,(parseInt(o.dias)||0)+(parseInt(o.prazoPag)||0))):'—';
-    var simCapital=parseFloat(o.investLote)||0;
-    var simLucro=parseFloat(o.lucroLote)||0;
+    var simCapital=finNum(o.investLote);
+    var simLucro=finNum(o.lucroLote);
     var simFat=simCapital+simLucro;
     var simConfinamento=(o.precificacaoSnapshot&&o.precificacaoSnapshot.boitelNome)||(o.boitelSnapshot&&(o.boitelSnapshot.boitelNome||o.boitelSnapshot.nome))||o.boitelNome||'Manual / sem boitel';
     var simBio=biometriaSimuladaOrc(o);
@@ -5899,19 +5952,19 @@ function openEditPanel(loteId, cardEl){
     var metric=resultadoStatusLote(lote,o);
     var aj=lote.ajusteReal||lote.apuracao||{};
     var paramsReal=getParams();
-    var realCapitalVal=(aj.custoReal!==undefined&&aj.custoReal!==null)?aj.custoReal:metric.capital;
+    var realCapitalVal=(aj.custoReal!==undefined&&aj.custoReal!==null)?normalizarValorRealizado(aj.custoReal,metric.capital):metric.capital;
     var realZoo=zootecRealCalc(lote,o,aj);
     var realEntradaVal=aj.dataEntradaReal||(lote.confRecord&&lote.confRecord.dataEntrada)||(o&&o.dataEntradaPrev)||'';
     var realAbateVal=aj.dataAbateReal||(lote.confRecord&&lote.confRecord.dataSaida)||(realEntradaVal&&o&&o.dias?_isoDate(_addDias(realEntradaVal,o.dias)):'');
     var realRecebVal=aj.dataRecebimentoReal||(realAbateVal&&o?_isoDate(_addDias(realAbateVal,parseInt(o.prazoPag)||0)):'');
-    var vendaValorAt=(aj.valorAtVendaReal!==undefined&&aj.valorAtVendaReal!==null)?aj.valorAtVendaReal:((o&&o.valorAt)||paramsReal.valorAt||0);
+    var vendaValorAt=finNum((aj.valorAtVendaReal!==undefined&&aj.valorAtVendaReal!==null)?aj.valorAtVendaReal:((o&&o.valorAt)||paramsReal.valorAt||0));
     var vendaBonusMode=aj.bonusVendaModeReal||(o&&o.bonusMode)||'val';
     var vendaDescMode=aj.descontoVendaModeReal||(o&&o.descontoMode)||'val';
-    var vendaBonusVal=(aj.bonusVendaReal!==undefined&&aj.bonusVendaReal!==null)?aj.bonusVendaReal:(o?parseFloat(o.bonus)||0:0);
-    var vendaDescVal=(aj.descontoVendaReal!==undefined&&aj.descontoVendaReal!==null)?aj.descontoVendaReal:(o?parseFloat(o.desconto)||0:0);
+    var vendaBonusVal=finNum((aj.bonusVendaReal!==undefined&&aj.bonusVendaReal!==null)?aj.bonusVendaReal:(o?o.bonus:0));
+    var vendaDescVal=finNum((aj.descontoVendaReal!==undefined&&aj.descontoVendaReal!==null)?aj.descontoVendaReal:(o?o.desconto:0));
     var vendaBonusAt=valorAjustePorArroba(vendaValorAt,vendaBonusVal,vendaBonusMode);
     var vendaDescAt=valorAjustePorArroba(vendaValorAt,vendaDescVal,vendaDescMode);
-    var vendaSenarPct=(aj.senarPctReal!==undefined&&aj.senarPctReal!==null)?aj.senarPctReal:((o&&o.funrural_pct!==undefined)?o.funrural_pct:paramsReal.funrural||0);
+    var vendaSenarPct=finNum((aj.senarPctReal!==undefined&&aj.senarPctReal!==null)?aj.senarPctReal:((o&&o.funrural_pct!==undefined)?o.funrural_pct:paramsReal.funrural||0));
     var vendaReal=vendaRealCalc(o&&o.qtd?o.qtd:lote.qtd,realZoo,vendaValorAt,vendaBonusAt,vendaDescAt,vendaSenarPct);
     var realFatManual=aj.receitaReal!==undefined&&aj.receitaReal!==null&&String(aj.receitaReal).trim()!=='';
     var realFatVal=realFatManual?finNum(aj.receitaReal):vendaReal.liquido;
@@ -6252,10 +6305,10 @@ function applyEditPanelDraft(lote){
     lote.confRecord={
       dataEntrada:epConfEntrada.value||null,
       dataSaida:(document.getElementById('ep-conf-saida')||{value:''}).value||null,
-      gmdReal:parseFloat((document.getElementById('ep-conf-gmd')||{value:''}).value)||null,
-      pesoSaida:parseFloat((document.getElementById('ep-conf-peso')||{value:''}).value)||null,
-      custoMSTotal:parseFloat((document.getElementById('ep-conf-ms')||{value:''}).value)||null,
-      custoOpTotal:parseFloat((document.getElementById('ep-conf-op')||{value:''}).value)||null,
+      gmdReal:finNum((document.getElementById('ep-conf-gmd')||{value:''}).value)||null,
+      pesoSaida:finNum((document.getElementById('ep-conf-peso')||{value:''}).value)||null,
+      custoMSTotal:finNum((document.getElementById('ep-conf-ms')||{value:''}).value)||null,
+      custoOpTotal:finNum((document.getElementById('ep-conf-op')||{value:''}).value)||null,
       obs:(document.getElementById('ep-conf-obs')||{value:''}).value.trim()||null
     };
   }
@@ -6312,6 +6365,7 @@ function aplicarRealizadoPainel(lote){
   var capital=_parseOptionalNumber('ep-real-capital');
   var base=resultadoStatusLote({orcamentos:lote.orcamentos||[]},lote.orcamentos&&lote.orcamentos[0]);
   if(capital===null)capital=base.capital;
+  else capital=normalizarValorRealizado(capital,base.capital);
   var dataEntradaReal=(document.getElementById('ep-real-entrada')||{value:''}).value||null;
   var dataAbateReal=(document.getElementById('ep-real-abate')||{value:''}).value||null;
   var dataRecebimentoReal=(document.getElementById('ep-real-receb')||{value:''}).value||null;
@@ -6395,6 +6449,8 @@ function atualizarRealizadoPainel(){
   var arrobasEl=document.getElementById('ep-real-arrobas');
   if(capital===null)return;
   var lote=_editLoteId?getLotes().find(function(l){return l.id===_editLoteId;}):null;
+  var baseMetric=lote?resultadoStatusLote({orcamentos:lote.orcamentos||[]},lote.orcamentos&&lote.orcamentos[0]):{capital:capital};
+  capital=normalizarValorRealizado(capital,baseMetric.capital);
   var dataEntradaReal=(document.getElementById('ep-real-entrada')||{value:''}).value||'';
   var dataRecebimentoReal=(document.getElementById('ep-real-receb')||{value:''}).value||'';
   var prazo=(dataEntradaReal&&dataRecebimentoReal)?Math.max(0,Math.round((_addDias(dataRecebimentoReal,0)-_addDias(dataEntradaReal,0))/86400000)):(lote?prazoDiasResultadoLote(lote,lote.orcamentos&&lote.orcamentos[0]):0);
