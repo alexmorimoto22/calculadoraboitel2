@@ -862,6 +862,8 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .status-cell.neg{color:var(--red);}
   .status-cell-title{display:inline;min-width:0;font-weight:850;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .status-cell-sub{display:none;margin-top:2px;font-size:10px;color:var(--text-3);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .status-row-edit-btn{float:right;flex:0 0 auto;margin:-3px 0 -3px 7px;border:1px solid var(--border);border-radius:7px;background:#fff;color:var(--accent);padding:4px 7px;font:800 9px 'Inter',sans-serif;cursor:pointer;line-height:1;}
+  .status-row-edit-btn:hover{border-color:var(--gold);background:rgba(201,162,78,.1);}
   .status-row>.status-cell:nth-child(4){display:flex;align-items:center;gap:8px;}
   .status-row>.status-cell:nth-child(5){display:flex;align-items:center;gap:8px;}
   .status-row>.status-cell:nth-child(5) .status-cell-sub{display:inline;margin:0;font-size:11px;line-height:1.1;}
@@ -6051,22 +6053,24 @@ function renderResultadoFinalHtml(lote,orc){
     +'</div>';
 }
 
-function openEditPanel(loteId, cardEl, forceOpen){
-  if(_editLoteId===loteId){
-    if(forceOpen)return;
+function openEditPanel(loteId, cardEl){
+  var ep=document.getElementById('edit-panel');
+  var painelVisivel=!!(ep&&cardEl&&ep.style.display!=='none'&&cardEl.nextElementSibling===ep);
+  if(_editLoteId!==null&&String(_editLoteId)===String(loteId)&&painelVisivel){
     closeEditPanel();
     return;
   }
-  _editLoteId=loteId;
+  var lote=getLotes().find(function(l){return String(l.id)===String(loteId);});
+  if(!lote||!ep)return;
+  var numeroLote=getNumeroLote(lote)||'1';
+  var nomeLote=getLoteNomeReferencia(lote,lote.orcamentos&&lote.orcamentos[0])||'';
+  _editLoteId=lote.id;
   // Highlight card
   document.querySelectorAll('.sc,.status-row').forEach(function(c){c.classList.remove('active-edit');});
   if(cardEl)cardEl.classList.add('active-edit');
-  var ep=document.getElementById('edit-panel');
   if(cardEl&&ep&&cardEl.parentNode){
     cardEl.insertAdjacentElement('afterend',ep);
   }
-  var lote=getLotes().find(function(l){return l.id===loteId;});
-  if(!lote)return;
   var vend=getVends().find(function(v){return v.id===lote.vendedorId;});
   var o=lote.orcamentos&&lote.orcamentos[0];
   // Build vendor options
@@ -6204,8 +6208,6 @@ function openEditPanel(loteId, cardEl, forceOpen){
     comparativoHtml='<div id="ep-comparativo">'+renderComparativoRealizadoHtml(lote,o,aj)+'</div>';
     resultadoFinalHtml='<div id="ep-resultado-final">'+renderResultadoFinalHtml(lote,o)+'</div>';
   }
-  if(!ep)return;
-  ep.style.display='block';
   ep.innerHTML='<div class="ep">'
     +'<div class="ep-header">'
       +'<div class="ep-title">Editar Orçamento</div>'
@@ -6300,6 +6302,7 @@ function openEditPanel(loteId, cardEl, forceOpen){
       +'<button class="btn-ep-detail" data-action="open-detail">Ver Detalhe Completo →</button>'
     +'</div>'
   +'</div>';
+  ep.style.display='block';
   var finalModeInitial=document.getElementById('ep-final-mode');
   if(finalModeInitial)setResultadoFinalMode(finalModeInitial.value,true);
   ep.scrollIntoView&&ep.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -7608,6 +7611,7 @@ function renderLotes(){
     var statusLabel='<div class="status-cell status-badge-cell '+statusColClass('status')+'">'
       +'<span class="status-drag-dot" style="background:'+(barColor||'var(--border)')+'"></span>'
       +'<span class="badge '+sc.cls+'">'+escHtml(sc.label)+'</span>'
+      +'<button type="button" class="status-row-edit-btn" data-action="status-edit" title="Editar lote">Editar</button>'
     +'</div>';
     var realizadoStatus=statusRealizadoLote(l);
     var loteCell='<div class="status-cell '+statusColClass('lote')+'"><span class="status-seq-pc">Lote '+escHtml(numeroLote)+'</span>'+(cardTitle?'<span class="status-cell-title">'+escHtml(cardTitle)+'</span>':'')
@@ -7750,9 +7754,17 @@ function renderLotes(){
   container.onclick=function(evt){
     var row=evt.target&&evt.target.closest?evt.target.closest('.status-row[data-lid]'):null;
     if(!row||!container.contains(row))return;
+    var editBtn=evt.target&&evt.target.closest?evt.target.closest('[data-action="status-edit"]'):null;
+    if(editBtn){
+      evt.preventDefault();
+      evt.stopPropagation();
+      openEditPanel(row.dataset.lid,row);
+      return;
+    }
     if(Date.now()<_statusDragSuppressUntil)return;
     if(evt.target&&evt.target.closest&&evt.target.closest('button,input,select,textarea,a,.status-col-resizer,.status-filter-control'))return;
-    openEditPanel(row.dataset.lid,row,true);
+    if(!row.dataset.lid)return;
+    openEditPanel(row.dataset.lid,row);
   };
   sortStatusRows();
   applyStatusGridTemplate();
