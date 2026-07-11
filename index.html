@@ -2438,10 +2438,10 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
           <span>Relatório</span><span class="report-chevron">▾</span>
         </button>
         <div class="export-menu">
-          <button type="button" onclick="exportReport(currentExportTab(),'pdf')">Exportar PDF</button>
-          <button type="button" onclick="exportReport(currentExportTab(),'excel')">Exportar Excel</button>
-          <button type="button" class="calc-export-only" onclick="exportReport(currentExportTab(),'jpg-resumo')">Exportar JPG - Resumo</button>
-          <button type="button" class="calc-export-only" onclick="exportReport(currentExportTab(),'jpg-completo')">Exportar JPG - Completo</button>
+          <button type="button" data-export-kind="pdf" onclick="exportReport(currentExportTab(),'pdf')">Exportar PDF</button>
+          <button type="button" data-export-kind="excel" onclick="exportReport(currentExportTab(),'excel')">Exportar Excel</button>
+          <button type="button" class="calc-export-only" data-export-kind="jpg-resumo" onclick="exportReport(currentExportTab(),'jpg-resumo')">Baixar JPG - Resumo</button>
+          <button type="button" class="calc-export-only" data-export-kind="jpg-completo" onclick="exportReport(currentExportTab(),'jpg-completo')">Baixar JPG - Completo</button>
         </div>
       </div>
       <span class="user-badge" id="user-display"></span>
@@ -10477,9 +10477,9 @@ function exportButtonHtml(tab,label){
         +'<span>Exportar</span>'
       +'</button>'
       +'<div class="export-menu">'
-        +'<button type="button" onclick="exportReport(\''+tab+'\',\'pdf\')">Exportar PDF</button>'
-        +'<button type="button" onclick="exportReport(\''+tab+'\',\'excel\')">Exportar Excel</button>'
-        +(tab==='calc'?'<button type="button" onclick="exportReport(\'calc\',\'jpg-resumo\')">Exportar JPG - Resumo</button><button type="button" onclick="exportReport(\'calc\',\'jpg-completo\')">Exportar JPG - Completo</button>':'')
+        +'<button type="button" data-export-kind="pdf" onclick="exportReport(\''+tab+'\',\'pdf\')">Exportar PDF</button>'
+        +'<button type="button" data-export-kind="excel" onclick="exportReport(\''+tab+'\',\'excel\')">Exportar Excel</button>'
+        +(tab==='calc'?'<button type="button" data-export-kind="jpg-resumo" onclick="exportReport(\'calc\',\'jpg-resumo\')">Baixar JPG - Resumo</button><button type="button" data-export-kind="jpg-completo" onclick="exportReport(\'calc\',\'jpg-completo\')">Baixar JPG - Completo</button>':'')
       +'</div>'
     +'</div>'
   +'</div>';
@@ -10496,11 +10496,25 @@ function currentExportTab(){
   if(tab==='calc')return 'calc';
   return 'home';
 }
+function isMobileShareDevice(){
+  return !!((window.matchMedia&&window.matchMedia('(max-width: 768px)').matches)||/Android|iPhone|iPad|iPod/i.test(navigator.userAgent||''));
+}
+function refreshExportMenuLabels(wrap){
+  if(!wrap)return;
+  var mobile=isMobileShareDevice();
+  var labels=mobile?{
+    pdf:'Compartilhar PDF',excel:'Compartilhar Excel','jpg-resumo':'Compartilhar JPG - Resumo','jpg-completo':'Compartilhar JPG - Completo'
+  }:{
+    pdf:'Exportar PDF',excel:'Exportar Excel','jpg-resumo':'Baixar JPG - Resumo','jpg-completo':'Baixar JPG - Completo'
+  };
+  wrap.querySelectorAll('[data-export-kind]').forEach(function(btn){var kind=btn.getAttribute('data-export-kind');if(labels[kind])btn.textContent=labels[kind];});
+}
 function toggleExportMenu(tab,ev){
   if(ev)ev.stopPropagation();
   document.querySelectorAll('.export-wrap').forEach(function(w){if(w.id!=='export-wrap-'+tab)w.classList.remove('open');});
   var wrap=document.getElementById('export-wrap-'+tab);if(wrap){
     wrap.querySelectorAll('.calc-export-only').forEach(function(btn){btn.style.display=currentExportTab()==='calc'?'block':'none';});
+    refreshExportMenuLabels(wrap);
     wrap.classList.toggle('open');
   }
 }
@@ -10509,16 +10523,52 @@ function setExportLoading(tab,on,type){
   var wrap=document.getElementById('export-wrap-'+tab)||document.getElementById('export-wrap-current');if(!wrap)return;
   var btn=wrap.querySelector('.export-btn');if(!btn)return;
   btn.disabled=!!on;
-  var txt=btn.querySelector('span');if(txt)txt.textContent=on?(type==='pdf'?'Gerando PDF...':type==='excel'?'Gerando Excel...':'Gerando imagem...'):'Relatório';
+  var txt=btn.querySelector('span');if(txt)txt.textContent=on?(type==='pdf'?'Gerando PDF...':type==='excel'?'Gerando Excel...':type==='jpg-completo'?'Gerando imagem completa...':'Gerando imagem...'):'Relatório';
+}
+function setExportStage(tab,label){
+  var wrap=document.getElementById('export-wrap-'+tab)||document.getElementById('export-wrap-current');
+  var txt=wrap&&wrap.querySelector('.export-btn span');if(txt)txt.textContent=label;
+}
+function downloadExportBlob(blob,fileName){
+  var url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=fileName;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(url);},1500);
+}
+function showExportDownloadFallback(files){
+  var old=document.getElementById('export-share-fallback');if(old)old.remove();
+  var box=document.createElement('div');box.id='export-share-fallback';box.setAttribute('role','dialog');box.setAttribute('aria-label','Baixar relatório');
+  box.style.cssText='position:fixed;left:16px;right:16px;bottom:92px;z-index:99999;max-width:460px;margin:auto;padding:16px;background:#fff;border:1px solid #D8CBB5;border-radius:12px;box-shadow:0 12px 36px rgba(13,27,42,.22);color:#0D1B2A;font-family:Inter,Arial,sans-serif';
+  box.innerHTML='<div style="font-size:14px;font-weight:800;margin-bottom:6px">Compartilhamento indisponível</div><div style="font-size:13px;color:#8A7967;margin-bottom:12px">Seu navegador não permite compartilhar este arquivo diretamente.</div><div style="display:flex;gap:8px"><button type="button" data-fallback-download style="flex:1;min-height:42px;border:0;border-radius:8px;background:#0D1B2A;color:#fff;font-weight:800">Baixar arquivo</button><button type="button" data-fallback-close aria-label="Fechar" style="min-width:42px;border:1px solid #D8CBB5;border-radius:8px;background:#fff;color:#0D1B2A">×</button></div>';
+  document.body.appendChild(box);
+  box.querySelector('[data-fallback-download]').onclick=function(){files.forEach(function(f){downloadExportBlob(f.blob,f.name);});box.remove();};
+  box.querySelector('[data-fallback-close]').onclick=function(){box.remove();};
+}
+async function deliverReportFiles(files,tab,shareText){
+  files=(files||[]).filter(function(f){return f&&f.blob;});if(!files.length)throw new Error('Arquivo de relatório vazio');
+  if(!isMobileShareDevice()){
+    files.forEach(function(f){downloadExportBlob(f.blob,f.name);});
+    return 'downloaded';
+  }
+  setExportStage(tab,'Preparando compartilhamento...');
+  var shareFiles=files.map(function(f){return new File([f.blob],f.name,{type:f.type||f.blob.type||'application/octet-stream'});});
+  if(navigator.share&&navigator.canShare&&navigator.canShare({files:shareFiles})){
+    try{
+      await navigator.share({title:'Relatório VM Agro',text:shareText||'Simulação completa da VM Agro',files:shareFiles});
+      return 'shared';
+    }catch(err){
+      if(err&&err.name==='AbortError')return 'cancelled';
+      console.error(err);
+    }
+  }
+  showExportDownloadFallback(files);return 'fallback';
 }
 async function exportReport(tab,type){
   try{
     setExportLoading(tab,true,type);
     var data=buildExportData(tab);
     if(!data){toast('Não foi possível gerar o relatório. Tente novamente.');return;}
-    if(type==='pdf')await downloadReportPdf(data);
-    else if(type==='excel')downloadReportXlsx(data);
-    else if(tab==='calc')await downloadCalculatorReportJpg(data.calculatorReport,type==='jpg-completo');
+    if(type==='pdf')await downloadReportPdf(data,tab);
+    else if(type==='excel')await downloadReportXlsx(data,tab);
+    else if(tab==='calc')await downloadCalculatorReportJpg(data.calculatorReport,type==='jpg-completo',tab);
   }catch(e){
     console.error(e);
     toast('Não foi possível gerar o relatório. Tente novamente.');
@@ -10947,7 +10997,7 @@ function calculatorReportPerformance(monthlyPct){
   if(value<=2.5)return {label:'Operação boa',color:'#6B7056'};
   return {label:'Operação extraordinária',color:'#0D4F8B'};
 }
-async function downloadReportPdf(data){
+async function downloadReportPdf(data,tab){
   if(!window.jspdf||!window.jspdf.jsPDF)throw new Error('Biblioteca de PDF indisponível');
   var jsPDF=window.jspdf.jsPDF;
   var doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4',compress:true});
@@ -11019,8 +11069,9 @@ async function downloadReportPdf(data){
     });
   }
   footer();
-  doc.save((data.file||'VM_Agro_Relatorio')+'.pdf');
-  toast('✓ PDF exportado');
+  var pdfName=(data.file||'VM_Agro_Relatorio')+'.pdf';
+  var result=await deliverReportFiles([{blob:doc.output('blob'),name:pdfName,type:'application/pdf'}],tab||currentExportTab(),'Relatório da VM Agro');
+  if(result==='downloaded')toast('✓ PDF exportado');else if(result==='shared')toast('✓ PDF compartilhado');
 }
 
 function calculatorImageHtml(report,complete){
@@ -11034,22 +11085,73 @@ function calculatorImageHtml(report,complete){
   if(complete)Object.keys(sections).forEach(function(name){html+='<div class="cri-section"><h2>'+exportXml(name)+'</h2>'+sections[name].map(function(item){return '<div><span>'+exportXml(item.label)+'</span><b>'+exportXml(calculatorReportDisplay(item.value,item.type,item.unit))+'</b></div>';}).join('')+'</div>';});
   return html+'<div class="cri-foot">VM Agro · Gestão de Lotes · '+exportXml(report.identification.exportedAt)+'</div>';
 }
-async function downloadCalculatorReportJpg(report,complete){
+function calculatorReportJpgName(report,complete,index,total){
+  var lot=report&&report.identification?report.identification.lotNumber:null;
+  var ref=report&&report.identification?report.identification.reference:null;
+  var prefix='VM_Agro_';
+  if(lot!==null&&lot!==undefined&&String(lot).trim()!=='')prefix+='Lote_'+calculatorReportSafeName(lot)+'_';
+  else if(ref)prefix+=calculatorReportSafeName(ref)+'_';
+  var name=prefix+(complete?'Simulacao_Completa':'Simulacao_Resumo')+'_'+exportDateFile();
+  if(total>1)name+='_'+String(index+1).padStart(2,'0');
+  return name+'.jpg';
+}
+function calculatorReportCanvasBlob(canvas){
+  return new Promise(function(resolve,reject){canvas.toBlob(function(blob){if(blob)resolve(blob);else reject(new Error('Não foi possível criar a imagem'));},'image/jpeg',0.95);});
+}
+async function waitCalculatorReportAssets(host){
+  if(document.fonts&&document.fonts.ready)try{await document.fonts.ready;}catch(e){}
+  var images=[].slice.call(host.querySelectorAll('img'));
+  await Promise.all(images.map(function(img){
+    if(img.complete)return img.decode?img.decode().catch(function(){}):Promise.resolve();
+    return new Promise(function(resolve){img.onload=img.onerror=resolve;});
+  }));
+  await new Promise(function(resolve){requestAnimationFrame(function(){requestAnimationFrame(resolve);});});
+}
+function calculatorReportSliceRanges(host,maxCssHeight){
+  var blocks=[].slice.call(host.children),ranges=[],start=0,lastEnd=0;
+  blocks.forEach(function(block){
+    var bottom=Math.ceil(block.offsetTop+block.offsetHeight);
+    if(lastEnd>start&&bottom-start>maxCssHeight){ranges.push({y:start,height:lastEnd-start});start=lastEnd;}
+    lastEnd=bottom;
+  });
+  var full=Math.ceil(host.scrollHeight);if(full>start)ranges.push({y:start,height:full-start});
+  return ranges.length?ranges:[{y:0,height:full}];
+}
+async function renderCalculatorReportCanvases(host){
+  var fullWidth=Math.ceil(host.scrollWidth),fullHeight=Math.ceil(host.scrollHeight),scale=2;
+  var base={scale:scale,backgroundColor:'#F2EDE3',useCORS:true,allowTaint:false,logging:false,width:fullWidth,height:fullHeight,windowWidth:fullWidth,windowHeight:fullHeight,scrollX:0,scrollY:0};
+  try{
+    var whole=await html2canvas(host,base);
+    if(whole&&whole.width>=fullWidth*scale*.95&&whole.height>=fullHeight*scale*.95)return [whole];
+  }catch(err){console.warn('Canvas completo excedeu o limite; usando blocos.',err);}
+  var ranges=calculatorReportSliceRanges(host,6000),parts=[];
+  for(var i=0;i<ranges.length;i++){
+    var range=ranges[i];
+    parts.push(await html2canvas(host,{scale:scale,backgroundColor:'#F2EDE3',useCORS:true,allowTaint:false,logging:false,width:fullWidth,height:range.height,y:range.y,windowWidth:fullWidth,windowHeight:fullHeight,scrollX:0,scrollY:0}));
+  }
+  var totalHeight=parts.reduce(function(sum,c){return sum+c.height;},0);
+  if(parts.length>1&&totalHeight<=30000){
+    try{
+      var joined=document.createElement('canvas');joined.width=parts[0].width;joined.height=totalHeight;
+      var ctx=joined.getContext('2d'),offset=0;parts.forEach(function(part){ctx.drawImage(part,0,offset);offset+=part.height;});
+      if(joined.width&&joined.height)return [joined];
+    }catch(err){console.warn('Não foi possível unir os blocos; mantendo arquivos sequenciais.',err);}
+  }
+  return parts;
+}
+async function downloadCalculatorReportJpg(report,complete,tab){
   if(!report||!window.html2canvas)throw new Error('Biblioteca de imagem indisponível');
   var host=document.createElement('div');host.id='calculator-report-image';host.innerHTML=calculatorImageHtml(report,complete);
-  host.style.cssText='position:fixed;left:-12000px;top:0;width:1080px;background:#F2EDE3;color:#0D1B2A;padding:54px;font-family:Inter,Arial,sans-serif;box-sizing:border-box;z-index:-1';
+  host.style.cssText='position:fixed;left:-12000px;top:0;width:1080px;height:auto;max-height:none;overflow:visible;background:#F2EDE3;color:#0D1B2A;padding:54px;font-family:Inter,Arial,sans-serif;box-sizing:border-box;z-index:-1';
   var style=document.createElement('style');style.textContent='#calculator-report-image *{box-sizing:border-box}#calculator-report-image .cri-head{margin:-54px -54px 36px;padding:38px 54px;background:#0D1B2A;color:#fff;display:flex;justify-content:space-between;align-items:center;border-bottom:5px solid #C9A24E}.cri-brand{font-size:34px;font-weight:900;letter-spacing:2px}.cri-sub{font-size:13px;color:#C9A24E;letter-spacing:5px}.cri-ref{font-size:25px;font-weight:800;max-width:55%;text-align:right}.cri-title{font-size:28px;font-weight:900;text-transform:uppercase;letter-spacing:2px;display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.cri-title span{font-size:17px;background:#fff;border-radius:999px;padding:10px 18px;color:#8A7967}.cri-kpis{display:grid;grid-template-columns:1fr 1fr;gap:18px}.cri-kpis>div,.cri-fin>div,.cri-grid>div,.cri-section{background:#fff;border:2px solid #D8CBB5;border-radius:14px;padding:22px}.cri-kpis small,.cri-fin small,.cri-grid small{display:block;color:#8A7967;font-size:14px;font-weight:800;letter-spacing:1px}.cri-kpis strong{display:block;font-size:56px;margin:8px 0}.cri-kpis em{font-style:normal;font-size:16px}.cri-fin{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}.cri-fin strong{display:block;font-size:25px;margin-top:8px}.cri-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}.cri-grid strong{display:block;font-size:20px;margin-top:5px}.cri-section{margin-top:20px}.cri-section h2{font-size:18px;text-transform:uppercase;letter-spacing:2px;border-bottom:2px solid #C9A24E;padding-bottom:12px}.cri-section>div{display:flex;justify-content:space-between;gap:30px;padding:9px 0;border-bottom:1px solid #E6DED1;font-size:16px}.cri-section>div b{text-align:right}.cri-foot{text-align:center;color:#8A7967;font-size:13px;padding:30px 0 0}';
   document.head.appendChild(style);document.body.appendChild(host);
   try{
-    var canvas=await html2canvas(host,{scale:2,backgroundColor:'#F2EDE3',useCORS:true,logging:false});
-    var pageHeight=complete?3840:canvas.height;
-    var pages=Math.max(1,Math.ceil(canvas.height/pageHeight));
-    for(var i=0;i<pages;i++){
-      var h=Math.min(pageHeight,canvas.height-i*pageHeight),part=document.createElement('canvas');part.width=canvas.width;part.height=h;
-      part.getContext('2d').drawImage(canvas,0,i*pageHeight,canvas.width,h,0,0,canvas.width,h);
-      await new Promise(function(resolve){part.toBlob(function(blob){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=report.fileBase+(pages>1?'_'+String(i+1).padStart(2,'0'):'')+'.jpg';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href);},1000);resolve();},'image/jpeg',0.95);});
-    }
-    toast('✓ '+(complete?'JPG completo':'JPG resumo')+' exportado');
+    host.querySelectorAll('*').forEach(function(el){if(getComputedStyle(el).overflow!=='visible'){el.style.maxHeight='none';el.style.overflow='visible';}});
+    await waitCalculatorReportAssets(host);
+    var canvases=await renderCalculatorReportCanvases(host),files=[];
+    for(var i=0;i<canvases.length;i++)files.push({blob:await calculatorReportCanvasBlob(canvases[i]),name:calculatorReportJpgName(report,complete,i,canvases.length),type:'image/jpeg'});
+    var result=await deliverReportFiles(files,tab||'calc',complete?'Simulação completa da VM Agro':'Resumo da simulação da VM Agro');
+    if(result==='downloaded')toast('✓ '+(complete?'JPG completo':'JPG resumo')+' exportado');else if(result==='shared')toast('✓ JPG compartilhado');
   }finally{host.remove();style.remove();}
 }
 function htmlTable(rows){
@@ -11058,12 +11160,11 @@ function htmlTable(rows){
     +rows.slice(1).map(function(r){return '<tr>'+r.map(function(c){return '<td>'+exportXml(c)+'</td>';}).join('')+'</tr>';}).join('')
     +'</tbody></table>';
 }
-function downloadReportXlsx(data){
+async function downloadReportXlsx(data,tab){
   var files=buildXlsxFiles(data.sheets||[]);
   var blob=new Blob([makeZip(files)],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=data.file+'.xlsx';document.body.appendChild(a);a.click();a.remove();
-  setTimeout(function(){URL.revokeObjectURL(a.href);},1200);
-  toast('✓ Excel exportado');
+  var result=await deliverReportFiles([{blob:blob,name:data.file+'.xlsx',type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}],tab||currentExportTab(),'Relatório da VM Agro');
+  if(result==='downloaded')toast('✓ Excel exportado');else if(result==='shared')toast('✓ Excel compartilhado');
 }
 function cleanSheetName(name,i){
   var s=String(name||('Aba '+i)).replace(/[\\/?*[\]:]/g,' ').trim().slice(0,31);
