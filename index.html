@@ -2438,8 +2438,10 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
           <span>Relatório</span><span class="report-chevron">▾</span>
         </button>
         <div class="export-menu">
-          <button type="button" onclick="exportReport(currentExportTab(),'pdf')">Prévia PDF</button>
-          <button type="button" onclick="exportReport(currentExportTab(),'excel')">Baixar Excel</button>
+          <button type="button" onclick="exportReport(currentExportTab(),'pdf')">Exportar PDF</button>
+          <button type="button" onclick="exportReport(currentExportTab(),'excel')">Exportar Excel</button>
+          <button type="button" class="calc-export-only" onclick="exportReport(currentExportTab(),'jpg-resumo')">Exportar JPG - Resumo</button>
+          <button type="button" class="calc-export-only" onclick="exportReport(currentExportTab(),'jpg-completo')">Exportar JPG - Completo</button>
         </div>
       </div>
       <span class="user-badge" id="user-display"></span>
@@ -3399,6 +3401,9 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="supabase-config.js"></script>
 <script>
 /* ── DADOS ─────────────────────────────────────── */
@@ -10472,8 +10477,9 @@ function exportButtonHtml(tab,label){
         +'<span>Exportar</span>'
       +'</button>'
       +'<div class="export-menu">'
-        +'<button type="button" onclick="exportReport(\''+tab+'\',\'pdf\')">Baixar PDF</button>'
-        +'<button type="button" onclick="exportReport(\''+tab+'\',\'excel\')">Baixar Excel</button>'
+        +'<button type="button" onclick="exportReport(\''+tab+'\',\'pdf\')">Exportar PDF</button>'
+        +'<button type="button" onclick="exportReport(\''+tab+'\',\'excel\')">Exportar Excel</button>'
+        +(tab==='calc'?'<button type="button" onclick="exportReport(\'calc\',\'jpg-resumo\')">Exportar JPG - Resumo</button><button type="button" onclick="exportReport(\'calc\',\'jpg-completo\')">Exportar JPG - Completo</button>':'')
       +'</div>'
     +'</div>'
   +'</div>';
@@ -10493,26 +10499,31 @@ function currentExportTab(){
 function toggleExportMenu(tab,ev){
   if(ev)ev.stopPropagation();
   document.querySelectorAll('.export-wrap').forEach(function(w){if(w.id!=='export-wrap-'+tab)w.classList.remove('open');});
-  var wrap=document.getElementById('export-wrap-'+tab);if(wrap)wrap.classList.toggle('open');
+  var wrap=document.getElementById('export-wrap-'+tab);if(wrap){
+    wrap.querySelectorAll('.calc-export-only').forEach(function(btn){btn.style.display=currentExportTab()==='calc'?'block':'none';});
+    wrap.classList.toggle('open');
+  }
 }
 document.addEventListener('click',function(){document.querySelectorAll('.export-wrap.open').forEach(function(w){w.classList.remove('open');});});
 function setExportLoading(tab,on,type){
   var wrap=document.getElementById('export-wrap-'+tab)||document.getElementById('export-wrap-current');if(!wrap)return;
   var btn=wrap.querySelector('.export-btn');if(!btn)return;
   btn.disabled=!!on;
-  var txt=btn.querySelector('span');if(txt)txt.textContent=on?(type==='pdf'?'Gerando PDF...':'Gerando Excel...'):'Relatório';
+  var txt=btn.querySelector('span');if(txt)txt.textContent=on?(type==='pdf'?'Gerando PDF...':type==='excel'?'Gerando Excel...':'Gerando imagem...'):'Relatório';
 }
-function exportReport(tab,type){
+async function exportReport(tab,type){
   try{
     setExportLoading(tab,true,type);
     var data=buildExportData(tab);
     if(!data){toast('Não foi possível gerar o relatório. Tente novamente.');return;}
-    if(type==='pdf')downloadReportPdf(data);else downloadReportXlsx(data);
+    if(type==='pdf')await downloadReportPdf(data);
+    else if(type==='excel')downloadReportXlsx(data);
+    else if(tab==='calc')await downloadCalculatorReportJpg(data.calculatorReport,type==='jpg-completo');
   }catch(e){
     console.error(e);
     toast('Não foi possível gerar o relatório. Tente novamente.');
   }finally{
-    setTimeout(function(){setExportLoading(tab,false,type);},450);
+    setTimeout(function(){setExportLoading(tab,false,type);},250);
   }
 }
 function exportNowLabel(){
@@ -10733,66 +10744,313 @@ function buildB3ExportData(){
   });
   return {tab:'B3',title:'Relatório B3',file:'VM_Agro_B3_'+exportDateFile(),filters:filters,sheets:[{name:'Resumo B3',rows:resumo},{name:'Contratos',rows:contratos}]};
 }
+function calculatorReportNumber(id){
+  var el=document.getElementById(id);if(!el)return null;
+  var raw=el.dataset&&el.dataset.raw;
+  if(raw!==undefined&&raw!==null&&raw!==''){var n=Number(raw);return isFinite(n)?n:null;}
+  var txt=el.value!==undefined?el.value:el.textContent;
+  if(txt===null||txt===undefined||String(txt).trim()===''||String(txt).trim()==='—')return null;
+  var parsed=parseBRMoney(txt);return isFinite(parsed)?parsed:null;
+}
+function calculatorReportInput(id){
+  var el=document.getElementById(id);if(!el)return null;
+  var value=String(el.value==null?'':el.value).trim();
+  if(value==='')return null;
+  var n=parseBRMoney(value);return isFinite(n)?n:null;
+}
+function calculatorReportSelect(id,fallback){
+  var el=document.getElementById(id);if(!el)return fallback||null;
+  var opt=el.options&&el.selectedIndex>=0?el.options[el.selectedIndex]:null;
+  var text=opt?String(opt.textContent||'').trim():'';
+  return text&&text.indexOf('+ Cadastrar')!==0?text:(fallback||null);
+}
+function calculatorReportPct(id){
+  var el=document.getElementById(id);if(!el)return null;
+  var raw=el.dataset&&el.dataset.raw;
+  if(raw!==undefined&&raw!==null&&raw!=='')return Number(raw)*100;
+  var txt=String(el.textContent||el.value||'').replace('%','');
+  return txt.trim()?parseBRMoney(txt):null;
+}
+function calculatorReportText(id){
+  var el=document.getElementById(id);if(!el)return null;
+  var text=String(el.value!==undefined?el.value:el.textContent||'').replace(/\s+/g,' ').trim();
+  return !text||text==='—'?null:text;
+}
+function calculatorReportItem(label,value,type,unit){return {label:label,value:value,type:type||'text',unit:unit||''};}
+function calculatorReportRows(items){
+  return [['Campo','Valor','Unidade']].concat((items||[]).map(function(i){return [i.label,i.value===null||i.value===undefined?'Não informado':i.value,i.unit||''];}));
+}
+function calculatorReportSafeName(value){
+  return String(value||'Simulacao').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9_-]+/g,'_').replace(/^_+|_+$/g,'').slice(0,70)||'Simulacao';
+}
+function buildCalculatorReportData(){
+  calcular({silent:true,auto:true,noScroll:true});
+  var qty=calculatorReportInput('qtd')||0;
+  var pesoCompra=calculatorReportInput('pesoCom');
+  var rendEntrada=calculatorReportInput('rendEntrada');
+  var rendAbate=calculatorReportInput('rendAbate');
+  var quebra=calculatorReportInput('quebra');
+  var pesoChegada=pesoCompra!==null&&quebra!==null?pesoCompra*(1-quebra/100):null;
+  var pesoFinal=calculatorReportNumber('pesoFinalKg');
+  var precoCompraAt=_precoModeAt?calculatorReportInput('valorAt_compra'):calculatorReportNumber('d-custoComAt');
+  var precoCompraKg=_precoModeAt&&precoCompraAt!==null&&rendEntrada?precoCompraAt*(rendEntrada/100)/15:calculatorReportInput('valorKG');
+  var compraAnimal=calculatorReportNumber('d-custoCom');
+  var comissaoInput=calculatorReportInput('comissao')||0;
+  var comissaoAnimal=getFieldMode('comissao')==='pct'&&compraAnimal!==null?compraAnimal*comissaoInput/100:comissaoInput;
+  var freteFixoReport=calcularFreteUnitarioOrc(getOrcamentoAtualEmEdicao());
+  var freteBrutoAnimal=freteFixoReport&&freteFixoReport.fixo?freteFixoReport.bruto:(qty>0?(calculatorReportInput('freteKm')||0)*(calculatorReportInput('freteCusto')||0)/qty:0);
+  var bonusFreteAnimal=calculatorReportInput('bonusFrete');
+  var freteLiquidoAnimal=calculatorReportNumber('d-freteAnim');
+  var consumoAnimal=calculatorReportNumber('d-consumoTotal');
+  var dias=calculatorReportInput('dias');
+  var atCompra=pesoCompra!==null&&rendEntrada!==null?pesoCompra*(rendEntrada/100)/15:null;
+  var atEntrada=pesoChegada!==null&&rendEntrada!==null?pesoChegada*(rendEntrada/100)/15:null;
+  var atAbate=calculatorReportNumber('arrobasAbateCalc');
+  var atProdOrigem=calculatorReportNumber('arrobasProdOrigem');
+  var atProdChegada=calculatorReportNumber('arrobasProdChegada');
+  var totalAt=calculatorReportNumber('d-totalAt');
+  var valorVenda=calculatorReportInput('valorAt');
+  var bonusInput=calculatorReportInput('bonus')||0;
+  var descontoInput=calculatorReportInput('desconto')||0;
+  var bonusVendaAt=getFieldMode('bonus')==='pct'&&valorVenda!==null?valorVenda*bonusInput/100:bonusInput;
+  var descontoVendaAt=getFieldMode('desconto')==='pct'&&valorVenda!==null?valorVenda*descontoInput/100:descontoInput;
+  var senarAt=Math.abs(calculatorReportNumber('d-funruralAt')||0);
+  var corretagemAt=calculatorReportInput('corretagemB3');
+  var fatLiquido=calculatorReportNumber('d-fatLiq');
+  var fatBruto=calculatorReportNumber('d-fatBruto');
+  var capital=calculatorReportNumber('sum-capital');
+  var capitalAnimal=calculatorReportNumber('sum-capital-boi');
+  var lucro=calculatorReportNumber('sum-lucro');
+  var lucroAnimal=calculatorReportNumber('sum-lucro-boi');
+  var faturamentoLote=calculatorReportNumber('sum-fat-lote');
+  var faturamentoAnimal=calculatorReportNumber('sum-fat-boi');
+  var custoOpTotal=calculatorReportNumber('d-custoOpLote');
+  var custoTotal=calculatorReportNumber('d-investLoteTotal');
+  var rent=calculatorReportPct('sum-rent-total');
+  var rentMes=calculatorReportPct('sum-rent-mes');
+  var ref=(calculatorReportText('orc-label-main')||calculatorReportText('orc-label')||'').trim()||null;
+  var origem=calculatorReportText('orc-origem');
+  var origemParts=origem?origem.split(/\s*[-/]\s*/):[];
+  var lote=activeLoteId?getLotes().find(function(l){return String(l.id)===String(activeLoteId);}):null;
+  var loteNum=lote?(lote.lot_number??lote.lotNumber??lote.numeroLote??null):null;
+  var vendedor=calculatorReportSelect('calc-vend','A definir');
+  var modalidade=calcModeloLabel(getCalcModelo());
+  var boitel=calculatorReportSelect('boitel','Manual / sem boitel');
+  var frigorifico=calculatorReportSelect('frigorifico','Nenhum (manual)');
+  var exportadoEm=exportNowLabel();
+  var simulacaoEm=new Date().toLocaleString('pt-BR');
+  var linkedFutures=activeLoteId?getFuturos().filter(function(c){return String(c.loteId||'')===String(activeLoteId);}):[];
+  var b3Items=linkedFutures.map(function(c){var r=futuroResultado(c);return {
+    codigo:gerarCodigoB3(c.vencimento)||c.codigo||'—',vencimento:c.vencimento||null,contratos:r.qtdContratos||0,
+    arrobas:r.arrobas||0,abertura:r.precoVenda||0,corretagem:r.corretagemTotal||0,resultado:r.resultado||0,
+    status:futuroStatusLabel(r.status),travados:(r.qtdLiquidada||0)+'/'+(r.qtdContratos||0)
+  };});
+  var data={
+    identification:{
+      reference:ref,lotNumber:loteNum,simulationAt:simulacaoEm,exportedAt:exportadoEm,user:exportUser(),seller:vendedor,
+      origin:origem,originCity:origemParts[0]||origem,originState:origemParts[1]||null,confinement:boitel,
+      farm:null,category:calculatorReportSelect('tipoAnimal',calculatorReportText('tipoAnimalCustom')),quantity:qty,
+      modality:modalidade,situation:lote&&lote.ajusteReal?'Comparativo':(lote?'Projetado':'Simulação projetada')
+    },
+    purchase:{quantity:qty,weightAverage:pesoCompra,weightTotal:pesoCompra!==null?pesoCompra*qty:null,yieldEntry:rendEntrada,
+      arrobasEntryAnimal:atCompra,arrobasEntryTotal:atCompra!==null?atCompra*qty:null,priceArroba:precoCompraAt,priceKg:precoCompraKg,
+      purchaseAnimal:compraAnimal,purchaseTotal:compraAnimal!==null?compraAnimal*qty:null,commissionValue:comissaoInput,
+      commissionMode:getFieldMode('comissao'),commissionAnimal:comissaoAnimal,commissionTotal:comissaoAnimal!==null?comissaoAnimal*qty:null},
+    transport:{distanceKm:calculatorReportInput('freteKm'),costKm:calculatorReportInput('freteCusto'),grossTotal:freteBrutoAnimal!==null?freteBrutoAnimal*qty:null,
+      grossAnimal:freteBrutoAnimal,bonusAnimal:bonusFreteAnimal,bonusTotal:bonusFreteAnimal!==null?bonusFreteAnimal*qty:null,
+      netAnimal:freteLiquidoAnimal,netTotal:freteLiquidoAnimal!==null?freteLiquidoAnimal*qty:null,shrinkPct:quebra,
+      shrinkKg:pesoCompra!==null&&pesoChegada!==null?pesoCompra-pesoChegada:null,originWeight:pesoCompra,arrivalWeight:pesoChegada},
+    confinement:{modality:modalidade,boitel:boitel,days:dias,entryDate:calculatorReportText('dataEntradaPrev'),slaughterDate:calculatorReportText('dataAbatePrev'),
+      receiptDate:calculatorReportText('dataRecebimentoPrev'),gmd:calculatorReportInput('gmd'),dryMatterDaily:consumoAnimal!==null&&dias?consumoAnimal/dias:null,
+      dryMatterAnimal:consumoAnimal,dryMatterLot:consumoAnimal!==null?consumoAnimal*qty:null,dryMatterPrice:calculatorReportInput('msKG'),
+      operationalAnimalDay:calculatorReportInput('opDia'),healthAnimal:calculatorReportInput('sanidade'),confinementAnimal:calculatorReportNumber('d-conf'),
+      confinementTotal:calculatorReportNumber('d-conf')!==null?calculatorReportNumber('d-conf')*qty:null,otherCosts:0},
+    biometrics:{purchaseWeight:pesoCompra,originWeight:pesoCompra,arrivalWeight:pesoChegada,entryWeight:pesoChegada,finalWeight:pesoFinal,
+      gainAnimal:pesoFinal!==null&&pesoChegada!==null?pesoFinal-pesoChegada:null,gmd:calculatorReportInput('gmd'),yieldEntry:rendEntrada,yieldSlaughter:rendAbate,
+      carcassWeight:atAbate!==null?atAbate*15:null,arrobasOrigin:atCompra,arrobasArrival:atEntrada,arrobasSlaughterAnimal:atAbate,
+      arrobasSlaughterTotal:totalAt,producedOrigin:atProdOrigem,producedArrival:atProdChegada},
+    sale:{slaughterhouse:frigorifico,date:calculatorReportText('dataAbatePrev'),basePrice:valorVenda,bonusMode:getFieldMode('bonus'),bonusInput:bonusInput,
+      bonusArroba:bonusVendaAt,bonusTotal:calculatorReportNumber('d-bonusTotal'),discountMode:getFieldMode('desconto'),discountInput:calculatorReportInput('desconto'),
+      discountArroba:descontoVendaAt,discountTotal:Math.abs(calculatorReportNumber('d-descontoTotal')||0),premium:0,senarPct:calculatorReportInput('funrural'),
+      senarArroba:senarAt,senarTotal:Math.abs(calculatorReportNumber('d-funrural')||0),brokerageArroba:corretagemAt,
+      brokerageTotal:Math.abs(calculatorReportNumber('d-corretagemB3Total')||0),grossPrice:calculatorReportNumber('d-atLiq'),
+      netPrice:calculatorReportNumber('d-fatLiqAt'),totalArrobas:totalAt,grossRevenue:fatBruto,netRevenue:fatLiquido},
+    technical:{gmd:calculatorReportInput('gmd'),gmc:calculatorReportNumber('d-gmc'),dryMatterAnimal:consumoAnimal,
+      dryMatterDaily:consumoAnimal!==null&&dias?consumoAnimal/dias:null,efficiencyOrigin:calculatorReportNumber('eficienciaBioOrigem'),
+      efficiencyArrival:calculatorReportNumber('eficienciaBioChegada'),costProducedOrigin:calculatorReportNumber('custoProdOrigem'),
+      costProducedArrival:calculatorReportNumber('custoProdChegada'),producedAnimal:atProdChegada,producedTotal:atProdChegada!==null?atProdChegada*qty:null,
+      termDays:(daysOrNull(dias)||0)+(calculatorReportInput('prazoPag')||0)},
+    costs:{purchaseAnimal:compraAnimal,purchaseTotal:compraAnimal!==null?compraAnimal*qty:null,commissionAnimal:comissaoAnimal,
+      commissionTotal:comissaoAnimal!==null?comissaoAnimal*qty:null,grossFreightAnimal:freteBrutoAnimal,grossFreightTotal:freteBrutoAnimal!==null?freteBrutoAnimal*qty:null,
+      freightBonusAnimal:bonusFreteAnimal,freightBonusTotal:bonusFreteAnimal!==null?bonusFreteAnimal*qty:null,netFreightAnimal:freteLiquidoAnimal,
+      netFreightTotal:freteLiquidoAnimal!==null?freteLiquidoAnimal*qty:null,healthAnimal:calculatorReportInput('sanidade'),healthTotal:(calculatorReportInput('sanidade')||0)*qty,
+      confinementAnimal:calculatorReportNumber('d-conf'),confinementTotal:calculatorReportNumber('d-conf')!==null?calculatorReportNumber('d-conf')*qty:null,
+      dryMatterAnimal:null,operationalAnimal:null,otherCosts:0,brokerageArroba:corretagemAt,brokerageTotal:Math.abs(calculatorReportNumber('d-corretagemB3Total')||0),
+      totalAnimal:calculatorReportNumber('d-investAt'),totalLot:custoTotal,investmentAnimal:capitalAnimal,investmentLot:capital,
+      costProducedOrigin:calculatorReportNumber('custoProdOrigem'),costProducedArrival:calculatorReportNumber('custoProdChegada')},
+    results:{revenueLot:faturamentoLote,revenueAnimal:faturamentoAnimal,capitalLot:capital,capitalAnimal:capitalAnimal,operationalTotal:custoOpTotal,
+      costTotal:custoTotal,profitLot:lucro,profitAnimal:lucroAnimal,profitArroba:atProdChegada&&qty?lucro/(atProdChegada*qty):null,
+      operationPct:rent,monthlyPct:rentMes,termDays:(dias||0)+(calculatorReportInput('prazoPag')||0),gmd:calculatorReportInput('gmd'),finalWeight:pesoFinal,totalArrobas:totalAt},
+    b3:{linked:b3Items.length>0,items:b3Items}
+  };
+  var refName=ref||(loteNum!==null?'Lote_'+loteNum:'Simulacao');
+  data.fileBase='VM_Agro_Simulacao_'+calculatorReportSafeName(refName)+'_'+exportDateFile();
+  return data;
+}
+function daysOrNull(v){return v===null||v===undefined?null:Number(v);}
+function calculatorReportSectionItems(data){
+  var i=data.identification,p=data.purchase,t=data.transport,c=data.confinement,b=data.biometrics,s=data.sale,x=data.technical,k=data.costs,r=data.results;
+  return {
+    'Identificação':[
+      calculatorReportItem('Nome / referência',i.reference),calculatorReportItem('Número do lote',i.lotNumber),calculatorReportItem('Data da simulação',i.simulationAt),calculatorReportItem('Data da exportação',i.exportedAt),calculatorReportItem('Usuário',i.user),calculatorReportItem('Vendedor',i.seller),calculatorReportItem('Origem',i.origin),calculatorReportItem('Confinamento',i.confinement),calculatorReportItem('Raça / categoria',i.category),calculatorReportItem('Quantidade',i.quantity,'number','cab.'),calculatorReportItem('Modalidade',i.modality),calculatorReportItem('Situação',i.situation)
+    ],
+    'Compra e Transporte':[
+      calculatorReportItem('Peso médio de compra',p.weightAverage,'number','kg'),calculatorReportItem('Peso total de compra',p.weightTotal,'number','kg'),calculatorReportItem('Rendimento de entrada',p.yieldEntry,'percent','%'),calculatorReportItem('@ entrada / animal',p.arrobasEntryAnimal,'number','@'),calculatorReportItem('@ totais de entrada',p.arrobasEntryTotal,'number','@'),calculatorReportItem('Preço de compra / @',p.priceArroba,'money','R$/@'),calculatorReportItem('Preço de compra / kg',p.priceKg,'money','R$/kg'),calculatorReportItem('Compra / animal',p.purchaseAnimal,'money','R$'),calculatorReportItem('Compra total',p.purchaseTotal,'money','R$'),calculatorReportItem('Comissão / animal',p.commissionAnimal,'money','R$'),calculatorReportItem('Comissão total',p.commissionTotal,'money','R$'),calculatorReportItem('Distância',t.distanceKm,'number','km'),calculatorReportItem('Custo por km',t.costKm,'money','R$/km'),calculatorReportItem('Frete bruto / animal',t.grossAnimal,'money','R$'),calculatorReportItem('Frete bruto total',t.grossTotal,'money','R$'),calculatorReportItem('Bônus frete / animal',t.bonusAnimal,'money','R$'),calculatorReportItem('Bônus frete total',t.bonusTotal,'money','R$'),calculatorReportItem('Frete líquido / animal',t.netAnimal,'money','R$'),calculatorReportItem('Frete líquido total',t.netTotal,'money','R$'),calculatorReportItem('Quebra',t.shrinkPct,'percent','%'),calculatorReportItem('Quebra em kg',t.shrinkKg,'number','kg')
+    ],
+    'Confinamento':[
+      calculatorReportItem('Modalidade',c.modality),calculatorReportItem('Boitel',c.boitel),calculatorReportItem('Dias',c.days,'number','dias'),calculatorReportItem('Data de entrada',c.entryDate),calculatorReportItem('Data de abate',c.slaughterDate),calculatorReportItem('Data de recebimento',c.receiptDate),calculatorReportItem('GMD',c.gmd,'number','kg/dia'),calculatorReportItem('MS diária',c.dryMatterDaily,'number','kg MS'),calculatorReportItem('MS total / animal',c.dryMatterAnimal,'number','kg MS'),calculatorReportItem('MS total do lote',c.dryMatterLot,'number','kg MS'),calculatorReportItem('Matéria seca',c.dryMatterPrice,'money','R$/kg'),calculatorReportItem('Operacional',c.operationalAnimalDay,'money','R$/animal/dia'),calculatorReportItem('Sanidade',c.healthAnimal,'money','R$/animal'),calculatorReportItem('Confinamento / animal',c.confinementAnimal,'money','R$'),calculatorReportItem('Confinamento total',c.confinementTotal,'money','R$')
+    ],
+    'Biometria e Indicadores':[
+      calculatorReportItem('Peso compra',b.purchaseWeight,'number','kg'),calculatorReportItem('Peso origem',b.originWeight,'number','kg'),calculatorReportItem('Peso chegada',b.arrivalWeight,'number','kg'),calculatorReportItem('Peso final',b.finalWeight,'number','kg'),calculatorReportItem('Ganho de peso / animal',b.gainAnimal,'number','kg'),calculatorReportItem('GMD',x.gmd,'number','kg/dia'),calculatorReportItem('GMC',x.gmc,'number','kg carcaça/dia'),calculatorReportItem('Rendimento entrada',b.yieldEntry,'percent','%'),calculatorReportItem('Rendimento abate',b.yieldSlaughter,'percent','%'),calculatorReportItem('Peso carcaça',b.carcassWeight,'number','kg'),calculatorReportItem('@ abate / animal',b.arrobasSlaughterAnimal,'number','@'),calculatorReportItem('@ abate totais',b.arrobasSlaughterTotal,'number','@'),calculatorReportItem('@ produzidas origem',b.producedOrigin,'number','@'),calculatorReportItem('@ produzidas chegada',b.producedArrival,'number','@'),calculatorReportItem('Eficiência origem',x.efficiencyOrigin,'number','kg MS/@'),calculatorReportItem('Eficiência chegada',x.efficiencyArrival,'number','kg MS/@'),calculatorReportItem('Custo @ produzida origem',x.costProducedOrigin,'money','R$/@'),calculatorReportItem('Custo @ produzida chegada',x.costProducedArrival,'money','R$/@')
+    ],
+    'Venda':[
+      calculatorReportItem('Frigorífico',s.slaughterhouse),calculatorReportItem('Data projetada',s.date),calculatorReportItem('Preço-base',s.basePrice,'money','R$/@'),calculatorReportItem('Bônus de venda / @',s.bonusArroba,'money','R$/@'),calculatorReportItem('Bônus de venda total',s.bonusTotal,'money','R$'),calculatorReportItem('Desconto / @',s.discountArroba,'money','R$/@'),calculatorReportItem('Desconto total',s.discountTotal,'money','R$'),calculatorReportItem('Senar',s.senarPct,'percent','%'),calculatorReportItem('Senar / @',s.senarArroba,'money','R$/@'),calculatorReportItem('Senar total',s.senarTotal,'money','R$'),calculatorReportItem('Corretagem B3 / @',s.brokerageArroba,'money','R$/@'),calculatorReportItem('Corretagem B3 total',s.brokerageTotal,'money','R$'),calculatorReportItem('Preço bruto / @',s.grossPrice,'money','R$/@'),calculatorReportItem('Preço líquido / @',s.netPrice,'money','R$/@'),calculatorReportItem('Total de arrobas',s.totalArrobas,'number','@'),calculatorReportItem('Faturamento bruto',s.grossRevenue,'money','R$'),calculatorReportItem('Faturamento líquido',s.netRevenue,'money','R$')
+    ],
+    'Custos e Resultado':[
+      calculatorReportItem('Custo total / animal',k.totalAnimal,'money','R$'),calculatorReportItem('Custo total do lote',k.totalLot,'money','R$'),calculatorReportItem('Faturamento do lote',r.revenueLot,'money','R$'),calculatorReportItem('Faturamento / animal',r.revenueAnimal,'money','R$'),calculatorReportItem('Capital investido',r.capitalLot,'money','R$'),calculatorReportItem('Capital / animal',r.capitalAnimal,'money','R$'),calculatorReportItem('Custo operacional total',r.operationalTotal,'money','R$'),calculatorReportItem('Lucro líquido',r.profitLot,'money','R$'),calculatorReportItem('Lucro / animal',r.profitAnimal,'money','R$'),calculatorReportItem('Lucro / @ produzida',r.profitArroba,'money','R$/@'),calculatorReportItem('% da operação',r.operationPct,'percent','%'),calculatorReportItem('% ao mês',r.monthlyPct,'percent','%'),calculatorReportItem('Prazo da operação',r.termDays,'number','dias'),calculatorReportItem('Peso final',r.finalWeight,'number','kg'),calculatorReportItem('Total de arrobas',r.totalArrobas,'number','@')
+    ]
+  };
+}
 function buildCalcExportData(){
-  var dados=[
-    ['Campo','Valor'],
-    ['Nome/referência',exportVal('orc-label')],
-    ['Origem',exportVal('orc-origem')],
-    ['Vendedor',exportVal('calc-vend')],
-    ['Raça/categoria',exportVal('tipoCustom')],
-    ['Quantidade de animais',exportVal('qtd')],
-    ['Peso de compra',exportVal('pesoCom')],
-    ['Rendimento entrada',exportVal('rendEntrada')],
-    ['Preço compra',exportVal('precoCompra')],
-    ['Comissão',exportVal('comissao')],
-    ['Distância',exportVal('dist')],
-    ['Custo frete/km',exportVal('freteKm')],
-    ['Bônus frete',exportVal('bonusFrete')],
-    ['Quebra',exportVal('quebra')],
-    ['Boitel',exportVal('boitel')],
-    ['Matéria seca',exportVal('msKg')],
-    ['Operacional',exportVal('opDia')],
-    ['Sanidade',exportVal('sanidade')],
-    ['Dias',exportVal('dias')],
-    ['Peso final',exportVal('pesoFinal')],
-    ['Frigorífico',exportVal('frig')],
-    ['Preço venda',exportVal('valorAt')]
-  ];
-  var resumo=[
-    ['Indicador','Total','Por boi'],
-    ['% ao mês',exportText(document.getElementById('sum-rent-mes')),''],
-    ['% da operação',exportText(document.getElementById('sum-rent-total')),''],
-    ['Faturamento do lote',exportText(document.getElementById('sum-fat-lote')),exportText(document.getElementById('sum-fat-boi'))],
-    ['Capital investido',exportText(document.getElementById('sum-capital')),exportText(document.getElementById('sum-capital-boi'))],
-    ['Lucro líquido',exportText(document.getElementById('sum-lucro')),exportText(document.getElementById('sum-lucro-boi'))],
-    ['GMD',exportText(document.getElementById('d-gmc')),''],
-    ['Eficiência biológica',exportText(document.getElementById('d-efic')),''],
-    ['Eficiência biológica origem',exportText(document.getElementById('d-efic-origem')),''],
-    ['Consumo total / animal',exportText(document.getElementById('d-consumoTotal')),'']
-  ];
-  var custos=exportRowsFromTable('#panel-calc','.res-table');
-  return {tab:'Calculadora',title:'Relatório da Simulação',file:'VM_Agro_Calculadora_'+exportDateFile(),filters:[['Modalidade',exportText(document.querySelector('#op-summary .op-summary-badge'))||'Atual']],sheets:[{name:'Dados da Simulação',rows:dados},{name:'Resumo',rows:resumo},{name:'Custos e Resultado',rows:custos}]};
+  var report=buildCalculatorReportData();
+  var sections=calculatorReportSectionItems(report);
+  var resumo=[['Indicador','Valor','Unidade'],['Quantidade',report.identification.quantity,'cab.'],['Peso final',report.results.finalWeight,'kg'],['GMD',report.results.gmd,'kg/dia'],['Faturamento',report.results.revenueLot,'R$'],['Capital',report.results.capitalLot,'R$'],['Lucro',report.results.profitLot,'R$'],['% operação',report.results.operationPct,'%'],['% ao mês',report.results.monthlyPct,'%'],['Eficiência origem',report.technical.efficiencyOrigin,'kg MS/@'],['Eficiência chegada',report.technical.efficiencyArrival,'kg MS/@']];
+  var custos=[['Item','Por @','Por animal','Total do lote'],['Compra',report.purchase.priceArroba,report.purchase.purchaseAnimal,report.purchase.purchaseTotal],['Comissão',null,report.purchase.commissionAnimal,report.purchase.commissionTotal],['Frete bruto',null,report.transport.grossAnimal,report.transport.grossTotal],['Bônus frete',null,report.transport.bonusAnimal,report.transport.bonusTotal],['Frete líquido',null,report.transport.netAnimal,report.transport.netTotal],['Sanidade',null,report.confinement.healthAnimal,(report.confinement.healthAnimal||0)*report.identification.quantity],['Confinamento',null,report.confinement.confinementAnimal,report.confinement.confinementTotal],['Corretagem B3',report.sale.brokerageArroba,null,report.sale.brokerageTotal],['Custo total',null,report.costs.totalAnimal,report.costs.totalLot],['Lucro líquido',report.results.profitArroba,report.results.profitAnimal,report.results.profitLot]];
+  var sheets=[{name:'Resumo Executivo',rows:resumo},{name:'Dados da Simulação',rows:calculatorReportRows(sections['Identificação'])},{name:'Compra e Transporte',rows:calculatorReportRows(sections['Compra e Transporte'])},{name:'Confinamento',rows:calculatorReportRows(sections['Confinamento'])},{name:'Biometria e Indicadores',rows:calculatorReportRows(sections['Biometria e Indicadores'])},{name:'Venda',rows:calculatorReportRows(sections['Venda'])},{name:'Custos e Resultado',rows:custos}];
+  if(report.b3.linked)sheets.push({name:'B3',rows:[['Código','Vencimento','Contratos','@ protegidas','Preço abertura','Corretagem','Resultado','Status','Travados / necessários']].concat(report.b3.items.map(function(b){return [b.codigo,b.vencimento,b.contratos,b.arrobas,b.abertura,b.corretagem,b.resultado,b.status,b.travados];}))});
+  return {tab:'Calculadora',title:'Relatório da Simulação',file:report.fileBase,filters:[['Modalidade',report.identification.modality],['Situação',report.identification.situation]],sheets:sheets,calculatorReport:report};
 }
 function exportXml(s){
   return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-function downloadReportPdf(data){
-  var logoSrc=new URL('vm-agro-logo.png',location.href).href;
-  var filters=(data.filters||[]).map(function(f){return '<span><b>'+exportXml(f[0])+':</b> '+exportXml(f[1]||'Todos')+'</span>';}).join('');
-  var sections=data.sheets.map(function(sheet){
-    return '<section><h2>'+exportXml(sheet.name)+'</h2>'+htmlTable(sheet.rows)+'</section>';
-  }).join('');
-  var html='<!doctype html><html><head><meta charset="utf-8"><title>'+exportXml(data.title)+'</title><style>'
-    +'body{font-family:Inter,Arial,sans-serif;margin:28px;color:#0D1B2A;background:#fff}.print-actions{position:sticky;top:0;z-index:5;display:flex;justify-content:flex-end;margin:-10px 0 14px}.print-actions button{border:1px solid #C9A24E;border-radius:10px;background:#0D1B2A;color:#fff;padding:10px 14px;font-weight:800;cursor:pointer}header{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #C9A24E;padding-bottom:14px;margin-bottom:18px}.brand{display:flex;align-items:center;gap:12px}.brand img{width:54px;height:54px;object-fit:contain}.brand h1{margin:0;font-size:22px;letter-spacing:.5px}.meta{font-size:12px;color:#8A7967;text-align:right}.filters{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 18px}.filters span{border:1px solid #D8CBB5;border-radius:999px;padding:6px 10px;font-size:11px;background:#F2EDE3}h2{font-size:13px;letter-spacing:1.8px;text-transform:uppercase;margin:22px 0 8px;color:#0D1B2A}table{width:100%;border-collapse:collapse;page-break-inside:auto}th{background:#F2EDE3;color:#0D1B2A;text-align:left;font-size:10px;letter-spacing:.8px;text-transform:uppercase}td,th{border:1px solid #D8CBB5;padding:7px 8px;font-size:11px;vertical-align:top}tr{page-break-inside:avoid}footer{position:fixed;bottom:12px;left:28px;right:28px;border-top:1px solid #D8CBB5;padding-top:6px;font-size:10px;color:#8A7967}@page{margin:18mm 12mm}@media print{.print-actions{display:none}body{margin:0}}</style></head><body>'
-    +'<div class="print-actions"><button onclick="window.print()">Salvar / imprimir PDF</button></div>'
-    +'<header><div class="brand"><img src="'+logoSrc+'"><div><h1>'+exportXml(data.title)+'</h1><div style="font-size:12px;color:#8A7967">VM Agro · Gestão de Lotes</div></div></div><div class="meta">Exportado em '+exportXml(exportNowLabel())+'<br>Usuário: '+exportXml(exportUser())+'</div></header>'
-    +'<div class="filters">'+filters+'</div>'+sections+'<footer>VM Agro · Gestão de Lotes</footer></body></html>';
-  var blob=new Blob([html],{type:'text/html;charset=utf-8'});
-  var url=URL.createObjectURL(blob);
-  var win=window.open(url,'_blank');
-  if(!win){URL.revokeObjectURL(url);toast('Permita pop-ups para abrir a prévia.');return;}
-  setTimeout(function(){URL.revokeObjectURL(url);},60000);
-  toast('✓ Prévia do PDF aberta');
+function calculatorReportDisplay(value,type,unit){
+  if(value===null||value===undefined||value===''||(typeof value==='number'&&!isFinite(value)))return '—';
+  if(type==='money')return fmt(Number(value));
+  if(type==='percent')return brNum(Number(value),2)+'%';
+  if(type==='number')return brNum(Number(value),2)+(unit?' '+unit:'');
+  return String(value)+(unit?' '+unit:'');
+}
+function calculatorReportPerformance(monthlyPct){
+  var value=Number(monthlyPct)||0;
+  if(value<=1.5)return {label:'Operação ruim',color:'#9A3B30'};
+  if(value<=2)return {label:'Operação média',color:'#C9A24E'};
+  if(value<=2.5)return {label:'Operação boa',color:'#6B7056'};
+  return {label:'Operação extraordinária',color:'#0D4F8B'};
+}
+async function downloadReportPdf(data){
+  if(!window.jspdf||!window.jspdf.jsPDF)throw new Error('Biblioteca de PDF indisponível');
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4',compress:true});
+  var navy=[13,27,42],gold=[201,162,78],ivory=[242,237,227],muted=[138,121,103];
+  var pageW=doc.internal.pageSize.getWidth(),pageH=doc.internal.pageSize.getHeight();
+  function pdfColor(value){
+    if(Array.isArray(value))return value;
+    var hex=String(value||'#0D1B2A').replace('#','');
+    return [parseInt(hex.slice(0,2),16)||0,parseInt(hex.slice(2,4),16)||0,parseInt(hex.slice(4,6),16)||0];
+  }
+  function header(title,sub){
+    doc.setFillColor.apply(doc,navy);doc.rect(0,0,pageW,25,'F');
+    doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(16);doc.text('VM AGRO',14,11);
+    doc.setTextColor.apply(doc,gold);doc.setFontSize(7);doc.text('GESTÃO DE LOTES',14,17);
+    doc.setTextColor(255,255,255);doc.setFontSize(12);doc.text(title,pageW-14,10,{align:'right'});
+    doc.setFont('helvetica','normal');doc.setFontSize(7);doc.text(sub||'',pageW-14,17,{align:'right'});
+  }
+  function footer(){
+    var pages=doc.internal.getNumberOfPages();
+    for(var p=1;p<=pages;p++){
+      doc.setPage(p);doc.setDrawColor.apply(doc,gold);doc.line(14,pageH-11,pageW-14,pageH-11);
+      doc.setTextColor.apply(doc,muted);doc.setFontSize(7);doc.text('VM Agro · Gestão de Lotes',14,pageH-6);doc.text('Página '+p+' de '+pages,pageW-14,pageH-6,{align:'right'});
+    }
+  }
+  var report=data.calculatorReport;
+  if(report){
+    header('RELATÓRIO DA SIMULAÇÃO',report.identification.exportedAt);
+    var perf=calculatorReportPerformance(report.results.monthlyPct);
+    doc.setTextColor.apply(doc,navy);doc.setFont('helvetica','bold');doc.setFontSize(15);doc.text(report.identification.reference||'Simulação sem referência',14,36);
+    doc.setFont('helvetica','normal');doc.setTextColor.apply(doc,muted);doc.setFontSize(8);
+    doc.text([report.identification.modality,report.identification.quantity+' animais',report.identification.seller||'Vendedor a definir'].join('  ·  '),14,42);
+    var cards=[
+      ['% AO MÊS',calculatorReportDisplay(report.results.monthlyPct,'percent'),perf.color],
+      ['% DA OPERAÇÃO',calculatorReportDisplay(report.results.operationPct,'percent'),perf.color],
+      ['FATURAMENTO',calculatorReportDisplay(report.results.revenueLot,'money'),navy],
+      ['CAPITAL',calculatorReportDisplay(report.results.capitalLot,'money'),navy],
+      ['LUCRO',calculatorReportDisplay(report.results.profitLot,'money'),report.results.profitLot>=0?'#6B7056':'#9A3B30'],
+      ['PESO FINAL',calculatorReportDisplay(report.results.finalWeight,'number','kg'),navy]
+    ];
+    cards.forEach(function(c,idx){
+      var col=idx%2,row=Math.floor(idx/2),x=14+col*91,y=50+row*22;
+      doc.setFillColor.apply(doc,ivory);doc.roundedRect(x,y,84,17,2,2,'F');
+      doc.setTextColor.apply(doc,muted);doc.setFont('helvetica','bold');doc.setFontSize(6);doc.text(c[0],x+4,y+5);
+      doc.setTextColor.apply(doc,pdfColor(c[2]));doc.setFontSize(11);doc.text(c[1],x+4,y+12);
+    });
+    doc.setFillColor.apply(doc,pdfColor(perf.color));doc.roundedRect(14,118,50,8,4,4,'F');doc.setTextColor(255,255,255);doc.setFontSize(7);doc.text(perf.label,39,123,{align:'center'});
+    doc.autoTable({startY:132,head:[['Resumo técnico','Valor']],body:[
+      ['Peso compra',calculatorReportDisplay(report.purchase.weightAverage,'number','kg')],['Peso chegada',calculatorReportDisplay(report.transport.arrivalWeight,'number','kg')],['GMD',calculatorReportDisplay(report.technical.gmd,'number','kg/dia')],['Total de arrobas',calculatorReportDisplay(report.results.totalArrobas,'number','@')],['Eficiência origem',calculatorReportDisplay(report.technical.efficiencyOrigin,'number','kg MS/@')],['Eficiência chegada',calculatorReportDisplay(report.technical.efficiencyArrival,'number','kg MS/@')],['Preço compra',calculatorReportDisplay(report.purchase.priceArroba,'money')+' /@'],['Preço venda',calculatorReportDisplay(report.sale.basePrice,'money')+' /@']
+    ],theme:'grid',styles:{fontSize:8,cellPadding:2.4,textColor:navy,lineColor:[216,203,181]},headStyles:{fillColor:navy,textColor:[255,255,255]},margin:{left:14,right:14,bottom:15}});
+    var sections=calculatorReportSectionItems(report);
+    Object.keys(sections).forEach(function(name){
+      doc.addPage();header(name.toUpperCase(),report.identification.reference||'Simulação');
+      var body=sections[name].map(function(item){return [item.label,calculatorReportDisplay(item.value,item.type,item.unit)];});
+      doc.autoTable({startY:33,head:[['Campo','Valor']],body:body,theme:'grid',styles:{fontSize:8,cellPadding:2.5,textColor:navy,lineColor:[216,203,181],overflow:'linebreak'},headStyles:{fillColor:navy,textColor:[255,255,255]},alternateRowStyles:{fillColor:ivory},columnStyles:{0:{cellWidth:90},1:{cellWidth:'auto'}},margin:{left:14,right:14,bottom:15}});
+    });
+    if(report.b3.linked){
+      doc.addPage();header('B3 E PROTEÇÃO',report.identification.reference||'Simulação');
+      doc.autoTable({startY:33,head:[['Código','Vencimento','Contratos','@ protegidas','Abertura','Resultado','Status']],body:report.b3.items.map(function(b){return [b.codigo,b.vencimento||'—',b.contratos,b.arrobas,calculatorReportDisplay(b.abertura,'money'),calculatorReportDisplay(b.resultado,'money'),b.status];}),styles:{fontSize:7,cellPadding:2,lineColor:[216,203,181]},headStyles:{fillColor:navy,textColor:[255,255,255]},margin:{left:10,right:10,bottom:15}});
+    }
+  }else{
+    header(data.title,exportNowLabel());
+    var y=33;
+    (data.sheets||[]).forEach(function(sheet,index){
+      if(index&&y>210){doc.addPage();header(data.title,exportNowLabel());y=33;}
+      var rows=sheet.rows&&sheet.rows.length?sheet.rows:[['Sem dados']];
+      doc.setTextColor.apply(doc,navy);doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text(sheet.name.toUpperCase(),14,y);y+=3;
+      doc.autoTable({startY:y,head:[rows[0]],body:rows.slice(1),styles:{fontSize:7,cellPadding:2,lineColor:[216,203,181],overflow:'linebreak'},headStyles:{fillColor:navy,textColor:[255,255,255]},margin:{left:14,right:14,bottom:15}});
+      y=doc.lastAutoTable.finalY+10;
+    });
+  }
+  footer();
+  doc.save((data.file||'VM_Agro_Relatorio')+'.pdf');
+  toast('✓ PDF exportado');
+}
+
+function calculatorImageHtml(report,complete){
+  var perf=calculatorReportPerformance(report.results.monthlyPct),sections=calculatorReportSectionItems(report);
+  var summary=[['Quantidade',report.identification.quantity+' cab.'],['Peso compra',calculatorReportDisplay(report.purchase.weightAverage,'number','kg')],['Peso chegada',calculatorReportDisplay(report.transport.arrivalWeight,'number','kg')],['Peso final',calculatorReportDisplay(report.results.finalWeight,'number','kg')],['GMD',calculatorReportDisplay(report.technical.gmd,'number','kg/dia')],['Total @',calculatorReportDisplay(report.results.totalArrobas,'number','@')],['Preço compra',calculatorReportDisplay(report.purchase.priceArroba,'money')+' /@'],['Preço venda',calculatorReportDisplay(report.sale.basePrice,'money')+' /@'],['Eficiência origem',calculatorReportDisplay(report.technical.efficiencyOrigin,'number','kg MS/@')],['Eficiência chegada',calculatorReportDisplay(report.technical.efficiencyArrival,'number','kg MS/@')]];
+  var html='<div class="cri-head"><div><div class="cri-brand">VM AGRO</div><div class="cri-sub">GESTÃO DE LOTES</div></div><div class="cri-ref">'+exportXml(report.identification.reference||'Simulação')+'</div></div>'
+    +'<div class="cri-title">Resumo da Operação <span>'+exportXml(report.identification.modality)+'</span></div>'
+    +'<div class="cri-kpis"><div style="border-color:'+perf.color+'"><small>% AO MÊS</small><strong style="color:'+perf.color+'">'+calculatorReportDisplay(report.results.monthlyPct,'percent')+'</strong><em>'+perf.label+'</em></div><div style="border-color:'+perf.color+'"><small>% DA OPERAÇÃO</small><strong style="color:'+perf.color+'">'+calculatorReportDisplay(report.results.operationPct,'percent')+'</strong></div></div>'
+    +'<div class="cri-fin"><div><small>FATURAMENTO</small><strong>'+calculatorReportDisplay(report.results.revenueLot,'money')+'</strong></div><div><small>CAPITAL</small><strong>'+calculatorReportDisplay(report.results.capitalLot,'money')+'</strong></div><div><small>LUCRO</small><strong style="color:'+(report.results.profitLot>=0?'#6B7056':'#9A3B30')+'">'+calculatorReportDisplay(report.results.profitLot,'money')+'</strong></div></div>'
+    +'<div class="cri-grid">'+summary.map(function(v){return '<div><small>'+exportXml(v[0])+'</small><strong>'+exportXml(v[1])+'</strong></div>';}).join('')+'</div>';
+  if(complete)Object.keys(sections).forEach(function(name){html+='<div class="cri-section"><h2>'+exportXml(name)+'</h2>'+sections[name].map(function(item){return '<div><span>'+exportXml(item.label)+'</span><b>'+exportXml(calculatorReportDisplay(item.value,item.type,item.unit))+'</b></div>';}).join('')+'</div>';});
+  return html+'<div class="cri-foot">VM Agro · Gestão de Lotes · '+exportXml(report.identification.exportedAt)+'</div>';
+}
+async function downloadCalculatorReportJpg(report,complete){
+  if(!report||!window.html2canvas)throw new Error('Biblioteca de imagem indisponível');
+  var host=document.createElement('div');host.id='calculator-report-image';host.innerHTML=calculatorImageHtml(report,complete);
+  host.style.cssText='position:fixed;left:-12000px;top:0;width:1080px;background:#F2EDE3;color:#0D1B2A;padding:54px;font-family:Inter,Arial,sans-serif;box-sizing:border-box;z-index:-1';
+  var style=document.createElement('style');style.textContent='#calculator-report-image *{box-sizing:border-box}#calculator-report-image .cri-head{margin:-54px -54px 36px;padding:38px 54px;background:#0D1B2A;color:#fff;display:flex;justify-content:space-between;align-items:center;border-bottom:5px solid #C9A24E}.cri-brand{font-size:34px;font-weight:900;letter-spacing:2px}.cri-sub{font-size:13px;color:#C9A24E;letter-spacing:5px}.cri-ref{font-size:25px;font-weight:800;max-width:55%;text-align:right}.cri-title{font-size:28px;font-weight:900;text-transform:uppercase;letter-spacing:2px;display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.cri-title span{font-size:17px;background:#fff;border-radius:999px;padding:10px 18px;color:#8A7967}.cri-kpis{display:grid;grid-template-columns:1fr 1fr;gap:18px}.cri-kpis>div,.cri-fin>div,.cri-grid>div,.cri-section{background:#fff;border:2px solid #D8CBB5;border-radius:14px;padding:22px}.cri-kpis small,.cri-fin small,.cri-grid small{display:block;color:#8A7967;font-size:14px;font-weight:800;letter-spacing:1px}.cri-kpis strong{display:block;font-size:56px;margin:8px 0}.cri-kpis em{font-style:normal;font-size:16px}.cri-fin{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}.cri-fin strong{display:block;font-size:25px;margin-top:8px}.cri-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}.cri-grid strong{display:block;font-size:20px;margin-top:5px}.cri-section{margin-top:20px}.cri-section h2{font-size:18px;text-transform:uppercase;letter-spacing:2px;border-bottom:2px solid #C9A24E;padding-bottom:12px}.cri-section>div{display:flex;justify-content:space-between;gap:30px;padding:9px 0;border-bottom:1px solid #E6DED1;font-size:16px}.cri-section>div b{text-align:right}.cri-foot{text-align:center;color:#8A7967;font-size:13px;padding:30px 0 0}';
+  document.head.appendChild(style);document.body.appendChild(host);
+  try{
+    var canvas=await html2canvas(host,{scale:2,backgroundColor:'#F2EDE3',useCORS:true,logging:false});
+    var pageHeight=complete?3840:canvas.height;
+    var pages=Math.max(1,Math.ceil(canvas.height/pageHeight));
+    for(var i=0;i<pages;i++){
+      var h=Math.min(pageHeight,canvas.height-i*pageHeight),part=document.createElement('canvas');part.width=canvas.width;part.height=h;
+      part.getContext('2d').drawImage(canvas,0,i*pageHeight,canvas.width,h,0,0,canvas.width,h);
+      await new Promise(function(resolve){part.toBlob(function(blob){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=report.fileBase+(pages>1?'_'+String(i+1).padStart(2,'0'):'')+'.jpg';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href);},1000);resolve();},'image/jpeg',0.95);});
+    }
+    toast('✓ '+(complete?'JPG completo':'JPG resumo')+' exportado');
+  }finally{host.remove();style.remove();}
 }
 function htmlTable(rows){
   rows=rows&&rows.length?rows:[['Sem dados']];
@@ -10812,15 +11070,26 @@ function cleanSheetName(name,i){
   return s||('Aba '+i);
 }
 function colName(n){var s='';while(n>0){var m=(n-1)%26;s=String.fromCharCode(65+m)+s;n=Math.floor((n-1)/26);}return s;}
-function sheetXml(rows){
+function sheetXml(rows,sheetName){
   rows=rows&&rows.length?rows:[['Sem dados']];
   var max=rows.reduce(function(m,r){return Math.max(m,r.length);},1);
-  var cols='<cols>';for(var c=1;c<=max;c++)cols+='<col min="'+c+'" max="'+c+'" width="22" customWidth="1"/>';cols+='</cols>';
+  var cols='<cols>';for(var c=1;c<=max;c++){var width=Math.min(42,Math.max(14,rows.reduce(function(m,r){return Math.max(m,String(r[c-1]??'').length);},0)+3));cols+='<col min="'+c+'" max="'+c+'" width="'+width+'" customWidth="1"/>';}cols+='</cols>';
   var body=rows.map(function(r,ri){
-    var cells=[];for(var ci=0;ci<max;ci++){var ref=colName(ci+1)+(ri+1),v=r[ci]==null?'':String(r[ci]);cells.push('<c r="'+ref+'" t="inlineStr"'+(ri===0?' s="1"':'')+'><is><t>'+exportXml(v)+'</t></is></c>');}
+    var cells=[];for(var ci=0;ci<max;ci++){
+      var ref=colName(ci+1)+(ri+1),raw=r[ci];
+      if(typeof raw==='number'&&isFinite(raw)){
+        var unit=String(r[2]||''),label=String(r[0]||'').toLowerCase(),style=4;
+        if(unit==='%'||label.indexOf('%')>=0)style=3;
+        else if(unit.indexOf('R$')>=0||(/Custos e Resultado/.test(sheetName)&&ci>0))style=2;
+        var numericValue=style===3?raw/100:raw;
+        cells.push('<c r="'+ref+'" s="'+style+'"><v>'+numericValue+'</v></c>');
+      }else{
+        var v=raw==null?'':String(raw);cells.push('<c r="'+ref+'" t="inlineStr"'+(ri===0?' s="1"':'')+'><is><t>'+exportXml(v)+'</t></is></c>');
+      }
+    }
     return '<row r="'+(ri+1)+'">'+cells.join('')+'</row>';
   }).join('');
-  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+cols+'<sheetData>'+body+'</sheetData></worksheet>';
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>'+cols+'<sheetData>'+body+'</sheetData><autoFilter ref="A1:'+colName(max)+Math.max(1,rows.length)+'"/></worksheet>';
 }
 function buildXlsxFiles(sheets){
   var files=[],sheetDefs=sheets.map(function(s,i){return {name:cleanSheetName(s.name,i+1),rows:s.rows||[]};});
@@ -10828,8 +11097,8 @@ function buildXlsxFiles(sheets){
   files.push({name:'_rels/.rels',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/></Relationships>'});
   files.push({name:'xl/workbook.xml',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>'+sheetDefs.map(function(s,i){return '<sheet name="'+exportXml(s.name)+'" sheetId="'+(i+1)+'" r:id="rId'+(i+1)+'"/>';}).join('')+'</sheets></workbook>'});
   files.push({name:'xl/_rels/workbook.xml.rels',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+sheetDefs.map(function(s,i){return '<Relationship Id="rId'+(i+1)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet'+(i+1)+'.xml"/>';}).join('')+'<Relationship Id="rId'+(sheetDefs.length+1)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'});
-  files.push({name:'xl/styles.xml',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="1"><fill><patternFill patternType="none"/></fill></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0"/></cellXfs></styleSheet>'});
-  sheetDefs.forEach(function(s,i){files.push({name:'xl/worksheets/sheet'+(i+1)+'.xml',data:sheetXml(s.rows)});});
+  files.push({name:'xl/styles.xml',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="3"><numFmt numFmtId="164" formatCode="[$R$-pt-BR] #,##0.00;[Red]-[$R$-pt-BR] #,##0.00"/><numFmt numFmtId="165" formatCode="0.00%"/><numFmt numFmtId="166" formatCode="#,##0.00"/></numFmts><fonts count="3"><font><sz val="11"/><name val="Calibri"/><color rgb="FF0D1B2A"/></font><font><b/><sz val="11"/><name val="Calibri"/><color rgb="FFFFFFFF"/></font><font><b/><sz val="11"/><name val="Calibri"/><color rgb="FF0D1B2A"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF0D1B2A"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="5"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFill="1" applyFont="1" applyAlignment="1"><alignment horizontal="center"/></xf><xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="10" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="166" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/></cellXfs></styleSheet>'});
+  sheetDefs.forEach(function(s,i){files.push({name:'xl/worksheets/sheet'+(i+1)+'.xml',data:sheetXml(s.rows,s.name)});});
   files.push({name:'docProps/core.xml',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/"><dc:creator>VM Agro</dc:creator><dc:title>Relatório VM Agro</dc:title><dcterms:created xsi:type="dcterms:W3CDTF" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'+new Date().toISOString()+'</dcterms:created></cp:coreProperties>'});
   files.push({name:'docProps/app.xml',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Application>VM Agro</Application></Properties>'});
   return files;
