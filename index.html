@@ -3491,31 +3491,29 @@ function zootecRealCalc(lote,orc,aj){
   lote=lote||{};
   orc=orc||(lote.orcamentos&&lote.orcamentos[0])||{};
   aj=aj||lote.ajusteReal||lote.apuracao||{};
-  var gmd=aj.gmdReal!==undefined&&aj.gmdReal!==null?finNum(aj.gmdReal):finNum((lote.confRecord&&lote.confRecord.gmdReal)||orc.gmd);
-  var rendA=aj.rendCarcacaReal!==undefined&&aj.rendCarcacaReal!==null?finNum(aj.rendCarcacaReal):finNum(orc.rendA_pct);
+  var gmd=aj.gmdReal!==undefined&&aj.gmdReal!==null?finNum(aj.gmdReal):finNum(lote.confRecord&&lote.confRecord.gmdReal);
+  var rendA=aj.rendCarcacaReal!==undefined&&aj.rendCarcacaReal!==null?finNum(aj.rendCarcacaReal):0;
   var entrada=aj.dataEntradaReal||(lote.confRecord&&lote.confRecord.dataEntrada)||(orc&&orc.dataEntradaPrev)||'';
   var abate=aj.dataAbateReal||(lote.confRecord&&lote.confRecord.dataSaida)||'';
-  var dias=(entrada&&abate)?Math.max(0,Math.round((_addDias(abate,0)-_addDias(entrada,0))/86400000)):(finNum(lote.confRecord&&lote.confRecord.diasEfetivos)||finNum(orc.dias));
-  var pesoCom=finNum(orc.pesoCom||lote.pesoMedio);
+  var dias=aj.diasReal!==undefined&&aj.diasReal!==null?finNum(aj.diasReal):((entrada&&abate)?Math.max(0,Math.round((_addDias(abate,0)-_addDias(entrada,0))/86400000)):finNum(lote.confRecord&&lote.confRecord.diasEfetivos));
+  var pesoCom=aj.pesoOrigemReal!==undefined&&aj.pesoOrigemReal!==null?finNum(aj.pesoOrigemReal):finNum(orc.pesoCom||lote.pesoMedio);
   var quebra=finNum(orc.quebra_pct)/100;
   var rendE=finNum(orc.rendE_pct)/100;
-  var consPC=finNum(orc.consPC_pct)/100;
   var pesoEntradaCalculado=pesoCom*(1-quebra);
   var pesoEntrada=(aj.pesoEntradaReal!==undefined&&aj.pesoEntradaReal!==null&&String(aj.pesoEntradaReal)!=='')?finNum(aj.pesoEntradaReal):pesoEntradaCalculado;
-  var pesoSaidaCalculado=pesoEntrada+(gmd*dias);
-  var pesoSaida=(aj.pesoSaidaReal!==undefined&&aj.pesoSaidaReal!==null&&String(aj.pesoSaidaReal)!=='')?finNum(aj.pesoSaidaReal):pesoSaidaCalculado;
+  var pesoSaida=(pesoEntrada>0&&gmd>0&&dias>0)?pesoEntrada+(gmd*dias):0;
   var atEntradaOrigem=rendE>0?pesoCom*rendE/15:0;
   var atEntrada=rendE>0?pesoEntrada*rendE/15:0;
   var atAbate=rendA>0?pesoSaida*(rendA/100)/15:0;
+  var pesoCarcaca=rendA>0&&pesoSaida>0?pesoSaida*(rendA/100):0;
   var atProdOrigem=atAbate-atEntradaOrigem;
-  var atProdCalculado=atAbate-atEntrada;
-  var atProd=(aj.arrobasProduzidasReal!==undefined&&aj.arrobasProduzidasReal!==null&&String(aj.arrobasProduzidasReal)!=='')?finNum(aj.arrobasProduzidasReal):atProdCalculado;
-  var consumoCalculado=((pesoEntrada+pesoSaida)/2)*consPC*dias;
-  var consumoTotal=(aj.consumoMSTotalReal!==undefined&&aj.consumoMSTotalReal!==null&&String(aj.consumoMSTotalReal)!=='')?finNum(aj.consumoMSTotalReal):consumoCalculado;
+  var atProd=atAbate-atEntrada;
+  var consumoDiario=(aj.consumoMSDiarioReal!==undefined&&aj.consumoMSDiarioReal!==null&&String(aj.consumoMSDiarioReal)!=='')?finNum(aj.consumoMSDiarioReal):0;
+  var consumoTotal=(aj.consumoMSTotalReal!==undefined&&aj.consumoMSTotalReal!==null&&String(aj.consumoMSTotalReal)!=='')?finNum(aj.consumoMSTotalReal):(consumoDiario>0&&dias>0?consumoDiario*dias:0);
   var eficOrigem=atProdOrigem>0&&consumoTotal>0?consumoTotal/atProdOrigem:0;
   var efic=atProd>0&&consumoTotal>0?consumoTotal/atProd:0;
   var custoAtReal=(aj.custoArrobaProduzidaReal!==undefined&&aj.custoArrobaProduzidaReal!==null&&String(aj.custoArrobaProduzidaReal)!=='')?finNum(aj.custoArrobaProduzidaReal):0;
-  return {gmd:gmd,rendA:rendA,dias:dias,pesoEntrada:pesoEntrada,pesoSaida:pesoSaida,consumoTotal:consumoTotal,efic:efic,eficOrigem:eficOrigem,atProd:atProd,atProdOrigem:atProdOrigem,atAbate:atAbate,custoAtReal:custoAtReal};
+  return {gmd:gmd,rendA:rendA,dias:dias,pesoOrigem:pesoCom,pesoEntrada:pesoEntrada,pesoSaida:pesoSaida,pesoCarcaca:pesoCarcaca,consumoDiario:consumoDiario,consumoTotal:consumoTotal,efic:efic,eficOrigem:eficOrigem,atEntradaOrigem:atEntradaOrigem,atEntrada:atEntrada,atProd:atProd>0?atProd:0,atProdOrigem:atProdOrigem>0?atProdOrigem:0,atAbate:atAbate,custoAtReal:custoAtReal};
 }
 function valorAjustePorArroba(base,val,mode){
   base=finNum(base);
@@ -3575,7 +3573,7 @@ function resultadoProjetadoLote(lote,orc){
   var lucro=finNum(orc.lucroLote);
   var faturamento=capital+lucro;
   var bio=biometriaSimuladaOrc(orc);
-  return {capital:capital,custoTotal:custoTotal,lucro:lucro,faturamento:faturamento,rent:finNum(orc.rent),rentMes:finNum(orc.rentMes),qtd:finNum(orc.qtd||lote.qtd),pesoEntrada:bio.pesoEntrada||0,pesoAbate:bio.pesoAbate||0,gmd:finNum(orc.gmd),dias:finNum(orc.dias),rendA:finNum(orc.rendA_pct),efic:bio.efic||0,arrobasProduzidas:bio.atProd||0,custoArroba:finNum(orc.custoAtProd||orc.custoArrobaProduzida||0),consumoMS:bio.consumoTotal||0};
+  return {capital:capital,custoTotal:custoTotal,lucro:lucro,faturamento:faturamento,rent:finNum(orc.rent),rentMes:finNum(orc.rentMes),qtd:finNum(orc.qtd||lote.qtd),pesoOrigem:bio.pesoCompra||0,pesoEntrada:bio.pesoEntrada||0,pesoAbate:bio.pesoAbate||0,pesoCarcaca:(bio.atAbate||0)*15,arrobasAbate:bio.atAbate||0,gmd:finNum(orc.gmd),dias:finNum(orc.dias),rendA:finNum(orc.rendA_pct),efic:bio.efic||0,eficOrigem:bio.eficOrigem||0,arrobasProduzidas:bio.atProd||0,arrobasProduzidasOrigem:bio.atProdOrigem||0,custoArroba:finNum(orc.custoAtProd||orc.custoArrobaProduzida||0),consumoMS:bio.consumoTotal||0};
 }
 function resultadoRealizadoLote(lote,orc,aj){
   lote=lote||{};
@@ -3585,12 +3583,13 @@ function resultadoRealizadoLote(lote,orc,aj){
   var zoo=zootecRealCalc(lote,orc,aj);
   var venda=vendaRealizadaEsperada(lote,orc,aj);
   var capital=aj.custoReal!==undefined&&aj.custoReal!==null?finNum(aj.custoReal):finNum(orc.investLote);
-  var faturamento=aj.receitaReal!==undefined&&aj.receitaReal!==null?finNum(aj.receitaReal):venda.liquido;
-  var lucro=aj.lucroReal!==undefined&&aj.lucroReal!==null?finNum(aj.lucroReal):(faturamento-capital);
+  var outrosCustos=aj.outrosCustosReal!==undefined&&aj.outrosCustosReal!==null?finNum(aj.outrosCustosReal):0;
+  var faturamento=aj.receitaFinalReal!==undefined&&aj.receitaFinalReal!==null?finNum(aj.receitaFinalReal):(aj.receitaReal!==undefined&&aj.receitaReal!==null?finNum(aj.receitaReal):venda.liquido);
+  var lucro=aj.lucroReal!==undefined&&aj.lucroReal!==null?finNum(aj.lucroReal):(faturamento-capital-outrosCustos);
   var rent=capital>0?lucro/capital:0;
   var prazo=prazoDiasResultadoLote(lote,orc);
   var qtd=aj.qtdReal!==undefined&&aj.qtdReal!==null?finNum(aj.qtdReal):finNum(orc.qtd||lote.qtd);
-  return {capital:capital,custoTotal:capital,lucro:lucro,faturamento:faturamento,rent:rent,rentMes:prazo>0?rent/(prazo/30):0,qtd:qtd,pesoEntrada:zoo.pesoEntrada||0,pesoAbate:zoo.pesoSaida||0,gmd:zoo.gmd||0,dias:zoo.dias||0,rendA:zoo.rendA||0,efic:zoo.efic||0,arrobasProduzidas:zoo.atProd||0,custoArroba:zoo.custoAtReal||0,consumoMS:zoo.consumoTotal||0};
+  return {capital:capital,custoTotal:capital+outrosCustos,outrosCustos:outrosCustos,lucro:lucro,faturamento:faturamento,rent:rent,rentMes:prazo>0?rent/(prazo/30):0,qtd:qtd,pesoOrigem:zoo.pesoOrigem||null,pesoEntrada:zoo.pesoEntrada||null,pesoAbate:zoo.pesoSaida||null,pesoCarcaca:zoo.pesoCarcaca||null,arrobasAbate:zoo.atAbate||null,gmd:zoo.gmd||null,dias:zoo.dias||null,rendA:zoo.rendA||null,efic:zoo.efic||null,eficOrigem:zoo.eficOrigem||null,arrobasProduzidas:zoo.atProd||null,arrobasProduzidasOrigem:zoo.atProdOrigem||null,custoArroba:zoo.custoAtReal||null,consumoMS:zoo.consumoTotal||null};
 }
 function statusRealizadoLote(lote){
   if(!lote)return {key:'none',label:'Sem realizado'};
@@ -5972,7 +5971,9 @@ function renderComparativoRealizadoHtml(lote,orc,aj){
     if(v===null||v===undefined||!isFinite(v))return '—';
     if(kind==='money')return fmt(v);
     if(kind==='pct')return (v*100).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
+    if(kind==='pctValue')return v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
     if(kind==='pp')return (v*100).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+' pp';
+    if(kind==='ppValue')return v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+' pp';
     if(kind==='kg')return brNum(v,2)+' kg';
     if(kind==='gmd')return brNum(v,2)+' kg/dia';
     if(kind==='efic')return brNum(v,2)+' kg MS/@';
@@ -5988,20 +5989,26 @@ function renderComparativoRealizadoHtml(lote,orc,aj){
     var diff=hasReal?rv-pv:null;
     var cls='neutral';
     if(diff!==null&&Math.abs(diff)>0.000001)cls=((higherBetter?diff>0:diff<0)?'good':'bad');
-    var diffKind=kind==='pct'?'pp':kind;
+    var diffKind=kind==='pct'?'pp':(kind==='pctValue'?'ppValue':kind);
     var diffText=diff===null?'—':((diff>0?'+':'')+cell(diff,diffKind));
     return '<tr><td>'+escHtml(label)+'</td><td>'+cell(pv,kind)+'</td><td>'+cell(rv,kind)+'</td><td class="pxr-diff '+cls+'">'+diffText+'</td></tr>';
   }
   return '<div class="ep-section">Projetado x Realizado <span class="real-status-chip '+status.key+'">'+status.label+'</span></div>'
     +'<div class="pxr-wrap"><table class="pxr-table"><thead><tr><th>Indicador</th><th>Projetado</th><th>Realizado</th><th>Diferença</th></tr></thead><tbody>'
     +row('Quantidade de animais','qtd','cab',true)
-    +row('Peso de entrada','pesoEntrada','kg',true)
-    +row('Peso de abate','pesoAbate','kg',true)
+    +row('Peso de origem','pesoOrigem','kg',true)
+    +row('Peso de chegada','pesoEntrada','kg',true)
+    +row('Peso final','pesoAbate','kg',true)
+    +row('Peso de carcaça','pesoCarcaca','kg',true)
+    +row('Arrobas de abate / animal','arrobasAbate','arroba',true)
     +row('GMD','gmd','gmd',true)
     +row('Dias de confinamento','dias','dias',false)
-    +row('Rendimento de carcaça','rendA','pct',true)
-    +row('Eficiência biológica','efic','efic',false)
-    +row('Arrobas produzidas','arrobasProduzidas','arroba',true)
+    +row('Rendimento de carcaça','rendA','pctValue',true)
+    +row('Arrobas produzidas — origem','arrobasProduzidasOrigem','arroba',true)
+    +row('Arrobas produzidas — chegada','arrobasProduzidas','arroba',true)
+    +row('Consumo de matéria seca','consumoMS','kg',false)
+    +row('Eficiência biológica — origem','eficOrigem','efic',false)
+    +row('Eficiência biológica — chegada','efic','efic',false)
     +row('Custo por @ produzida','custoArroba','money',false)
     +row('Faturamento','faturamento','money',true)
     +row('Capital','capital','money',false)
@@ -6147,15 +6154,20 @@ function openEditPanel(loteId, cardEl){
     var vendaDescAt=valorAjustePorArroba(vendaValorAt,vendaDescVal,vendaDescMode);
     var vendaSenarPct=finNum((aj.senarPctReal!==undefined&&aj.senarPctReal!==null)?aj.senarPctReal:((o&&o.funrural_pct!==undefined)?o.funrural_pct:paramsReal.funrural||0));
     var realQtdVal=(aj.qtdReal!==undefined&&aj.qtdReal!==null)?finNum(aj.qtdReal):finNum(o&&o.qtd?o.qtd:lote.qtd);
+    var realPesoOrigemVal=(aj.pesoOrigemReal!==undefined&&aj.pesoOrigemReal!==null)?finNum(aj.pesoOrigemReal):finNum(o&&o.pesoCom);
     var realPesoEntradaVal=(aj.pesoEntradaReal!==undefined&&aj.pesoEntradaReal!==null)?finNum(aj.pesoEntradaReal):realZoo.pesoEntrada;
-    var realPesoSaidaVal=(aj.pesoSaidaReal!==undefined&&aj.pesoSaidaReal!==null)?finNum(aj.pesoSaidaReal):realZoo.pesoSaida;
+    var realDiasVal=(aj.diasReal!==undefined&&aj.diasReal!==null)?finNum(aj.diasReal):((realEntradaVal&&realAbateVal)?Math.max(0,Math.round((_addDias(realAbateVal,0)-_addDias(realEntradaVal,0))/86400000)):realZoo.dias);
     var realConsumoVal=(aj.consumoMSTotalReal!==undefined&&aj.consumoMSTotalReal!==null)?finNum(aj.consumoMSTotalReal):realZoo.consumoTotal;
+    var realConsumoDiarioVal=(aj.consumoMSDiarioReal!==undefined&&aj.consumoMSDiarioReal!==null)?finNum(aj.consumoMSDiarioReal):0;
     var realArrobasProdVal=(aj.arrobasProduzidasReal!==undefined&&aj.arrobasProduzidasReal!==null)?finNum(aj.arrobasProduzidasReal):realZoo.atProd;
     var realCustoArrobaVal=(aj.custoArrobaProduzidaReal!==undefined&&aj.custoArrobaProduzidaReal!==null)?finNum(aj.custoArrobaProduzidaReal):realZoo.custoAtReal;
     var vendaReal=vendaRealCalc(realQtdVal,realZoo,vendaValorAt,vendaBonusAt,vendaDescAt,vendaSenarPct);
-    var realFatManual=aj.receitaReal!==undefined&&aj.receitaReal!==null&&String(aj.receitaReal).trim()!=='';
-    var realFatVal=realFatManual?finNum(aj.receitaReal):vendaReal.liquido;
-    var realLucroVal=realFatVal-realCapitalVal;
+    var receitaLegacyInformada=aj.receitaModo===undefined&&aj.receitaReal!==undefined&&aj.receitaReal!==null&&Math.abs(finNum(aj.receitaReal)-vendaReal.liquido)>0.01;
+    var realFatManual=aj.receitaModo==='manual'||receitaLegacyInformada||(aj.receitaManualReal!==undefined&&aj.receitaManualReal!==null&&String(aj.receitaManualReal).trim()!=='');
+    var realFatManualVal=realFatManual?finNum(aj.receitaManualReal!==undefined&&aj.receitaManualReal!==null?aj.receitaManualReal:aj.receitaReal):null;
+    var realFatVal=realFatManual&&realFatManualVal!==null?realFatManualVal:vendaReal.liquido;
+    var realOutrosCustosVal=aj.outrosCustosReal!==undefined&&aj.outrosCustosReal!==null?finNum(aj.outrosCustosReal):0;
+    var realLucroVal=realFatVal-realCapitalVal-realOutrosCustosVal;
     var realRentVal=realCapitalVal>0?realLucroVal/realCapitalVal:0;
     var realPrazo=prazoDiasResultadoLote(lote,o);
     var realRentMesVal=realPrazo>0?realRentVal/(realPrazo/30):metric.rentMes;
@@ -6168,8 +6180,9 @@ function openEditPanel(loteId, cardEl){
           +'<div class="field" style="margin:0"><label style="font-size:10px">Data abate</label><input type="date" id="ep-real-abate" value="'+(realAbateVal||'')+'" oninput="atualizarRealizadoPainel()"></div>'
           +'<div class="field" style="margin:0"><label style="font-size:10px">Data recebimento</label><input type="date" id="ep-real-receb" value="'+(realRecebVal||'')+'" oninput="atualizarRealizadoPainel()"></div>'
           +'<div class="field" style="margin:0"><label style="font-size:10px">Quantidade real de animais</label><input type="text" inputmode="numeric" id="ep-real-qtd" value="'+brNum(realQtdVal,0)+'" oninput="atualizarRealizadoPainel()"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Peso real de entrada (kg)</label><input type="text" inputmode="decimal" id="ep-real-peso-entrada" value="'+brNum(realPesoEntradaVal,2)+'" oninput="atualizarRealizadoPainel()"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Peso real de abate (kg)</label><input type="text" inputmode="decimal" id="ep-real-peso-abate" value="'+brNum(realPesoSaidaVal,2)+'" oninput="atualizarRealizadoPainel()"></div>'
+          +'<div class="field" style="margin:0"><label style="font-size:10px">Peso médio de origem (kg)</label><input type="text" inputmode="decimal" id="ep-real-peso-origem" value="'+brNum(realPesoOrigemVal,2)+'" oninput="atualizarRealizadoPainel()"></div>'
+          +'<div class="field" style="margin:0"><label style="font-size:10px">Peso médio de chegada (kg)</label><input type="text" inputmode="decimal" id="ep-real-peso-entrada" value="'+brNum(realPesoEntradaVal,2)+'" oninput="atualizarRealizadoPainel()"></div>'
+          +'<div class="field" style="margin:0"><label style="font-size:10px">Dias reais de confinamento</label><input type="text" inputmode="numeric" id="ep-real-dias" value="'+brNum(realDiasVal,0)+'" oninput="atualizarRealizadoPainel()"><div class="hint">As datas reais, quando preenchidas, atualizam este prazo.</div></div>'
         +'</div>'
         +'<div class="ep-section" style="margin-top:14px">Venda realizada</div>'
         +'<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">'
@@ -6178,11 +6191,15 @@ function openEditPanel(loteId, cardEl){
           +'<div class="field" style="margin:0"><label style="font-size:10px">Desconto venda <span class="mode-toggle" style="margin-left:6px"><button type="button" class="mt-btn '+(vendaDescMode==='pct'?'active':'')+'" data-real-field="desconto" data-mode="pct" onclick="setRealVendaMode(\'desconto\',\'pct\',this)">%</button><button type="button" class="mt-btn '+(vendaDescMode==='val'?'active':'')+'" data-real-field="desconto" data-mode="val" onclick="setRealVendaMode(\'desconto\',\'val\',this)">R$/@</button></span></label><input type="text" inputmode="decimal" id="ep-real-desc-at" value="'+brNum(vendaDescVal,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"><div class="hint" id="ep-real-desconto-hint">'+(vendaDescMode==='pct'?'% sobre o preço de venda':'R$/@ descontado do preço de venda')+'</div></div>'
           +'<div class="field" style="margin:0"><label style="font-size:10px">Senar</label><input type="text" inputmode="decimal" id="ep-real-senar" value="'+brNum(vendaSenarPct,2)+'%" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainelPercent(this,2)"></div>'
           +'<div class="field" style="margin:0"><label style="font-size:10px">Arrobas vendidas</label><input type="text" id="ep-real-arrobas" value="'+brNum(vendaReal.arrobas,2)+' @" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+vendaReal.arrobas+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);cursor:not-allowed;"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Faturamento realizado</label><input type="text" inputmode="decimal" id="ep-real-fat" value="'+fmt(realFatVal)+'" data-raw="'+realFatVal+'" data-manual="'+(realFatManual?'1':'0')+'" oninput="this.dataset.manual=\'1\';atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"><div class="hint">Editável. Se não alterar, acompanha a venda líquida calculada.</div></div>'
+          +'<div class="field" style="margin:0"><label style="font-size:10px">Faturamento calculado</label><input type="text" id="ep-real-fat-calculado" value="'+fmt(vendaReal.liquido)+'" data-raw="'+vendaReal.liquido+'" readonly disabled tabindex="-1" aria-readonly="true" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);"></div>'
+          +'<div class="field" style="margin:0"><label style="font-size:10px">Faturamento manual (opcional)</label><input type="text" inputmode="decimal" id="ep-real-fat" value="'+(realFatManual?brNum(realFatManualVal,2):'')+'" data-raw="'+(realFatManual?realFatManualVal:'')+'" data-manual="'+(realFatManual?'1':'0')+'" placeholder="Deixe vazio para usar o calculado" oninput="this.dataset.manual=this.value.trim()?\'1\':\'0\';atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"><div class="hint">900.000,00 será lido como R$ 900.000,00.</div></div>'
+          +'<div class="field" style="margin:0"><label style="font-size:10px">Faturamento realizado utilizado</label><input type="text" id="ep-real-fat-utilizado" value="'+fmt(realFatVal)+'" data-raw="'+realFatVal+'" readonly disabled tabindex="-1" aria-readonly="true" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);"><div class="hint" id="ep-real-fat-origem">'+(realFatManual?'Ajustado manualmente':'Valor calculado automaticamente')+'</div></div>'
+          +'<div class="field" style="margin:0;align-self:end"><button type="button" class="btn-ep-detail" onclick="restaurarFaturamentoRealizado()">Restaurar valor calculado</button></div>'
         +'</div>'
         +'<div class="ep-section" style="margin-top:14px">Resultado financeiro</div>'
         +'<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">'
           +'<div class="field" style="margin:0"><label style="font-size:10px">Capital realizado (custos)</label><input type="text" inputmode="decimal" id="ep-real-capital" value="'+brNum(realCapitalVal,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div>'
+          +'<div class="field" style="margin:0"><label style="font-size:10px">Outros custos realizados</label><input type="text" inputmode="decimal" id="ep-real-outros-custos" value="'+brNum(realOutrosCustosVal,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div>'
           +'<div class="field" style="margin:0"><label style="font-size:10px">Lucro realizado (R$)</label><input type="text" id="ep-real-lucro" value="'+fmt(realLucroVal)+'" readonly data-raw="'+realLucroVal+'" style="background:#fff;color:'+(realLucroVal>=0?'var(--green)':'var(--red)')+';font-weight:800;"></div>'
           +'<div class="field" style="margin:0"><label style="font-size:10px">% operação realizado</label><input type="text" id="ep-real-rent" value="'+fmtPct(realRentVal)+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realRentVal+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);cursor:not-allowed;"></div>'
           +'<div class="field" style="margin:0"><label style="font-size:10px">% ao mês realizado</label><input type="text" id="ep-real-rentmes" value="'+fmtPct(realRentMesVal)+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realRentMesVal+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);cursor:not-allowed;"><div class="hint">Prazo usado: '+(realPrazo||0)+' dias.</div></div>'
@@ -6191,11 +6208,16 @@ function openEditPanel(loteId, cardEl){
         +'<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">'
           +'<div class="field" style="margin:0"><label style="font-size:10px">GMD realizado (kg/dia)</label><input type="text" inputmode="decimal" id="ep-real-gmd" value="'+brNum(realZoo.gmd,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div>'
           +'<div class="field" style="margin:0"><label style="font-size:10px">Rendimento carcaça (%)</label><input type="text" inputmode="decimal" id="ep-real-rend" value="'+brNum(realZoo.rendA,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Peso de saída (kg)</label><input type="text" id="ep-real-peso-saida" value="'+brNum(realZoo.pesoSaida,1)+' kg" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.pesoSaida+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);cursor:not-allowed;"><div class="hint">Calculado por peso de entrada + GMD × dias.</div></div>'
+          +'<div class="field" style="margin:0"><label style="font-size:10px">Peso final realizado (kg)</label><input type="text" id="ep-real-peso-saida" value="'+(realZoo.pesoSaida?brNum(realZoo.pesoSaida,2)+' kg':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.pesoSaida+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);cursor:not-allowed;"><div class="hint">Peso chegada + GMD realizado × dias reais.</div></div>'
+          +'<div class="field" style="margin:0"><label style="font-size:10px">Peso de carcaça realizado</label><input type="text" id="ep-real-peso-carcaca" value="'+(realZoo.pesoCarcaca?brNum(realZoo.pesoCarcaca,2)+' kg':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.pesoCarcaca+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);"></div>'
+          +'<div class="field" style="margin:0"><label style="font-size:10px">Arrobas realizadas / animal</label><input type="text" id="ep-real-at-abate" value="'+(realZoo.atAbate?brNum(realZoo.atAbate,2)+' @':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.atAbate+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);"></div>'
+          +'<div class="field" style="margin:0"><label style="font-size:10px">Arrobas realizadas totais</label><input type="text" id="ep-real-at-total" value="'+(realZoo.atAbate&&realQtdVal?brNum(realZoo.atAbate*realQtdVal,2)+' @':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+(realZoo.atAbate*realQtdVal)+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);"></div>'
           +'<div class="field" style="margin:0"><label style="font-size:10px">Eficiência bio. chegada</label><input type="text" id="ep-real-efic" value="'+(realZoo.efic?brNum(realZoo.efic,2)+' kg MS/@':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.efic+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);cursor:not-allowed;"></div>'
           +'<div class="field" style="margin:0"><label style="font-size:10px">Eficiência bio. origem</label><input type="text" id="ep-real-efic-origem" value="'+(realZoo.eficOrigem?brNum(realZoo.eficOrigem,2)+' kg MS/@':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.eficOrigem+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);cursor:not-allowed;"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Consumo real de MS (kg/animal)</label><input type="text" inputmode="decimal" id="ep-real-consumo-ms" value="'+brNum(realConsumoVal,2)+'" oninput="atualizarRealizadoPainel()"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Arrobas reais produzidas / animal</label><input type="text" inputmode="decimal" id="ep-real-at-prod" value="'+brNum(realArrobasProdVal,3)+'" oninput="atualizarRealizadoPainel()"></div>'
+          +'<div class="field" style="margin:0"><label style="font-size:10px">Consumo real de MS total (kg/animal)</label><input type="text" inputmode="decimal" id="ep-real-consumo-ms" value="'+(realConsumoVal?brNum(realConsumoVal,2):'')+'" oninput="atualizarRealizadoPainel()"><div class="hint">O total informado tem prioridade.</div></div>'
+          +'<div class="field" style="margin:0"><label style="font-size:10px">Consumo real de MS diário (kg/animal/dia)</label><input type="text" inputmode="decimal" id="ep-real-consumo-ms-dia" value="'+(realConsumoDiarioVal?brNum(realConsumoDiarioVal,2):'')+'" oninput="document.getElementById(\'ep-real-consumo-ms\').value=\'\';atualizarRealizadoPainel()"><div class="hint">Se usado: diário × dias reais.</div></div>'
+          +'<div class="field" style="margin:0"><label style="font-size:10px">@ produzidas — origem</label><input type="text" id="ep-real-at-prod-origem" value="'+(realZoo.atProdOrigem?brNum(realZoo.atProdOrigem,3)+' @':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.atProdOrigem+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);"></div>'
+          +'<div class="field" style="margin:0"><label style="font-size:10px">@ produzidas — chegada</label><input type="text" id="ep-real-at-prod" value="'+(realArrobasProdVal?brNum(realArrobasProdVal,3)+' @':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realArrobasProdVal+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);"></div>'
           +'<div class="field" style="margin:0"><label style="font-size:10px">Custo real por @ produzida</label><input type="text" inputmode="decimal" id="ep-real-custo-at" value="'+brNum(realCustoArrobaVal,2)+'" oninput="atualizarRealizadoPainel()"></div>'
         +'</div>'
         +'<div class="field" style="margin-top:10px"><label style="font-size:10px">Obs. do confinamento</label>'
@@ -6303,6 +6325,7 @@ function openEditPanel(loteId, cardEl){
     +'</div>'
   +'</div>';
   ep.style.display='block';
+  if(document.getElementById('ep-real-fat'))atualizarRealizadoPainel();
   var finalModeInitial=document.getElementById('ep-final-mode');
   if(finalModeInitial)setResultadoFinalMode(finalModeInitial.value,true);
   ep.scrollIntoView&&ep.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -6544,6 +6567,15 @@ function formatarRealizadoPainelPercent(el,dec){
   if(n===null)return;
   el.value=brNum(n,dec||2)+'%';
 }
+function restaurarFaturamentoRealizado(){
+  var el=document.getElementById('ep-real-fat');
+  if(!el)return;
+  el.value='';
+  el.dataset.raw='';
+  el.dataset.manual='0';
+  atualizarRealizadoPainel();
+  toast('✓ Faturamento calculado restaurado');
+}
 function getRealVendaMode(field){
   var active=document.querySelector('.mt-btn[data-real-field="'+field+'"].active');
   return active?active.dataset.mode:'val';
@@ -6583,10 +6615,11 @@ function aplicarRealizadoPainel(lote){
     gmdReal:_parseOptionalNumber('ep-real-gmd'),
     rendCarcacaReal:_parseOptionalNumber('ep-real-rend'),
     qtdReal:_parseOptionalNumber('ep-real-qtd'),
+    pesoOrigemReal:_parseOptionalNumber('ep-real-peso-origem'),
     pesoEntradaReal:_parseOptionalNumber('ep-real-peso-entrada'),
-    pesoSaidaReal:_parseOptionalNumber('ep-real-peso-abate'),
+    diasReal:_parseOptionalNumber('ep-real-dias'),
+    consumoMSDiarioReal:_parseOptionalNumber('ep-real-consumo-ms-dia'),
     consumoMSTotalReal:_parseOptionalNumber('ep-real-consumo-ms'),
-    arrobasProduzidasReal:_parseOptionalNumber('ep-real-at-prod'),
     custoArrobaProduzidaReal:_parseOptionalNumber('ep-real-custo-at'),
     dataEntradaReal:dataEntradaReal,
     dataAbateReal:dataAbateReal
@@ -6604,26 +6637,39 @@ function aplicarRealizadoPainel(lote){
   var fatManual=fatEl&&fatEl.dataset.manual==='1';
   var fatInput=_parseOptionalNumber('ep-real-fat');
   var fat=(fatManual&&fatInput!==null)?fatInput:venda.liquido;
-  var lucro=fat-capital;
+  var outrosCustos=_parseOptionalNumber('ep-real-outros-custos')||0;
+  var lucro=fat-capital-outrosCustos;
   var rentReal=capital>0?lucro/capital:0;
   var prazo=(dataEntradaReal&&dataRecebimentoReal)?Math.max(0,Math.round((_addDias(dataRecebimentoReal,0)-_addDias(dataEntradaReal,0))/86400000)):prazoDiasResultadoLote(lote,lote.orcamentos&&lote.orcamentos[0]);
   var rentMesReal=prazo>0?rentReal/(prazo/30):base.rentMes;
   lote.ajusteReal={
     manual:true,
     receitaReal:fat,
+    receitaCalculadaReal:venda.liquido,
+    receitaManualReal:fatManual&&fatInput!==null?fatInput:null,
+    receitaModo:fatManual&&fatInput!==null?'manual':'calculado',
+    receitaFinalReal:fat,
     custoReal:capital,
+    outrosCustosReal:outrosCustos,
     lucroReal:lucro,
-    lucroAnimalReal:(parseFloat(lote.qtd)||0)>0?lucro/(parseFloat(lote.qtd)||1):0,
+    lucroAnimalReal:qtdReal>0?lucro/qtdReal:0,
     rentReal:rentReal,
     rentMesReal:rentMesReal,
     gmdReal:zoo.gmd,
     rendCarcacaReal:zoo.rendA,
     qtdReal:qtdReal,
+    pesoOrigemReal:zoo.pesoOrigem,
     pesoEntradaReal:zoo.pesoEntrada,
     pesoSaidaReal:zoo.pesoSaida,
+    pesoCarcacaReal:zoo.pesoCarcaca,
+    diasReal:zoo.dias,
+    consumoMSDiarioReal:realDraft.consumoMSDiarioReal,
     consumoMSTotalReal:zoo.consumoTotal,
     eficienciaBioReal:zoo.efic,
     eficienciaBioOrigemReal:zoo.eficOrigem,
+    arrobasAbateReal:zoo.atAbate,
+    arrobasAbateTotalReal:zoo.atAbate*qtdReal,
+    arrobasProduzidasOrigemReal:zoo.atProdOrigem,
     arrobasProduzidasReal:zoo.atProd,
     custoArrobaProduzidaReal:realDraft.custoArrobaProduzidaReal,
     valorAtVendaReal:valorAtVenda,
@@ -6644,6 +6690,8 @@ function aplicarRealizadoPainel(lote){
     dataApuracao:new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}),
     updatedAt:new Date().toISOString()
   };
+  if(!lote.projectedData)lote.projectedData=resultadoProjetadoLote(lote,lote.orcamentos&&lote.orcamentos[0]);
+  lote.realizedData=Object.assign({},lote.ajusteReal);
   lote.realizedUpdatedAt=lote.ajusteReal.updatedAt;
   lote.realizedStatus=statusRealizadoLote(lote).key;
   aplicarResultadoFinalPainel(lote);
@@ -6667,12 +6715,19 @@ function atualizarRealizadoPainel(){
   var rentEl=document.getElementById('ep-real-rent');
   var rentMesEl=document.getElementById('ep-real-rentmes');
   var arrobasEl=document.getElementById('ep-real-arrobas');
+  var outrosCustos=_parseOptionalNumber('ep-real-outros-custos')||0;
   if(capital===null)return;
   var lote=_editLoteId?getLotes().find(function(l){return l.id===_editLoteId;}):null;
   var baseMetric=lote?resultadoStatusLote({orcamentos:lote.orcamentos||[]},lote.orcamentos&&lote.orcamentos[0]):{capital:capital};
   capital=normalizarValorRealizado(capital,baseMetric.capital);
   var dataEntradaReal=(document.getElementById('ep-real-entrada')||{value:''}).value||'';
+  var dataAbateReal=(document.getElementById('ep-real-abate')||{value:''}).value||'';
   var dataRecebimentoReal=(document.getElementById('ep-real-receb')||{value:''}).value||'';
+  var diasEl=document.getElementById('ep-real-dias');
+  if(dataEntradaReal&&dataAbateReal&&diasEl){
+    var diasDatas=Math.max(0,Math.round((_addDias(dataAbateReal,0)-_addDias(dataEntradaReal,0))/86400000));
+    diasEl.value=brNum(diasDatas,0);
+  }
   var prazo=(dataEntradaReal&&dataRecebimentoReal)?Math.max(0,Math.round((_addDias(dataRecebimentoReal,0)-_addDias(dataEntradaReal,0))/86400000)):(lote?prazoDiasResultadoLote(lote,lote.orcamentos&&lote.orcamentos[0]):0);
   var venda={arrobas:0,liquido:0};
   var rent=0, rentMes=0, lucro=0;
@@ -6681,10 +6736,11 @@ function atualizarRealizadoPainel(){
       gmdReal:_parseOptionalNumber('ep-real-gmd'),
       rendCarcacaReal:_parseOptionalNumber('ep-real-rend'),
       qtdReal:_parseOptionalNumber('ep-real-qtd'),
+      pesoOrigemReal:_parseOptionalNumber('ep-real-peso-origem'),
       pesoEntradaReal:_parseOptionalNumber('ep-real-peso-entrada'),
-      pesoSaidaReal:_parseOptionalNumber('ep-real-peso-abate'),
+      diasReal:_parseOptionalNumber('ep-real-dias'),
+      consumoMSDiarioReal:_parseOptionalNumber('ep-real-consumo-ms-dia'),
       consumoMSTotalReal:_parseOptionalNumber('ep-real-consumo-ms'),
-      arrobasProduzidasReal:_parseOptionalNumber('ep-real-at-prod'),
       custoArrobaProduzidaReal:_parseOptionalNumber('ep-real-custo-at'),
       dataEntradaReal:dataEntradaReal,
       dataAbateReal:(document.getElementById('ep-real-abate')||{value:''}).value||''
@@ -6695,7 +6751,7 @@ function atualizarRealizadoPainel(){
     if(qtdTmp===null)qtdTmp=lote.orcamentos&&lote.orcamentos[0]&&lote.orcamentos[0].qtd?lote.orcamentos[0].qtd:lote.qtd;
     venda=vendaRealCalc(qtdTmp,zooTmp,valorAtVenda,bonusVendaAt,descontoVendaAt,senarPct);
     var fatCalc=(fatManual&&fatManualVal!==null)?fatManualVal:venda.liquido;
-    lucro=fatCalc-capital;
+    lucro=fatCalc-capital-outrosCustos;
     rent=capital>0?lucro/capital:0;
     rentMes=prazo>0?rent/(prazo/30):0;
   }
@@ -6703,10 +6759,18 @@ function atualizarRealizadoPainel(){
     if(fatManual&&fatManualVal!==null){
       fatEl.dataset.raw=fatManualVal;
     }else{
-      fatEl.value=fmt(venda.liquido);
-      fatEl.dataset.raw=venda.liquido;
+      fatEl.value='';
+      fatEl.dataset.raw='';
+      fatEl.dataset.manual='0';
     }
   }
+  var fatCalcEl=document.getElementById('ep-real-fat-calculado');
+  var fatUsadoEl=document.getElementById('ep-real-fat-utilizado');
+  var fatOrigemEl=document.getElementById('ep-real-fat-origem');
+  var faturamentoUsado=(fatManual&&fatManualVal!==null)?fatManualVal:venda.liquido;
+  if(fatCalcEl){fatCalcEl.value=fmt(venda.liquido);fatCalcEl.dataset.raw=venda.liquido;}
+  if(fatUsadoEl){fatUsadoEl.value=fmt(faturamentoUsado);fatUsadoEl.dataset.raw=faturamentoUsado;}
+  if(fatOrigemEl)fatOrigemEl.textContent=(fatManual&&fatManualVal!==null)?'Ajustado manualmente':'Valor calculado automaticamente';
   if(arrobasEl){
     arrobasEl.value=brNum(venda.arrobas,2)+' @';
     arrobasEl.dataset.raw=venda.arrobas;
@@ -6729,18 +6793,30 @@ function atualizarRealizadoPainel(){
       gmdReal:_parseOptionalNumber('ep-real-gmd'),
       rendCarcacaReal:_parseOptionalNumber('ep-real-rend'),
       qtdReal:_parseOptionalNumber('ep-real-qtd'),
+      pesoOrigemReal:_parseOptionalNumber('ep-real-peso-origem'),
       pesoEntradaReal:_parseOptionalNumber('ep-real-peso-entrada'),
-      pesoSaidaReal:_parseOptionalNumber('ep-real-peso-abate'),
+      diasReal:_parseOptionalNumber('ep-real-dias'),
+      consumoMSDiarioReal:_parseOptionalNumber('ep-real-consumo-ms-dia'),
       consumoMSTotalReal:_parseOptionalNumber('ep-real-consumo-ms'),
-      arrobasProduzidasReal:_parseOptionalNumber('ep-real-at-prod'),
       custoArrobaProduzidaReal:_parseOptionalNumber('ep-real-custo-at'),
       dataEntradaReal:dataEntradaReal,
       dataAbateReal:(document.getElementById('ep-real-abate')||{value:''}).value||''
     });
     var pesoEl=document.getElementById('ep-real-peso-saida');
+    var carcacaEl=document.getElementById('ep-real-peso-carcaca');
+    var atAbateEl=document.getElementById('ep-real-at-abate');
+    var atTotalEl=document.getElementById('ep-real-at-total');
+    var atOrigemEl=document.getElementById('ep-real-at-prod-origem');
+    var atChegadaEl=document.getElementById('ep-real-at-prod');
     var eficEl=document.getElementById('ep-real-efic');
     var eficOrigemEl=document.getElementById('ep-real-efic-origem');
-    if(pesoEl){pesoEl.value=brNum(zoo.pesoSaida,1)+' kg';pesoEl.dataset.raw=zoo.pesoSaida;}
+    if(pesoEl){pesoEl.value=zoo.pesoSaida?brNum(zoo.pesoSaida,2)+' kg':'—';pesoEl.dataset.raw=zoo.pesoSaida;}
+    if(carcacaEl){carcacaEl.value=zoo.pesoCarcaca?brNum(zoo.pesoCarcaca,2)+' kg':'—';carcacaEl.dataset.raw=zoo.pesoCarcaca;}
+    if(atAbateEl){atAbateEl.value=zoo.atAbate?brNum(zoo.atAbate,2)+' @':'—';atAbateEl.dataset.raw=zoo.atAbate;}
+    var qtdAtual=_parseOptionalNumber('ep-real-qtd')||0;
+    if(atTotalEl){atTotalEl.value=zoo.atAbate&&qtdAtual?brNum(zoo.atAbate*qtdAtual,2)+' @':'—';atTotalEl.dataset.raw=zoo.atAbate*qtdAtual;}
+    if(atOrigemEl){atOrigemEl.value=zoo.atProdOrigem?brNum(zoo.atProdOrigem,3)+' @':'—';atOrigemEl.dataset.raw=zoo.atProdOrigem;}
+    if(atChegadaEl){atChegadaEl.value=zoo.atProd?brNum(zoo.atProd,3)+' @':'—';atChegadaEl.dataset.raw=zoo.atProd;}
     if(eficEl){eficEl.value=zoo.efic?brNum(zoo.efic,2)+' kg MS/@':'—';eficEl.dataset.raw=zoo.efic;}
     if(eficOrigemEl){eficOrigemEl.value=zoo.eficOrigem?brNum(zoo.eficOrigem,2)+' kg MS/@':'—';eficOrigemEl.dataset.raw=zoo.eficOrigem;}
   }
@@ -6752,15 +6828,25 @@ function getRealizadoDraftPainel(lote){
   var atual=Object.assign({},(lote&&lote.ajusteReal)||(lote&&lote.apuracao)||{});
   function val(id,key){var n=_parseOptionalNumber(id);if(n!==null)atual[key]=n;}
   val('ep-real-qtd','qtdReal');
+  val('ep-real-peso-origem','pesoOrigemReal');
   val('ep-real-peso-entrada','pesoEntradaReal');
-  val('ep-real-peso-abate','pesoSaidaReal');
+  val('ep-real-dias','diasReal');
   val('ep-real-gmd','gmdReal');
   val('ep-real-rend','rendCarcacaReal');
+  val('ep-real-consumo-ms-dia','consumoMSDiarioReal');
   val('ep-real-consumo-ms','consumoMSTotalReal');
-  val('ep-real-at-prod','arrobasProduzidasReal');
   val('ep-real-custo-at','custoArrobaProduzidaReal');
-  val('ep-real-fat','receitaReal');
+  var fatManualEl=document.getElementById('ep-real-fat');
+  var fatManualVal=_parseOptionalNumber('ep-real-fat');
+  atual.receitaModo=fatManualEl&&fatManualEl.dataset.manual==='1'&&fatManualVal!==null?'manual':'calculado';
+  atual.receitaManualReal=atual.receitaModo==='manual'?fatManualVal:null;
+  var fatCalcEl=document.getElementById('ep-real-fat-calculado');
+  var fatUsadoEl=document.getElementById('ep-real-fat-utilizado');
+  if(fatCalcEl&&fatCalcEl.dataset.raw!=='')atual.receitaCalculadaReal=finNum(fatCalcEl.dataset.raw);
+  if(fatUsadoEl&&fatUsadoEl.dataset.raw!=='')atual.receitaFinalReal=finNum(fatUsadoEl.dataset.raw);
+  atual.receitaReal=atual.receitaFinalReal;
   val('ep-real-capital','custoReal');
+  val('ep-real-outros-custos','outrosCustosReal');
   var lucro=document.getElementById('ep-real-lucro');
   var rent=document.getElementById('ep-real-rent');
   var rentMes=document.getElementById('ep-real-rentmes');
@@ -6862,6 +6948,7 @@ function limparRealizadoPainel(){
   var i=arr.findIndex(function(l){return l.id===_editLoteId;});
   if(i<0)return;
   delete arr[i].ajusteReal;
+  delete arr[i].realizedData;
   arr[i].finalResultMode='projected';
   arr[i].realizedStatus='none';
   saveLotes(arr);
