@@ -907,6 +907,89 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	  .real-status-chip.complete{background:rgba(107,112,86,.12);color:var(--green);}
 	  .real-status-chip.partial{background:rgba(201,162,78,.14);color:#8a6a2f;}
 	  .real-status-chip.manually_adjusted{background:rgba(13,79,139,.12);color:#0D4F8B;}
+	  /* REALIZADO — organização visual, sem alterar dados ou regras de cálculo */
+	  .realizado-wrapper{width:100%;max-width:100%;min-width:0;overflow-x:hidden;margin-top:14px;}
+	  .realizado-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:14px 16px;margin:0 0 10px;background:linear-gradient(135deg,#fffdf7 0%,#f4eddf 100%);border:1px solid var(--border);border-left:4px solid var(--navy);border-radius:12px;}
+	  .realizado-kicker{display:block;margin:0 0 3px;color:var(--gold);font-size:9px;font-weight:900;letter-spacing:1.4px;text-transform:uppercase;}
+	  .realizado-heading h3{margin:0;color:var(--navy);font-size:16px;line-height:1.15;letter-spacing:.2px;}
+	  .realizado-heading p{margin:5px 0 0;color:var(--text-2);font-size:11px;line-height:1.35;}
+	  .realizado-card{width:100%;max-width:100%;min-width:0;box-sizing:border-box;background:#fffdf7;border:1px solid var(--border);border-radius:14px;padding:14px;margin:0 0 10px;box-shadow:0 4px 14px rgba(13,27,42,.035);}
+	  .realizado-card-head{display:flex;align-items:center;gap:8px;padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid var(--border);color:var(--navy);}
+	  .realizado-step{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:24px;height:24px;border-radius:999px;background:var(--navy);color:#fff;font-size:9px;font-weight:900;letter-spacing:.4px;}
+	  .realizado-card-head h4{margin:0;font-size:11px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;}
+	  .realizado-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:start;width:100%;max-width:100%;min-width:0;}
+	  .realizado-field,.realizado-grid>.field{min-width:0;margin:0!important;}
+	  .realizado-field label,.realizado-grid>.field label{display:flex;align-items:flex-start;min-height:24px;margin:0 0 4px!important;color:var(--taupe);font-size:9px!important;font-weight:850!important;letter-spacing:.85px;line-height:1.18;text-transform:uppercase;overflow-wrap:anywhere;}
+	  .realizado-field input,.realizado-field select,.realizado-grid>.field input,.realizado-grid>.field select{width:100%;min-width:0;box-sizing:border-box;min-height:42px!important;padding:8px 10px!important;font-size:14px!important;}
+	  .realizado-field .hint,.realizado-grid>.field .hint{min-height:17px;margin-top:3px;font-size:9px;line-height:1.25;overflow-wrap:anywhere;}
+	  .realizado-field.realizado-calculated input,.realizado-grid>.field.realizado-calculated input{background:#fff!important;border-color:#dce1e4!important;color:var(--navy)!important;cursor:default;}
+	  .realizado-field.realizado-calculated label::after,.realizado-grid>.field.realizado-calculated label::after{content:'Calculado';margin-left:auto;padding:2px 5px;border-radius:999px;background:rgba(13,27,42,.07);color:var(--text-3);font-size:7px;letter-spacing:.35px;line-height:1;}
+	  .realizado-field.realizado-manual input,.realizado-grid>.field.realizado-manual input{border-color:rgba(201,162,78,.65)!important;background:#fff9ed!important;}
+	  .realizado-field.realizado-manual label::after,.realizado-grid>.field.realizado-manual label::after{content:'Manual';margin-left:auto;padding:2px 5px;border-radius:999px;background:rgba(201,162,78,.16);color:#8a6a2f;font-size:7px;letter-spacing:.35px;line-height:1;}
+	  .realizado-span-2{grid-column:span 2;}
+	  .realizado-span-full{grid-column:1 / -1;}
+	  .realizado-action{display:flex;align-items:end;justify-content:stretch;}
+	  .realizado-action .btn-ep-detail{width:100%;min-height:42px;padding:8px 10px;font-size:10px;font-weight:800;}
+	  .realizado-result-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;width:100%;max-width:100%;min-width:0;}
+	  .realizado-metric-card{min-width:0;background:#fff;border:1px solid var(--border);border-radius:10px;padding:9px 10px;}
+	  .realizado-metric-card .metric-label{display:block;min-height:20px;color:var(--taupe);font-size:8px;font-weight:850;letter-spacing:.65px;line-height:1.15;text-transform:uppercase;overflow-wrap:anywhere;}
+	  .realizado-metric-card .metric-value{display:block;margin-top:5px;color:var(--navy);font-size:15px;font-weight:850;line-height:1.12;overflow-wrap:anywhere;}
+	  .realizado-metric-card .metric-value.positive{color:var(--green);}
+	  .realizado-metric-card .metric-value.negative{color:var(--red);}
+	  .realizado-metric-card .metric-helper{display:block;margin-top:4px;color:var(--text-3);font-size:8px;line-height:1.2;}
+	  .realizado-metric-card input{width:100%;min-width:0;box-sizing:border-box;min-height:32px!important;border:0!important;background:transparent!important;padding:3px 0!important;color:var(--navy);font-size:15px!important;font-weight:850!important;box-shadow:none!important;}
+	  .realizado-metric-card.is-editable{background:var(--surface2);border-color:var(--border2);}
+	  .realizado-indicators{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;width:100%;max-width:100%;min-width:0;}
+	  .realizado-indicator{min-width:0;border:1px solid var(--border);border-radius:10px;background:#fff;padding:9px;}
+	  .realizado-indicator label{display:block;min-height:20px;margin:0;color:var(--taupe);font-size:8px!important;font-weight:850!important;letter-spacing:.65px;line-height:1.15;text-transform:uppercase;overflow-wrap:anywhere;}
+	  .realizado-indicator input{width:100%;min-width:0;box-sizing:border-box;min-height:27px!important;border:0!important;background:transparent!important;padding:3px 0!important;color:var(--navy);font-size:13px!important;font-weight:850!important;box-shadow:none!important;}
+	  .realizado-indicator label::after{content:'Calculado';display:block;width:max-content;margin-top:3px;color:var(--text-3);font-size:7px;letter-spacing:.25px;text-transform:none;}
+	  .realizado-comparativo-card .ep-section{display:none;}
+	  .realizado-comparativo-card .pxr-wrap{margin:0;max-width:100%;border-radius:9px;overflow:hidden;}
+	  .realizado-comparativo-card .pxr-table{width:100%;min-width:0;table-layout:fixed;font-size:10px;}
+	  .realizado-comparativo-card .pxr-table th,.realizado-comparativo-card .pxr-table td{padding:7px 6px;white-space:normal;overflow-wrap:anywhere;line-height:1.22;}
+	  .realizado-comparativo-card .pxr-table th:first-child,.realizado-comparativo-card .pxr-table td:first-child{width:34%;}
+	  .realizado-clear-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px;}
+
+	  @media(max-width:768px){
+	    .realizado-wrapper{margin-top:10px;}
+	    .realizado-heading{padding:11px 12px;margin-bottom:8px;gap:8px;}
+	    .realizado-heading h3{font-size:14px;}
+	    .realizado-heading p{font-size:10px;}
+	    .realizado-heading .real-status-chip{flex:0 0 auto;font-size:8px;padding:4px 7px;}
+	    .realizado-card{padding:10px;margin-bottom:8px;border-radius:12px;}
+	    .realizado-card-head{padding-bottom:8px;margin-bottom:8px;}
+	    .realizado-step{width:21px;height:21px;font-size:8px;}
+	    .realizado-card-head h4{font-size:9px;letter-spacing:1px;}
+	    .realizado-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;}
+	    .realizado-field label,.realizado-grid>.field label{min-height:22px;font-size:8px!important;letter-spacing:.55px;}
+	    .realizado-field input,.realizado-field select,.realizado-grid>.field input,.realizado-grid>.field select{min-height:44px!important;padding:7px 8px!important;font-size:16px!important;}
+	    .realizado-field .hint,.realizado-grid>.field .hint{min-height:14px;font-size:8px;}
+	    .realizado-mobile-1{grid-column:span 1;}
+	    .realizado-mobile-2{grid-column:span 2;}
+	    .realizado-mobile-4{grid-column:span 4;}
+	    .realizado-result-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;}
+	    .realizado-metric-card{padding:8px;}
+	    .realizado-metric-card .metric-label{min-height:19px;font-size:7px;letter-spacing:.45px;}
+	    .realizado-metric-card .metric-value,.realizado-metric-card input{font-size:13px!important;}
+	    .realizado-metric-card .metric-helper{font-size:7px;}
+	    .realizado-indicators{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;}
+	    .realizado-indicator{padding:7px;}
+	    .realizado-indicator label{min-height:26px;font-size:7px!important;letter-spacing:.4px;}
+	    .realizado-indicator input{font-size:11px!important;min-height:25px!important;}
+	    .realizado-indicator label::after{font-size:6px;}
+	    .realizado-comparativo-card .pxr-table{font-size:8px;}
+	    .realizado-comparativo-card .pxr-table th,.realizado-comparativo-card .pxr-table td{padding:6px 4px;}
+	    .realizado-clear-actions{justify-content:stretch;}
+	    .realizado-clear-actions .btn-ep-danger{width:100%;}
+	  }
+	  @media(max-width:375px){
+	    .realizado-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+	    .realizado-mobile-4,.realizado-mobile-2{grid-column:span 2;}
+	    .realizado-mobile-1{grid-column:span 1;}
+	    .realizado-result-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+	    .realizado-indicators{grid-template-columns:repeat(2,minmax(0,1fr));}
+	  }
 	  .status-realized-chip{margin-top:3px;width:max-content;max-width:100%;white-space:nowrap;}
 	  .final-history{margin-top:10px;border-top:1px solid var(--border);padding-top:8px;font-size:10px;color:var(--text-2);}
 	  .final-history-item{padding:6px 0;border-bottom:1px dashed var(--border);}
@@ -6172,62 +6255,65 @@ function openEditPanel(loteId, cardEl){
     var realPrazo=prazoDiasResultadoLote(lote,o);
     var realRentMesVal=realPrazo>0?realRentVal/(realPrazo/30):metric.rentMes;
     var realizedPanelStatus=statusRealizadoLote(lote);
-    realHtml='<div class="ep-section">'+((lote.ajusteReal||lote.apuracao)?'Editar realizado':'Lançar realizado')+' <span class="real-status-chip '+realizedPanelStatus.key+'">'+realizedPanelStatus.label+'</span></div>'
-      +'<div style="background:rgba(13,27,42,.05);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;">'
-        +'<div style="font-size:11px;color:var(--text-2);line-height:1.45;margin-bottom:10px;">Calcule o realizado com dados resumidos de venda. Se o faturamento real vier diferente da conta, ajuste manualmente; lucro e rentabilidade serão recalculados.</div>'
-        +'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-bottom:10px;">'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Data entrada</label><input type="date" id="ep-real-entrada" value="'+(realEntradaVal||'')+'" oninput="atualizarRealizadoPainel()"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Data abate</label><input type="date" id="ep-real-abate" value="'+(realAbateVal||'')+'" oninput="atualizarRealizadoPainel()"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Data recebimento</label><input type="date" id="ep-real-receb" value="'+(realRecebVal||'')+'" oninput="atualizarRealizadoPainel()"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Quantidade real de animais</label><input type="text" inputmode="numeric" id="ep-real-qtd" value="'+brNum(realQtdVal,0)+'" oninput="atualizarRealizadoPainel()"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Peso médio de origem (kg)</label><input type="text" inputmode="decimal" id="ep-real-peso-origem" value="'+brNum(realPesoOrigemVal,2)+'" oninput="atualizarRealizadoPainel()"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Peso médio de chegada (kg)</label><input type="text" inputmode="decimal" id="ep-real-peso-entrada" value="'+brNum(realPesoEntradaVal,2)+'" oninput="atualizarRealizadoPainel()"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Dias reais de confinamento</label><input type="text" inputmode="numeric" id="ep-real-dias" value="'+brNum(realDiasVal,0)+'" oninput="atualizarRealizadoPainel()"><div class="hint">As datas reais, quando preenchidas, atualizam este prazo.</div></div>'
+    realHtml='<section class="realizado-wrapper">'
+      +'<div class="realizado-heading"><div><span class="realizado-kicker">Dados finais</span><h3>Realizado do lote</h3><p>Informe os dados finais da operação sem alterar a simulação original.</p></div><span class="real-status-chip '+realizedPanelStatus.key+'">'+realizedPanelStatus.label+'</span></div>'
+      +'<section class="realizado-card"><div class="realizado-card-head"><span class="realizado-step">01</span><h4>Datas e quantidade</h4></div>'
+        +'<div class="realizado-grid">'
+          +'<div class="field realizado-mobile-2"><label>Data entrada</label><input type="date" id="ep-real-entrada" value="'+(realEntradaVal||'')+'" oninput="atualizarRealizadoPainel()"></div>'
+          +'<div class="field realizado-mobile-2"><label>Data abate</label><input type="date" id="ep-real-abate" value="'+(realAbateVal||'')+'" oninput="atualizarRealizadoPainel()"></div>'
+          +'<div class="field realizado-mobile-2"><label>Data recebimento</label><input type="date" id="ep-real-receb" value="'+(realRecebVal||'')+'" oninput="atualizarRealizadoPainel()"></div>'
+          +'<div class="field realizado-mobile-2"><label>Quantidade real de animais</label><input type="text" inputmode="numeric" id="ep-real-qtd" value="'+brNum(realQtdVal,0)+'" oninput="atualizarRealizadoPainel()"></div>'
+        +'</div></section>'
+      +'<section class="realizado-card"><div class="realizado-card-head"><span class="realizado-step">02</span><h4>Venda realizada</h4></div>'
+        +'<div class="realizado-grid">'
+          +'<div class="field realizado-mobile-2"><label>Preço venda (R$/@)</label><input type="text" inputmode="decimal" id="ep-real-valor-at" value="'+brNum(vendaValorAt,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div>'
+          +'<div class="field realizado-mobile-1"><label>Bônus venda <span class="mode-toggle" style="margin-left:6px"><button type="button" class="mt-btn '+(vendaBonusMode==='pct'?'active':'')+'" data-real-field="bonus" data-mode="pct" onclick="setRealVendaMode(\'bonus\',\'pct\',this)">%</button><button type="button" class="mt-btn '+(vendaBonusMode==='val'?'active':'')+'" data-real-field="bonus" data-mode="val" onclick="setRealVendaMode(\'bonus\',\'val\',this)">R$/@</button></span></label><input type="text" inputmode="decimal" id="ep-real-bonus-at" value="'+brNum(vendaBonusVal,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"><div class="hint" id="ep-real-bonus-hint">'+(vendaBonusMode==='pct'?'% sobre o preço de venda':'R$/@ somado ao preço de venda')+'</div></div>'
+          +'<div class="field realizado-mobile-1"><label>Desconto venda <span class="mode-toggle" style="margin-left:6px"><button type="button" class="mt-btn '+(vendaDescMode==='pct'?'active':'')+'" data-real-field="desconto" data-mode="pct" onclick="setRealVendaMode(\'desconto\',\'pct\',this)">%</button><button type="button" class="mt-btn '+(vendaDescMode==='val'?'active':'')+'" data-real-field="desconto" data-mode="val" onclick="setRealVendaMode(\'desconto\',\'val\',this)">R$/@</button></span></label><input type="text" inputmode="decimal" id="ep-real-desc-at" value="'+brNum(vendaDescVal,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"><div class="hint" id="ep-real-desconto-hint">'+(vendaDescMode==='pct'?'% sobre o preço de venda':'R$/@ descontado do preço de venda')+'</div></div>'
+          +'<div class="field realizado-mobile-1"><label>Senar</label><input type="text" inputmode="decimal" id="ep-real-senar" value="'+brNum(vendaSenarPct,2)+'%" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainelPercent(this,2)"></div>'
+          +'<div class="field realizado-calculated realizado-mobile-1"><label>Arrobas vendidas</label><input type="text" id="ep-real-arrobas" value="'+brNum(vendaReal.arrobas,2)+' @" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+vendaReal.arrobas+'"></div>'
+          +'<div class="field realizado-calculated realizado-mobile-2"><label>Faturamento calculado</label><input type="text" id="ep-real-fat-calculado" value="'+fmt(vendaReal.liquido)+'" data-raw="'+vendaReal.liquido+'" readonly disabled tabindex="-1" aria-readonly="true"></div>'
+          +'<div class="field realizado-manual realizado-span-2 realizado-mobile-4"><label>Faturamento manual (opcional)</label><input type="text" inputmode="decimal" id="ep-real-fat" value="'+(realFatManual?brNum(realFatManualVal,2):'')+'" data-raw="'+(realFatManual?realFatManualVal:'')+'" data-manual="'+(realFatManual?'1':'0')+'" placeholder="Deixe vazio para usar o calculado" oninput="this.dataset.manual=this.value.trim()?\'1\':\'0\';atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"><div class="hint">900.000,00 será lido como R$ 900.000,00.</div></div>'
+          +'<div class="field realizado-mobile-2"><label>Outros custos realizados</label><input type="text" inputmode="decimal" id="ep-real-outros-custos" value="'+brNum(realOutrosCustosVal,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div>'
+          +'<div class="field realizado-action realizado-mobile-2"><button type="button" class="btn-ep-detail" onclick="restaurarFaturamentoRealizado()">Restaurar valor calculado</button></div>'
+        +'</div></section>'
+      +'<section class="realizado-card"><div class="realizado-card-head"><span class="realizado-step">03</span><h4>Resultado financeiro</h4></div>'
+        +'<div class="realizado-result-grid">'
+          +'<div class="realizado-metric-card is-editable"><span class="metric-label">Capital realizado (custos)</span><input type="text" inputmode="decimal" id="ep-real-capital" value="'+brNum(realCapitalVal,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div>'
+          +'<div class="realizado-metric-card"><span class="metric-label">Faturamento realizado</span><strong class="metric-value" id="ep-real-fat-utilizado-display">'+fmt(realFatVal)+'</strong><input type="hidden" id="ep-real-fat-utilizado" value="'+fmt(realFatVal)+'" data-raw="'+realFatVal+'"><span class="metric-helper" id="ep-real-fat-origem">'+(realFatManual?'Ajustado manualmente':'Valor calculado automaticamente')+'</span></div>'
+          +'<div class="realizado-metric-card"><span class="metric-label">Lucro realizado</span><input type="text" id="ep-real-lucro" value="'+fmt(realLucroVal)+'" readonly data-raw="'+realLucroVal+'" class="'+(realLucroVal>=0?'positive':'negative')+'"></div>'
+          +'<div class="realizado-metric-card"><span class="metric-label">% operação realizada</span><input type="text" id="ep-real-rent" value="'+fmtPct(realRentVal)+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realRentVal+'"></div>'
+          +'<div class="realizado-metric-card"><span class="metric-label">% ao mês realizada</span><input type="text" id="ep-real-rentmes" value="'+fmtPct(realRentMesVal)+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realRentMesVal+'"><span class="metric-helper">Prazo usado: <span id="ep-real-prazo">'+(realPrazo||0)+'</span> dias.</span></div>'
+          +'<div class="realizado-metric-card"><span class="metric-label">Prazo real</span><strong class="metric-value" id="ep-real-prazo-display">'+(realPrazo||0)+' dias</strong></div>'
+        +'</div></section>'
+      +'<section class="realizado-card"><div class="realizado-card-head"><span class="realizado-step">04</span><h4>Zootécnico realizado</h4></div>'
+        +'<div class="realizado-grid">'
+          +'<div class="field realizado-mobile-2"><label>Peso médio de origem (kg)</label><input type="text" inputmode="decimal" id="ep-real-peso-origem" value="'+brNum(realPesoOrigemVal,2)+'" oninput="atualizarRealizadoPainel()"></div>'
+          +'<div class="field realizado-mobile-2"><label>Peso médio de chegada (kg)</label><input type="text" inputmode="decimal" id="ep-real-peso-entrada" value="'+brNum(realPesoEntradaVal,2)+'" oninput="atualizarRealizadoPainel()"></div>'
+          +'<div class="field realizado-mobile-1"><label>GMD realizado (kg/dia)</label><input type="text" inputmode="decimal" id="ep-real-gmd" value="'+brNum(realZoo.gmd,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div>'
+          +'<div class="field realizado-mobile-1"><label>Dias reais de confinamento</label><input type="text" inputmode="numeric" id="ep-real-dias" value="'+brNum(realDiasVal,0)+'" oninput="atualizarRealizadoPainel()"><div class="hint">Datas reais atualizam este prazo.</div></div>'
+          +'<div class="field realizado-mobile-1"><label>Rendimento carcaça (%)</label><input type="text" inputmode="decimal" id="ep-real-rend" value="'+brNum(realZoo.rendA,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div>'
+          +'<div class="field realizado-calculated realizado-mobile-1"><label>Peso final realizado (kg)</label><input type="text" id="ep-real-peso-saida" value="'+(realZoo.pesoSaida?brNum(realZoo.pesoSaida,2)+' kg':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.pesoSaida+'"></div>'
+          +'<div class="field realizado-calculated realizado-mobile-2"><label>Peso de carcaça realizado</label><input type="text" id="ep-real-peso-carcaca" value="'+(realZoo.pesoCarcaca?brNum(realZoo.pesoCarcaca,2)+' kg':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.pesoCarcaca+'"></div>'
+          +'<div class="field realizado-calculated realizado-mobile-2"><label>Arrobas realizadas / animal</label><input type="text" id="ep-real-at-abate" value="'+(realZoo.atAbate?brNum(realZoo.atAbate,2)+' @':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.atAbate+'"></div>'
+          +'<div class="field realizado-calculated realizado-mobile-4"><label>Arrobas realizadas totais</label><input type="text" id="ep-real-at-total" value="'+(realZoo.atAbate&&realQtdVal?brNum(realZoo.atAbate*realQtdVal,2)+' @':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+(realZoo.atAbate*realQtdVal)+'"></div>'
+        +'</div></section>'
+      +'<section class="realizado-card"><div class="realizado-card-head"><span class="realizado-step">05</span><h4>Eficiência biológica</h4></div>'
+        +'<div class="realizado-grid">'
+          +'<div class="field realizado-mobile-2"><label>Consumo real de MS diário (kg/animal/dia)</label><input type="text" inputmode="decimal" id="ep-real-consumo-ms-dia" value="'+(realConsumoDiarioVal?brNum(realConsumoDiarioVal,2):'')+'" oninput="document.getElementById(\'ep-real-consumo-ms\').value=\'\';atualizarRealizadoPainel()"><div class="hint">Se usado: diário × dias reais.</div></div>'
+          +'<div class="field realizado-mobile-2"><label>Consumo real de MS total (kg/animal)</label><input type="text" inputmode="decimal" id="ep-real-consumo-ms" value="'+(realConsumoVal?brNum(realConsumoVal,2):'')+'" oninput="atualizarRealizadoPainel()"><div class="hint">O total informado tem prioridade.</div></div>'
+          +'<div class="realizado-indicators realizado-span-full">'
+            +'<div class="realizado-indicator"><label>@ produzidas origem</label><input type="text" id="ep-real-at-prod-origem" value="'+(realZoo.atProdOrigem?brNum(realZoo.atProdOrigem,3)+' @':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.atProdOrigem+'"></div>'
+            +'<div class="realizado-indicator"><label>@ produzidas chegada</label><input type="text" id="ep-real-at-prod" value="'+(realArrobasProdVal?brNum(realArrobasProdVal,3)+' @':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realArrobasProdVal+'"></div>'
+            +'<div class="realizado-indicator"><label>Eficiência bio. origem</label><input type="text" id="ep-real-efic-origem" value="'+(realZoo.eficOrigem?brNum(realZoo.eficOrigem,2)+' kg MS/@':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.eficOrigem+'"></div>'
+            +'<div class="realizado-indicator"><label>Eficiência bio. chegada</label><input type="text" id="ep-real-efic" value="'+(realZoo.efic?brNum(realZoo.efic,2)+' kg MS/@':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.efic+'"></div>'
+          +'</div>'
+          +'<div class="field realizado-mobile-4"><label>Custo real por @ produzida</label><input type="text" inputmode="decimal" id="ep-real-custo-at" value="'+brNum(realCustoArrobaVal,2)+'" oninput="atualizarRealizadoPainel()"></div>'
+          +'<div class="field realizado-span-full realizado-mobile-4"><label>Obs. do confinamento</label><textarea id="ep-real-conf-obs" rows="3" class="ep-textarea" placeholder="Observações do confinamento, manejo, ocorrências, qualidade do lote...">'+escHtml((lote.confRecord&&lote.confRecord.obs)||'')+'</textarea></div>'
         +'</div>'
-        +'<div class="ep-section" style="margin-top:14px">Venda realizada</div>'
-        +'<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Preço venda (R$/@)</label><input type="text" inputmode="decimal" id="ep-real-valor-at" value="'+brNum(vendaValorAt,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Bônus venda <span class="mode-toggle" style="margin-left:6px"><button type="button" class="mt-btn '+(vendaBonusMode==='pct'?'active':'')+'" data-real-field="bonus" data-mode="pct" onclick="setRealVendaMode(\'bonus\',\'pct\',this)">%</button><button type="button" class="mt-btn '+(vendaBonusMode==='val'?'active':'')+'" data-real-field="bonus" data-mode="val" onclick="setRealVendaMode(\'bonus\',\'val\',this)">R$/@</button></span></label><input type="text" inputmode="decimal" id="ep-real-bonus-at" value="'+brNum(vendaBonusVal,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"><div class="hint" id="ep-real-bonus-hint">'+(vendaBonusMode==='pct'?'% sobre o preço de venda':'R$/@ somado ao preço de venda')+'</div></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Desconto venda <span class="mode-toggle" style="margin-left:6px"><button type="button" class="mt-btn '+(vendaDescMode==='pct'?'active':'')+'" data-real-field="desconto" data-mode="pct" onclick="setRealVendaMode(\'desconto\',\'pct\',this)">%</button><button type="button" class="mt-btn '+(vendaDescMode==='val'?'active':'')+'" data-real-field="desconto" data-mode="val" onclick="setRealVendaMode(\'desconto\',\'val\',this)">R$/@</button></span></label><input type="text" inputmode="decimal" id="ep-real-desc-at" value="'+brNum(vendaDescVal,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"><div class="hint" id="ep-real-desconto-hint">'+(vendaDescMode==='pct'?'% sobre o preço de venda':'R$/@ descontado do preço de venda')+'</div></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Senar</label><input type="text" inputmode="decimal" id="ep-real-senar" value="'+brNum(vendaSenarPct,2)+'%" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainelPercent(this,2)"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Arrobas vendidas</label><input type="text" id="ep-real-arrobas" value="'+brNum(vendaReal.arrobas,2)+' @" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+vendaReal.arrobas+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);cursor:not-allowed;"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Faturamento calculado</label><input type="text" id="ep-real-fat-calculado" value="'+fmt(vendaReal.liquido)+'" data-raw="'+vendaReal.liquido+'" readonly disabled tabindex="-1" aria-readonly="true" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Faturamento manual (opcional)</label><input type="text" inputmode="decimal" id="ep-real-fat" value="'+(realFatManual?brNum(realFatManualVal,2):'')+'" data-raw="'+(realFatManual?realFatManualVal:'')+'" data-manual="'+(realFatManual?'1':'0')+'" placeholder="Deixe vazio para usar o calculado" oninput="this.dataset.manual=this.value.trim()?\'1\':\'0\';atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"><div class="hint">900.000,00 será lido como R$ 900.000,00.</div></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Faturamento realizado utilizado</label><input type="text" id="ep-real-fat-utilizado" value="'+fmt(realFatVal)+'" data-raw="'+realFatVal+'" readonly disabled tabindex="-1" aria-readonly="true" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);"><div class="hint" id="ep-real-fat-origem">'+(realFatManual?'Ajustado manualmente':'Valor calculado automaticamente')+'</div></div>'
-          +'<div class="field" style="margin:0;align-self:end"><button type="button" class="btn-ep-detail" onclick="restaurarFaturamentoRealizado()">Restaurar valor calculado</button></div>'
-        +'</div>'
-        +'<div class="ep-section" style="margin-top:14px">Resultado financeiro</div>'
-        +'<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Capital realizado (custos)</label><input type="text" inputmode="decimal" id="ep-real-capital" value="'+brNum(realCapitalVal,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Outros custos realizados</label><input type="text" inputmode="decimal" id="ep-real-outros-custos" value="'+brNum(realOutrosCustosVal,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Lucro realizado (R$)</label><input type="text" id="ep-real-lucro" value="'+fmt(realLucroVal)+'" readonly data-raw="'+realLucroVal+'" style="background:#fff;color:'+(realLucroVal>=0?'var(--green)':'var(--red)')+';font-weight:800;"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">% operação realizado</label><input type="text" id="ep-real-rent" value="'+fmtPct(realRentVal)+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realRentVal+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);cursor:not-allowed;"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">% ao mês realizado</label><input type="text" id="ep-real-rentmes" value="'+fmtPct(realRentMesVal)+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realRentMesVal+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);cursor:not-allowed;"><div class="hint">Prazo usado: '+(realPrazo||0)+' dias.</div></div>'
-        +'</div>'
-        +'<div class="ep-section" style="margin-top:14px">Zootécnico realizado</div>'
-        +'<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">GMD realizado (kg/dia)</label><input type="text" inputmode="decimal" id="ep-real-gmd" value="'+brNum(realZoo.gmd,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Rendimento carcaça (%)</label><input type="text" inputmode="decimal" id="ep-real-rend" value="'+brNum(realZoo.rendA,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Peso final realizado (kg)</label><input type="text" id="ep-real-peso-saida" value="'+(realZoo.pesoSaida?brNum(realZoo.pesoSaida,2)+' kg':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.pesoSaida+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);cursor:not-allowed;"><div class="hint">Peso chegada + GMD realizado × dias reais.</div></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Peso de carcaça realizado</label><input type="text" id="ep-real-peso-carcaca" value="'+(realZoo.pesoCarcaca?brNum(realZoo.pesoCarcaca,2)+' kg':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.pesoCarcaca+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Arrobas realizadas / animal</label><input type="text" id="ep-real-at-abate" value="'+(realZoo.atAbate?brNum(realZoo.atAbate,2)+' @':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.atAbate+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Arrobas realizadas totais</label><input type="text" id="ep-real-at-total" value="'+(realZoo.atAbate&&realQtdVal?brNum(realZoo.atAbate*realQtdVal,2)+' @':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+(realZoo.atAbate*realQtdVal)+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Eficiência bio. chegada</label><input type="text" id="ep-real-efic" value="'+(realZoo.efic?brNum(realZoo.efic,2)+' kg MS/@':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.efic+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);cursor:not-allowed;"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Eficiência bio. origem</label><input type="text" id="ep-real-efic-origem" value="'+(realZoo.eficOrigem?brNum(realZoo.eficOrigem,2)+' kg MS/@':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.eficOrigem+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);cursor:not-allowed;"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Consumo real de MS total (kg/animal)</label><input type="text" inputmode="decimal" id="ep-real-consumo-ms" value="'+(realConsumoVal?brNum(realConsumoVal,2):'')+'" oninput="atualizarRealizadoPainel()"><div class="hint">O total informado tem prioridade.</div></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Consumo real de MS diário (kg/animal/dia)</label><input type="text" inputmode="decimal" id="ep-real-consumo-ms-dia" value="'+(realConsumoDiarioVal?brNum(realConsumoDiarioVal,2):'')+'" oninput="document.getElementById(\'ep-real-consumo-ms\').value=\'\';atualizarRealizadoPainel()"><div class="hint">Se usado: diário × dias reais.</div></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">@ produzidas — origem</label><input type="text" id="ep-real-at-prod-origem" value="'+(realZoo.atProdOrigem?brNum(realZoo.atProdOrigem,3)+' @':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.atProdOrigem+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">@ produzidas — chegada</label><input type="text" id="ep-real-at-prod" value="'+(realArrobasProdVal?brNum(realArrobasProdVal,3)+' @':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realArrobasProdVal+'" style="background:#fff;font-weight:800;opacity:1;-webkit-text-fill-color:var(--text);"></div>'
-          +'<div class="field" style="margin:0"><label style="font-size:10px">Custo real por @ produzida</label><input type="text" inputmode="decimal" id="ep-real-custo-at" value="'+brNum(realCustoArrobaVal,2)+'" oninput="atualizarRealizadoPainel()"></div>'
-        +'</div>'
-        +'<div class="field" style="margin-top:10px"><label style="font-size:10px">Obs. do confinamento</label>'
-          +'<textarea id="ep-real-conf-obs" rows="3" class="ep-textarea" placeholder="Observações do confinamento, manejo, ocorrências, qualidade do lote...">'+escHtml((lote.confRecord&&lote.confRecord.obs)||'')+'</textarea>'
-        +'</div>'
-        +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">'
-          +(lote.ajusteReal?'<button type="button" class="btn-ep-danger" data-action="clear-real">Limpar realizado</button>':'')
-        +'</div>'
-      +'</div>';
-    comparativoHtml='<div id="ep-comparativo">'+renderComparativoRealizadoHtml(lote,o,aj)+'</div>';
+        +'<div class="realizado-clear-actions">'+(lote.ajusteReal?'<button type="button" class="btn-ep-danger" data-action="clear-real">Limpar realizado</button>':'')+'</div>'
+      +'</section>'
+      +'</section>';
+    comparativoHtml='<section class="realizado-card realizado-comparativo-card" id="ep-comparativo"><div class="realizado-card-head"><span class="realizado-step">06</span><h4>Projetado x realizado</h4></div><div id="ep-comparativo-content">'+renderComparativoRealizadoHtml(lote,o,aj)+'</div></section>';
     resultadoFinalHtml='<div id="ep-resultado-final">'+renderResultadoFinalHtml(lote,o)+'</div>';
   }
   ep.innerHTML='<div class="ep">'
@@ -6766,11 +6852,17 @@ function atualizarRealizadoPainel(){
   }
   var fatCalcEl=document.getElementById('ep-real-fat-calculado');
   var fatUsadoEl=document.getElementById('ep-real-fat-utilizado');
+  var fatUsadoDisplayEl=document.getElementById('ep-real-fat-utilizado-display');
   var fatOrigemEl=document.getElementById('ep-real-fat-origem');
+  var prazoHintEl=document.getElementById('ep-real-prazo');
+  var prazoDisplayEl=document.getElementById('ep-real-prazo-display');
   var faturamentoUsado=(fatManual&&fatManualVal!==null)?fatManualVal:venda.liquido;
   if(fatCalcEl){fatCalcEl.value=fmt(venda.liquido);fatCalcEl.dataset.raw=venda.liquido;}
   if(fatUsadoEl){fatUsadoEl.value=fmt(faturamentoUsado);fatUsadoEl.dataset.raw=faturamentoUsado;}
+  if(fatUsadoDisplayEl)fatUsadoDisplayEl.textContent=fmt(faturamentoUsado);
   if(fatOrigemEl)fatOrigemEl.textContent=(fatManual&&fatManualVal!==null)?'Ajustado manualmente':'Valor calculado automaticamente';
+  if(prazoHintEl)prazoHintEl.textContent=prazo||0;
+  if(prazoDisplayEl)prazoDisplayEl.textContent=(prazo||0)+' dias';
   if(arrobasEl){
     arrobasEl.value=brNum(venda.arrobas,2)+' @';
     arrobasEl.dataset.raw=venda.arrobas;
@@ -6864,7 +6956,8 @@ function atualizarComparativoPainel(){
   var lote=getLotes().find(function(l){return l.id===_editLoteId;});
   if(!lote)return;
   var orc=lote.orcamentos&&lote.orcamentos[0];
-  el.innerHTML=renderComparativoRealizadoHtml(lote,orc,getRealizadoDraftPainel(lote));
+  var content=document.getElementById('ep-comparativo-content')||el;
+  content.innerHTML=renderComparativoRealizadoHtml(lote,orc,getRealizadoDraftPainel(lote));
 }
 function setResultadoFinalMode(mode,initial){
   if(['projected','realized','manual'].indexOf(mode)<0)return;
