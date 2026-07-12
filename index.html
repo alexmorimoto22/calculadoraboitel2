@@ -595,6 +595,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 .fut-liq-history{margin-top:6px;font-size:10px;color:var(--text-3);line-height:1.35;white-space:normal;}
 .fut-modal-backdrop{position:fixed;inset:0;background:rgba(13,27,42,.45);z-index:9998;display:none;align-items:center;justify-content:center;padding:18px;}
 .fut-modal-backdrop.show{display:flex;}
+.fut-modal-backdrop.open{display:flex;}
 .fut-modal{width:min(520px,100%);background:var(--surface);border:1px solid var(--border);border-radius:18px;box-shadow:0 26px 80px rgba(13,27,42,.28);padding:18px;}
 .fut-modal-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:14px;}
 .fut-modal-title{font-size:18px;font-weight:900;color:var(--navy);}
@@ -2409,6 +2410,18 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
     .header-report .report-chevron{font-size:11px}
   }
 
+  .auth-view{display:none}.auth-view.active{display:block}.auth-switch{margin-top:16px;text-align:center;font-size:12px;color:var(--text-2)}
+  .auth-link{border:0;background:transparent;color:var(--gold);font:inherit;font-weight:800;cursor:pointer;padding:5px}.auth-actions{display:grid;gap:9px}
+  .auth-secondary{width:100%;min-height:44px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--navy);font-weight:800;cursor:pointer}
+  .password-strength{height:5px;border-radius:999px;background:var(--surface2);overflow:hidden;margin-top:6px}.password-strength span{display:block;height:100%;width:0;background:var(--red);transition:.2s}
+  .auth-status-card{padding:18px;border:1px solid var(--border);border-radius:10px;background:rgba(255,255,255,.7);text-align:center}.auth-status-card h3{margin:0 0 8px}.auth-status-card p{font-size:13px;line-height:1.45;color:var(--text-2)}
+  .users-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:14px 0}.users-stat{padding:14px;background:#fff;border:1px solid var(--border);border-radius:9px}.users-stat small{display:block;color:var(--text-3);font-size:9px;font-weight:800;text-transform:uppercase}.users-stat strong{display:block;font-size:22px;margin-top:5px}
+  .users-toolbar{display:grid;grid-template-columns:1.2fr 1.4fr .9fr .9fr auto;gap:8px;margin-bottom:12px}.users-toolbar input,.users-toolbar select{min-height:42px}
+  .users-table-wrap{overflow:auto;border:1px solid var(--border);border-radius:10px;background:#fff}.users-table{width:100%;border-collapse:collapse;min-width:920px}.users-table th,.users-table td{padding:11px;border-bottom:1px solid var(--border);text-align:left;font-size:11px}.users-table th{font-size:9px;text-transform:uppercase;color:var(--text-3);background:var(--surface2)}
+  .role-badge,.profile-status{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:9px;font-weight:850;text-transform:uppercase;background:var(--surface2)}.profile-status.active{color:#3f7d1b}.profile-status.pending{color:#9b6900}.profile-status.blocked,.profile-status.rejected{color:var(--red)}
+  .user-actions{display:flex;gap:5px;flex-wrap:wrap}.user-actions button{min-height:30px;border:1px solid var(--border);border-radius:6px;background:#fff;font-size:9px;font-weight:800;cursor:pointer}.user-actions .primary{background:var(--navy);color:#fff}
+  .users-empty{padding:30px;text-align:center;color:var(--text-3)}
+  @media(max-width:768px){.auth-view input,.auth-view select,.auth-view button{font-size:16px!important}.users-stats{grid-template-columns:repeat(2,1fr)}.users-toolbar{grid-template-columns:1fr}.users-table-wrap{border:0;background:transparent;overflow:visible}.users-table{min-width:0;display:block}.users-table thead{display:none}.users-table tbody{display:grid;gap:10px}.users-table tr{display:block;background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px}.users-table td{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px}.users-table td::before{content:attr(data-label);font-size:9px;font-weight:800;text-transform:uppercase;color:var(--text-3)}.users-table td:last-child{display:block;border:0}.user-actions{margin-top:8px}}
 	</style>
 </head>
 <body>
@@ -2435,17 +2448,36 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
         <img class="login-logo" src="vm-agro-logo.png" alt="VM Agro">
         <p class="login-title">Bem-vindo ao <strong>VM Agro</strong></p>
         <p class="login-subtitle">Gestão de Lotes</p>
-        <div class="lf">
-          <label>Usuário</label>
-          <div class="login-input-wrap"><span class="login-input-icon">✉</span><input type="text" id="inp-user" value="alexmorimoto" placeholder="alexmorimoto" autocomplete="username"></div>
+        <div class="auth-view active" id="auth-login-view">
+          <div class="lf"><label>E-mail</label><div class="login-input-wrap"><span class="login-input-icon">✉</span><input type="email" id="inp-user" placeholder="seu@email.com" autocomplete="username"></div></div>
+          <div class="lf"><label>Senha</label><div class="login-input-wrap"><span class="login-input-icon">▣</span><input type="password" id="inp-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div></div>
+          <div class="login-err" id="login-err"></div>
+          <button class="btn-login" id="btn-auth-login" onclick="doLogin()">Entrar</button>
+          <div class="login-forgot"><button class="auth-link" onclick="showAuthView('forgot')">Esqueci minha senha</button></div>
+          <div class="auth-switch">Ainda não possui acesso? <button class="auth-link" onclick="showAuthView('signup')">Criar conta</button></div>
         </div>
-        <div class="lf">
-          <label>Senha</label>
-          <div class="login-input-wrap"><span class="login-input-icon">▣</span><input type="password" id="inp-pass" value="alex@2025" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <div class="auth-view" id="auth-signup-view">
+          <p class="login-title" style="display:block">Criar sua conta</p><p class="login-subtitle" style="display:block">Solicite acesso à plataforma VM Agro</p>
+          <div class="lf"><label>Nome completo</label><div class="login-input-wrap"><input id="signup-name" autocomplete="name"></div></div>
+          <div class="lf"><label>E-mail</label><div class="login-input-wrap"><input type="email" id="signup-email" autocomplete="email"></div></div>
+          <div class="lf"><label>Telefone <small>(opcional)</small></label><div class="login-input-wrap"><input id="signup-phone" inputmode="tel" autocomplete="tel"></div></div>
+          <div class="lf"><label>Área de atuação <small>(opcional)</small></label><div class="login-input-wrap"><input id="signup-area"></div></div>
+          <div class="lf"><label>Senha</label><div class="login-input-wrap"><input type="password" id="signup-password" autocomplete="new-password" oninput="updatePasswordStrength()"></div><div class="password-strength"><span id="password-strength-bar"></span></div></div>
+          <div class="lf"><label>Confirmar senha</label><div class="login-input-wrap"><input type="password" id="signup-confirm" autocomplete="new-password"></div></div>
+          <div class="login-err" id="signup-err"></div><div class="auth-actions"><button class="btn-login" id="btn-auth-signup" onclick="createAccount()">Criar conta</button><button class="auth-secondary" onclick="showAuthView('login')">Voltar para entrar</button></div>
         </div>
-        <div class="login-err" id="login-err"></div>
-        <button class="btn-login" onclick="doLogin()">Entrar</button>
-        <div class="login-forgot"><span>▣</span>Esqueci minha senha</div>
+        <div class="auth-view" id="auth-forgot-view">
+          <p class="login-title" style="display:block">Recuperar senha</p><p class="login-subtitle" style="display:block">Receba as instruções por e-mail</p>
+          <div class="lf"><label>E-mail</label><div class="login-input-wrap"><input type="email" id="forgot-email" autocomplete="email"></div></div>
+          <div class="login-err" id="forgot-message"></div><div class="auth-actions"><button class="btn-login" id="btn-auth-forgot" onclick="requestPasswordReset()">Enviar instruções</button><button class="auth-secondary" onclick="showAuthView('login')">Voltar para entrar</button></div>
+        </div>
+        <div class="auth-view" id="auth-new-password-view">
+          <p class="login-title" style="display:block">Definir nova senha</p>
+          <div class="lf"><label>Nova senha</label><div class="login-input-wrap"><input type="password" id="new-password" autocomplete="new-password"></div></div>
+          <div class="lf"><label>Confirmar senha</label><div class="login-input-wrap"><input type="password" id="new-password-confirm" autocomplete="new-password"></div></div>
+          <div class="login-err" id="new-password-err"></div><button class="btn-login" onclick="saveNewPassword()">Salvar nova senha</button>
+        </div>
+        <div class="auth-view" id="auth-status-view"><div class="auth-status-card"><h3 id="auth-status-title">Aguardando aprovação</h3><p id="auth-status-message"></p><p><strong id="auth-status-email"></strong></p><div class="auth-actions"><button class="btn-login" onclick="refreshAccountStatus()">Atualizar status</button><button class="auth-secondary" onclick="doLogout()">Sair</button></div></div></div>
       </div>
     </div>
   </div>
@@ -3189,6 +3221,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
         <button class="csn" onclick="showCfg('boiteis')">Boitéis</button>
         <button class="csn" onclick="showCfg('transportadoras')">Transportadoras</button>
         <button class="csn" id="csn-params" onclick="showCfg('params')">Parâmetros</button>
+        <button class="csn" id="csn-users" onclick="showCfg('users')" style="display:none">Usuários e acessos</button>
       </div>
 
       <!-- VENDEDORES -->
@@ -3450,6 +3483,14 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
         </div>
       </div>
 
+      <div id="cfg-users" style="display:none">
+        <div class="cfg-header"><div><h2>Usuários e acessos</h2><p>Aprovações, funções, bloqueios e histórico</p></div><button class="btn-add" onclick="openInviteUser()">+ Adicionar usuário</button></div>
+        <div class="users-stats" id="users-stats"></div>
+        <div class="users-toolbar"><input id="users-filter-name" placeholder="Nome" oninput="renderUsersAccess()"><input id="users-filter-email" placeholder="E-mail" oninput="renderUsersAccess()"><select id="users-filter-role" onchange="renderUsersAccess()"><option value="">Todas as funções</option><option value="master">Master</option><option value="admin">Administrador</option><option value="manager">Gestor</option><option value="editor">Editor</option><option value="viewer">Visualizador</option><option value="b3_operator">Operador B3</option></select><select id="users-filter-status" onchange="renderUsersAccess()"><option value="">Todos os status</option><option value="pending">Pendente</option><option value="active">Ativo</option><option value="blocked">Bloqueado</option><option value="rejected">Rejeitado</option></select><button class="btn-cancel" onclick="loadUsersAccess()">Atualizar</button></div>
+        <div class="users-table-wrap"><table class="users-table"><thead><tr><th>Nome</th><th>E-mail</th><th>Função</th><th>Status</th><th>Último acesso</th><th>Criação</th><th>Ações</th></tr></thead><tbody id="users-table-body"></tbody></table></div>
+        <div class="card" style="margin-top:16px"><div class="cfg-row-lbl">Histórico de acessos e alterações</div><div id="audit-log-list" class="users-empty">Carregando histórico...</div></div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -3460,12 +3501,43 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 <script src="supabase-config.js"></script>
 <script>
 /* ── DADOS ─────────────────────────────────────── */
-const USERS={'hastaagro':'hasta2024','caroline':'csilva@2025','alexmorimoto':'alex@2025','vitormorimoto':'vitor@2025'};
-const ADMINS=['hastaagro','caroline','alexmorimoto'];
-const PARAM_ADMINS=['alexmorimoto','hastaagro'];
-const FULL_ACCESS=['hastaagro','alexmorimoto'];
-const SESSION_KEY='vmagro_user_session_v1';
 let currentUser='';
+var currentAuthUser=null,currentProfile=null,currentMembership=null,currentOrganizationId='',currentSpecialPermissions=[];
+const ROLE_PERMISSIONS={
+  master:['*'],
+  admin:['home.view','lots.view_all','lots.create','lots.edit_all','lots.delete','lots.change_status','calculator.use','realized.edit','freight.edit','b3.view','b3.edit','reports.export','settings.operational','settings.parameters','users.view','users.approve','users.manage_lower_roles','audit.view'],
+  manager:['home.view','lots.view_all','lots.create','lots.edit_all','lots.change_status','calculator.use','realized.edit','freight.edit','b3.view','reports.export','settings.view_operational'],
+  editor:['home.view','lots.view_assigned','lots.create','lots.edit_assigned','calculator.use','realized.edit_assigned','freight.edit_assigned','reports.export_assigned'],
+  viewer:['home.view','lots.view_allowed','calculator.view','b3.view','reports.export'],
+  b3_operator:['home.view','lots.view_hedge_data','b3.view','b3.create','b3.edit','b3.liquidate','reports.export_b3']
+};
+const ROLE_LABELS={master:'Master',admin:'Administrador',manager:'Gestor',editor:'Editor',viewer:'Visualizador',b3_operator:'Operador B3'};
+function getCurrentProfile(){return currentProfile;}
+function getCurrentRole(){return currentMembership&&currentMembership.role||'';}
+function hasPermission(permission){
+  var overrides=(currentSpecialPermissions||[]).filter(function(p){return p.permission===permission;});
+  if(overrides.some(function(p){return p.allowed===false;}))return false;
+  if(overrides.some(function(p){return p.allowed===true;}))return true;
+  var list=ROLE_PERMISSIONS[getCurrentRole()]||[];return list.indexOf('*')>=0||list.indexOf(permission)>=0;
+}
+function requirePermission(permission,message){if(hasPermission(permission))return true;toast(typeof message==='string'?message:'Você não possui permissão para realizar esta ação.');return false;}
+function canAccessTab(tab){
+  var map={home:'home.view',lotes:'lots.view_allowed',calc:'calculator.view',futuros:'b3.view',config:'settings.operational'};
+  if(tab==='lotes')return hasPermission('lots.view_all')||hasPermission('lots.view_assigned')||hasPermission('lots.view_allowed')||hasPermission('lots.view_hedge_data');
+  if(tab==='calc')return hasPermission('calculator.use')||hasPermission('calculator.view');
+  if(tab==='config')return hasPermission('settings.operational')||hasPermission('settings.view_operational')||hasPermission('users.view');
+  if(tab==='financeiro')return false;
+  return !map[tab]||hasPermission(map[tab]);
+}
+function canViewLot(lot){
+  if(hasPermission('lots.view_all'))return true;
+  var uid=currentAuthUser&&currentAuthUser.id;if(!uid)return false;
+  if(hasPermission('lots.view_hedge_data'))return true;
+  var assigned=lot&&Array.isArray(lot.assignedUserIds)?lot.assignedUserIds:[];
+  return !!lot&&(lot.createdByUserId===uid||assigned.indexOf(uid)>=0||lot.criadoPor===currentUser);
+}
+function canEditLot(lot){return hasPermission('lots.edit_all')||(hasPermission('lots.edit_assigned')&&canViewLot(lot));}
+function applyPermissionToElement(selector,permission){document.querySelectorAll(selector).forEach(function(el){var allowed=hasPermission(permission);el.hidden=!allowed;el.disabled=!allowed;});}
 let calcMode='standalone';
 let activeLoteId=null;
 let calcStandaloneInitialized=false;
@@ -3790,7 +3862,7 @@ function getSupabaseClient(){
   return supabaseClient;
 }
 function supabaseUserKey(){
-  return currentUser||localStorage.getItem(SESSION_KEY)||'sem_usuario';
+  return currentOrganizationId||'sem_organizacao';
 }
 function safeJsonParse(raw,fallback){
   try{return JSON.parse(raw);}catch(e){return fallback;}
@@ -3821,7 +3893,8 @@ async function salvarDadosBanco(key,value){
   var payload={
     app_id:SUPABASE_APP_ID,
     user_key:supabaseUserKey(),
-    user_id:null,
+    user_id:currentAuthUser&&currentAuthUser.id||null,
+    organization_id:currentOrganizationId||null,
     key:remoteKey,
     value:value===undefined?null:value
   };
@@ -3839,7 +3912,7 @@ async function excluirDadosBanco(key){
   var res=await client.from(SUPABASE_TABLE)
     .delete()
     .eq('app_id',SUPABASE_APP_ID)
-    .eq('user_key',supabaseUserKey())
+    .eq('organization_id',currentOrganizationId)
     .eq('key',remoteKey);
   if(res.error)throw res.error;
   return true;
@@ -3888,7 +3961,7 @@ async function carregarDadosSupabase(){
     var res=await client.from(SUPABASE_TABLE)
       .select('key,value')
       .eq('app_id',SUPABASE_APP_ID)
-      .eq('user_key',userKey);
+      .eq('organization_id',currentOrganizationId);
     if(res.error)throw res.error;
     var rows=res.data||[];
     if(!rows.length){
@@ -4777,32 +4850,68 @@ function bioRows(id,rows){
 }
 
 /* ── LOGIN / LOGOUT ────────────────────────────── */
-async function entrarApp(u,tab){
-  currentUser=u;
+function setAuthBusy(buttonId,busy,label){var b=document.getElementById(buttonId);if(!b)return;b.disabled=!!busy;if(!b.dataset.label)b.dataset.label=b.textContent;b.textContent=busy?(label||'Aguarde...'):b.dataset.label;}
+function showAuthView(name){document.querySelectorAll('.auth-view').forEach(function(v){v.classList.remove('active');});var el=document.getElementById('auth-'+name+'-view');if(el)el.classList.add('active');var err=document.getElementById('login-err');if(err)err.textContent='';}
+function authErrorMessage(error){var msg=String(error&&error.message||'').toLowerCase();if(msg.indexOf('invalid login')>=0)return 'E-mail ou senha inválidos.';if(msg.indexOf('already registered')>=0||msg.indexOf('already been registered')>=0)return 'Este e-mail já possui cadastro.';if(msg.indexOf('password')>=0)return 'A senha deve possuir no mínimo 8 caracteres.';return 'Não foi possível concluir. Tente novamente.';}
+function updatePasswordStrength(){var p=(document.getElementById('signup-password')||{}).value||'',score=0;if(p.length>=8)score++;if(/[A-Z]/.test(p)&&/[a-z]/.test(p))score++;if(/\d/.test(p))score++;if(/[^A-Za-z0-9]/.test(p))score++;var bar=document.getElementById('password-strength-bar');if(bar){bar.style.width=(score*25)+'%';bar.style.background=score<2?'#9A3B30':score<4?'#C9A24E':'#6B7056';}}
+async function writeAudit(action,entityType,entityId,previousData,newData){try{var c=getSupabaseClient();if(!c||!currentOrganizationId||!currentAuthUser)return;await c.from('audit_logs').insert({organization_id:currentOrganizationId,user_id:currentAuthUser.id,action:action,entity_type:entityType||null,entity_id:entityId?String(entityId):null,previous_data:previousData||null,new_data:newData||null,user_agent:navigator.userAgent.slice(0,500)});}catch(e){console.warn('Falha ao registrar auditoria',e);}}
+async function loadCurrentAuthContext(user){
+  var c=getSupabaseClient();if(!c||!user)throw new Error('Sessão inválida');
+  var profileRes=await c.from('profiles').select('*').eq('id',user.id).maybeSingle();if(profileRes.error)throw profileRes.error;
+  currentAuthUser=user;currentProfile=profileRes.data||{id:user.id,email:user.email||'',full_name:user.user_metadata&&user.user_metadata.full_name||'',status:'pending'};
+  var memberRes=await c.from('organization_members').select('*,organizations(id,name,slug,active)').eq('user_id',user.id).eq('active',true).maybeSingle();
+  currentMembership=memberRes.data||null;currentOrganizationId=currentMembership&&currentMembership.organization_id||'';
+  currentSpecialPermissions=[];
+  if(currentOrganizationId){var permRes=await c.from('user_permissions').select('permission,allowed').eq('organization_id',currentOrganizationId).eq('user_id',user.id);if(!permRes.error)currentSpecialPermissions=permRes.data||[];}
+  currentUser=currentProfile.full_name||currentProfile.email||user.email||'Usuário';
+  return {profile:currentProfile,membership:currentMembership};
+}
+function showAccountStatus(profile,user){
+  document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';showAuthView('status');
+  var status=profile&&profile.status||'pending',title='Aguardando aprovação',message='Seu cadastro foi recebido e está aguardando aprovação.';
+  if(status==='blocked'){title='Acesso bloqueado';message='Seu acesso está temporariamente bloqueado. Entre em contato com um administrador.';}
+  if(status==='rejected'){title='Acesso não aprovado';message='Seu pedido de acesso não foi aprovado.';}
+  document.getElementById('auth-status-title').textContent=title;document.getElementById('auth-status-message').textContent=message;document.getElementById('auth-status-email').textContent=(user&&user.email)||profile.email||'';
+}
+function applyCurrentUserPermissions(){
+  document.querySelectorAll('[data-tab-target]').forEach(function(el){var tab=el.getAttribute('data-tab-target');el.style.display=canAccessTab(tab)?'':'none';});
+  var cfg=canAccessTab('config');var tabCfg=document.getElementById('tab-config'),sideCfg=document.getElementById('side-config');if(tabCfg)tabCfg.style.display=cfg?'':'none';if(sideCfg)sideCfg.style.display=cfg?'':'none';
+  var params=document.getElementById('csn-params');if(params)params.style.display=hasPermission('settings.parameters')?'':'none';
+  var users=document.getElementById('csn-users');if(users)users.style.display=hasPermission('users.view')?'':'none';
+  document.querySelectorAll('.header-report').forEach(function(el){el.style.display=(hasPermission('reports.export')||hasPermission('reports.export_assigned')||hasPermission('reports.export_b3'))?'':'none';});
+  if(hasPermission('calculator.view')&&!hasPermission('calculator.use'))document.querySelectorAll('#panel-calc input,#panel-calc select,#panel-calc textarea,#panel-calc button').forEach(function(el){if(!el.closest('.export-wrap'))el.disabled=true;});
+  if(hasPermission('settings.view_operational')&&!hasPermission('settings.operational'))document.querySelectorAll('#panel-config input,#panel-config select,#panel-config textarea,#panel-config .btn-add,#panel-config .btn-save,#panel-config .btn-ic-del').forEach(function(el){el.disabled=true;});
+}
+async function entrarApp(user,tab){
+  await loadCurrentAuthContext(user);
+  if(currentProfile.status!=='active'||!currentMembership||!currentMembership.active){showAccountStatus(currentProfile,user);return false;}
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').style.display='block';
-  document.getElementById('user-display').textContent=u;
+  document.getElementById('user-display').textContent=currentProfile.full_name||currentProfile.email;
   var err=document.getElementById('login-err');if(err)err.textContent='';
   await carregarDadosSupabase();
-  document.getElementById('tab-config').style.display='';
-  var sideConfig=document.getElementById('side-config');if(sideConfig)sideConfig.style.display='';
-  document.getElementById('csn-params').style.display=PARAM_ADMINS.includes(u)?'':'none';
+  applyCurrentUserPermissions();
   sanitizarLotes();populateTipoSelects();populateFrigSelect();populateBoitelSelect();populateVendSelect();populateFilterVend();populateFilterFrig();populateCalcVendSelect();
-  switchTab(tab||'home');
+  switchTab(canAccessTab(tab||'home')?(tab||'home'):'home');
+  getSupabaseClient().rpc('touch_last_login').then(function(){});
+  writeAudit('auth.login','user',user.id,null,{role:getCurrentRole()});return true;
 }
-function doLogin(){
-  const u=document.getElementById('inp-user').value.trim().toLowerCase();
-  const p=document.getElementById('inp-pass').value;
-  const err=document.getElementById('login-err');
-  if(USERS[u]&&USERS[u]===p){
-    localStorage.setItem(SESSION_KEY,u);
-    entrarApp(u,'home');
-  }else{err.textContent='Usuário ou senha incorretos.';document.getElementById('inp-pass').value='';document.getElementById('inp-pass').focus();}
+async function doLogin(){
+  var email=document.getElementById('inp-user').value.trim().toLowerCase(),password=document.getElementById('inp-pass').value,err=document.getElementById('login-err');err.textContent='';
+  if(!supabaseIsConfigured()){err.textContent='Configure o Supabase para entrar.';return;}
+  setAuthBusy('btn-auth-login',true,'Entrando...');try{var res=await getSupabaseClient().auth.signInWithPassword({email:email,password:password});if(res.error)throw res.error;await entrarApp(res.data.user,'home');}catch(e){console.error(e);err.textContent=authErrorMessage(e);document.getElementById('inp-pass').value='';}finally{setAuthBusy('btn-auth-login',false);}
 }
-function doLogout(){currentUser='';
-  localStorage.removeItem(SESSION_KEY);
+async function createAccount(){
+  var name=document.getElementById('signup-name').value.trim(),email=document.getElementById('signup-email').value.trim().toLowerCase(),phone=document.getElementById('signup-phone').value.trim(),area=document.getElementById('signup-area').value.trim(),password=document.getElementById('signup-password').value,confirmPassword=document.getElementById('signup-confirm').value,err=document.getElementById('signup-err');err.textContent='';
+  if(!name){err.textContent='Informe seu nome completo.';return;}if(!/^\S+@\S+\.\S+$/.test(email)){err.textContent='Informe um e-mail válido.';return;}if(password.length<8){err.textContent='A senha deve possuir no mínimo 8 caracteres.';return;}if(password!==confirmPassword){err.textContent='As senhas não são iguais.';return;}
+  setAuthBusy('btn-auth-signup',true,'Criando conta...');try{var res=await getSupabaseClient().auth.signUp({email:email,password:password,options:{data:{full_name:name,phone:phone,area:area}}});if(res.error)throw res.error;if(res.data.session)await getSupabaseClient().auth.signOut();showAuthView('login');document.getElementById('login-err').textContent='Conta criada com sucesso. Seu acesso está aguardando aprovação.';document.getElementById('inp-user').value=email;}catch(e){console.error(e);err.textContent=authErrorMessage(e);}finally{setAuthBusy('btn-auth-signup',false);}
+}
+async function requestPasswordReset(){var email=document.getElementById('forgot-email').value.trim().toLowerCase(),msg=document.getElementById('forgot-message');setAuthBusy('btn-auth-forgot',true,'Enviando...');try{await getSupabaseClient().auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});msg.textContent='Caso exista uma conta associada a esse e-mail, enviaremos as instruções.';}catch(e){console.error(e);msg.textContent='Caso exista uma conta associada a esse e-mail, enviaremos as instruções.';}finally{setAuthBusy('btn-auth-forgot',false);}}
+async function saveNewPassword(){var p=document.getElementById('new-password').value,c=document.getElementById('new-password-confirm').value,err=document.getElementById('new-password-err');if(p.length<8){err.textContent='A senha deve possuir no mínimo 8 caracteres.';return;}if(p!==c){err.textContent='As senhas não são iguais.';return;}var res=await getSupabaseClient().auth.updateUser({password:p});if(res.error){err.textContent=authErrorMessage(res.error);return;}toast('✓ Senha atualizada');showAuthView('login');}
+async function refreshAccountStatus(){var res=await getSupabaseClient().auth.getSession();if(res.data&&res.data.session)await entrarApp(res.data.session.user,'home');else showAuthView('login');}
+async function doLogout(){var userId=currentAuthUser&&currentAuthUser.id;if(userId)writeAudit('auth.logout','user',userId);try{var c=getSupabaseClient();if(c)await c.auth.signOut();}catch(e){console.warn(e);}currentUser='';currentAuthUser=null;currentProfile=null;currentMembership=null;currentOrganizationId='';currentSpecialPermissions=[];supabaseLastLoadUser='';
   document.body.classList.remove('mobile-header-hidden','calc-tab-active');
-  document.getElementById('tab-config').style.display='none';var sideConfig=document.getElementById('side-config');if(sideConfig)sideConfig.style.display='none';document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';document.getElementById('inp-user').value='alexmorimoto';document.getElementById('inp-pass').value='alex@2025';}
+  document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';document.getElementById('inp-pass').value='';showAuthView('login');}
 
 /* ── TABS ──────────────────────────────────────── */
 function syncDesktopSidebar(tab){
@@ -4811,6 +4920,10 @@ function syncDesktopSidebar(tab){
   });
 }
 function switchTab(tab){
+  if(!canAccessTab(tab)){
+    toast('⚠ Você não possui permissão para acessar esta área.');
+    return false;
+  }
   ['home','lotes','lote-detail','futuros','financeiro','calc','config'].forEach(t=>{const p=document.getElementById('panel-'+t);if(p)p.style.display='none';});
   document.getElementById('panel-'+tab).style.display='block';
   document.body.classList.toggle('calc-tab-active',tab==='calc');
@@ -4823,7 +4936,7 @@ function switchTab(tab){
   if(tab==='futuros')renderFuturos();
   if(tab==='financeiro')renderFinanceiro();
   if(tab==='config'){
-    showCfg('vends');
+    showCfg(hasPermission('settings.operational')?'vends':'users');
   }
   if(tab==='calc'&&calcMode==='standalone'&&!calcStandaloneInitialized)abrirCalcStandalone();
   ensureExportControls();
@@ -4867,8 +4980,7 @@ function renderHome(){
   var de=document.getElementById('home-date');
   if(de)de.textContent=now.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 
-  var isFA=FULL_ACCESS.includes(currentUser);
-  var lotes=getLotes().filter(function(l){return isFA||!l.criadoPor||l.criadoPor===currentUser;});
+  var lotes=getLotes().filter(canViewLot);
   var vends=getVends();
   var frigs=getFrigs();
   var by=function(s){return lotes.filter(function(l){return l.status===s;});};
@@ -5369,7 +5481,7 @@ function loteLabelB3(lote){
 }
 function lotesDisponiveisB3(apenasVinculaveis){
   return getLotes().filter(function(l){
-    var podeVer=FULL_ACCESS.includes(currentUser)||!l.criadoPor||l.criadoPor===currentUser;
+    var podeVer=canViewLot(l);
     if(!podeVer)return false;
     return !apenasVinculaveis||(l.status||'embarque')!=='recebido';
   });
@@ -5539,6 +5651,8 @@ function limparFormFuturo(loteId){
   atualizarFuturoPreview();
 }
 function salvarFuturo(){
+  var editingId=(document.getElementById('fut-id')||{}).value||'';
+  if(!requirePermission(editingId?'b3.edit':'b3.create'))return;
   var operacao=(document.getElementById('fut-operacao')||{}).value||'hedge';
   var lado=(document.getElementById('fut-lado')||{}).value||'venda';
   var loteId=(document.getElementById('fut-lote')||{}).value||'';
@@ -5588,6 +5702,7 @@ function salvarFuturo(){
   toast('✓ Contrato B3 salvo');
 }
 function editarFuturo(id){
+  if(!requirePermission('b3.edit'))return;
   var c=getFuturos().find(function(x){return x.id===id;});
   if(!c)return;
   fillFuturoLoteSelects();
@@ -5628,6 +5743,7 @@ function editarFuturo(id){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function deletarFuturo(id){
+  if(!requirePermission('b3.edit'))return;
   if(!confirm('Excluir este contrato B3?'))return;
   saveFuturos(getFuturos().filter(function(c){return c.id!==id;}));
   renderFuturos();
@@ -5635,6 +5751,7 @@ function deletarFuturo(id){
   if(document.getElementById('panel-lotes')&&document.getElementById('panel-lotes').style.display!=='none')renderLotes();
 }
 function abrirModalLiquidarFuturo(id){
+  if(!requirePermission('b3.liquidate'))return;
   var c=getFuturos().find(function(x){return x.id===id;});
   if(!c)return;
   var r=futuroResultado(c);
@@ -5657,6 +5774,7 @@ function fecharModalLiquidarFuturo(){
   if(modal){modal.classList.remove('show');modal.setAttribute('aria-hidden','true');}
 }
 function confirmarLiquidacaoFuturo(){
+  if(!requirePermission('b3.liquidate'))return;
   var id=(document.getElementById('fut-liquidar-id')||{}).value||'';
   var arr=getFuturos();
   var i=arr.findIndex(function(c){return c.id===id;});
@@ -5691,6 +5809,7 @@ function confirmarLiquidacaoFuturo(){
   toast('✓ Liquidação registrada');
 }
 function cancelarFuturo(id){
+  if(!requirePermission('b3.edit'))return;
   if(!confirm('Cancelar este contrato? O histórico será mantido.'))return;
   var arr=getFuturos();
   var i=arr.findIndex(function(c){return c.id===id;});
@@ -5718,8 +5837,9 @@ function renderFuturos(){
   var loteMap={};
   lotes.forEach(function(l){loteMap[l.id]=l;});
   var arr=getFuturos().filter(function(c){
-    if(!FULL_ACCESS.includes(currentUser)&&c.criadoPor&&c.criadoPor!==currentUser)return false;
-    return !c.loteId||loteMap[c.loteId]||getLotes().some(function(l){return l.id===c.loteId;});
+    var linked=c.loteId&&getLotes().find(function(l){return l.id===c.loteId;});
+    if(linked&&!canViewLot(linked))return false;
+    return !c.loteId||loteMap[c.loteId]||!!linked;
   });
   var filtroStatus=(document.getElementById('fut-filter-status')||{}).value||'todos';
   var filtroOperacao=(document.getElementById('fut-filter-operacao')||{}).value||'todos';
@@ -6319,6 +6439,7 @@ function salvarFreteRealizado(){
   var arr=getLotes();
   var index=arr.findIndex(function(l){return l.id===_editLoteId;});
   if(index<0)return;
+  if(!(hasPermission('freight.edit')||(hasPermission('freight.edit_assigned')&&canEditLot(arr[index])))){toast('⚠ Sem permissão para editar o frete deste lote.');return;}
   var transporter=document.getElementById('ep-frete-transportadora');
   var valor=document.getElementById('ep-frete-realizado-valor');
   if(!transporter||!transporter.value){toast('⚠ Selecione a transportadora');return;}
@@ -6732,6 +6853,7 @@ function escalarValoresLote(lote,ratio,novaQtd,sufixoLabel){
 
 function gerarParcialLote(){
   if(!_editLoteId)return;
+  if(!requirePermission('lots.edit_all'))return;
   var qtdParcial=parseFloat((document.getElementById('ep-parcial-qtd')||{value:''}).value);
   var statusParcial=(document.getElementById('ep-parcial-status')||{value:''}).value||null;
   var arr=getLotes();
@@ -6771,6 +6893,7 @@ function gerarParcialLote(){
 
 function excluirLotePainel(){
   if(!_editLoteId)return;
+  if(!requirePermission('lots.delete'))return;
   var arr=getLotes();
   var lote=arr.find(function(l){return l.id===_editLoteId;});
   if(!lote)return;
@@ -7282,6 +7405,7 @@ function updateStatusCardDom(loteId,status){
 }
 
 function updateEditPanelStatus(newStatus){
+  if(!requirePermission('lots.change_status'))return;
   if(!_editLoteId||!STATUS_CFG[newStatus])return;
   var arr=getLotes();
   var i=arr.findIndex(function(l){return l.id===_editLoteId;});
@@ -7322,6 +7446,7 @@ function saveEditPanel(){
   var arr=getLotes();
   var i=arr.findIndex(function(l){return l.id===_editLoteId;});
   if(i<0)return;
+  if(!canEditLot(arr[i])){toast('⚠ Você não possui permissão para editar este lote.');return;}
   if(!aplicarIdentificacaoLote(arr[i],arr))return;
   var newStatus=document.getElementById('ep-status').value;
   var newVend=document.getElementById('ep-vend').value;
@@ -7477,6 +7602,7 @@ function showCustomCostForm(id){
   document.getElementById('cc-nome').focus();
 }
 function salvarCustomCost(){
+  if(!requirePermission('settings.parameters'))return;
   const nome=document.getElementById('cc-nome').value.trim();
   if(!nome){toast('⚠ Informe o nome do custo.');return;}
   const cfg=loadConfig();
@@ -7809,12 +7935,11 @@ function renderLotes(){
   var fFrig=document.getElementById('filter-frig')?document.getElementById('filter-frig').value:'';
   var fT=(document.getElementById('filter-tipo')||{value:''}).value;
   var vends=getVends();
-  var isFA=FULL_ACCESS.includes(currentUser);
   var ST_COLORS={'embarque':'#C9A24E','confinando':'var(--green)','escalado':'var(--accent)','abatido':'#515640','recebido':'var(--text-3)'};
   var todosLotes=getLotes();
   if(garantirNumerosLote(todosLotes))saveLotes(todosLotes);
   var lotes=todosLotes.filter(function(l){
-    if(!isFA&&l.criadoPor&&l.criadoPor!==currentUser)return false;
+    if(!canViewLot(l))return false;
     if(pillFilter&&l.status!==pillFilter)return false;
     if(fV&&l.vendedorId!==fV)return false;
     if(fFrig){var lFrig=l.frigId||(l.orcamentos&&l.orcamentos[0]&&l.orcamentos[0].frigId)||null;if(lFrig!==fFrig)return false;}
@@ -8316,7 +8441,7 @@ function moverLoteParaStatus(loteId,newStatus,focusStatus){
 
 /* ── LOTE FORM ─────────────────────────────────── */
 function hideLoteForm(){document.getElementById('lote-form').style.display='none';}
-function deletarLote(id){if(!confirm('Excluir este lote?'))return;saveLotes(getLotes().filter(l=>l.id!==id));renderLotes();renderDashboard();}
+function deletarLote(id){if(!requirePermission('lots.delete'))return;if(!confirm('Excluir este lote?'))return;saveLotes(getLotes().filter(l=>l.id!==id));renderLotes();renderDashboard();}
 
 /* ── LOTE DETAIL ───────────────────────────────── */
 function openLoteOrcs(id){
@@ -8325,7 +8450,7 @@ function openLoteOrcs(id){
 }
 function openLoteDetail(id){
   const lote=getLotes().find(function(l){return l.id===id;});
-  if(lote&&!FULL_ACCESS.includes(currentUser)&&lote.criadoPor&&lote.criadoPor!==currentUser){
+  if(lote&&!canViewLot(lote)){
     toast('⚠ Sem permissão para este lote');return;
   }
   activeLoteDetailId=id;
@@ -8339,6 +8464,7 @@ function closeLoteDetail(){
   switchTab('lotes');
 }
 function mudarStatusDetail(val){
+  if(!requirePermission('lots.change_status'))return;
   if(!activeLoteDetailId||!val)return;
   const lote=getLotes().find(l=>l.id===activeLoteDetailId);
   if(!lote)return;
@@ -9154,6 +9280,7 @@ function fecharConfirmarAprovacaoSimulacao(){
   if(modal)modal.classList.remove('show');
 }
 function confirmarAprovacaoSimulacao(){
+  if(!requirePermission('lots.create'))return;
   fecharConfirmarAprovacaoSimulacao();
   setOrcStatus(true);
 }
@@ -9368,6 +9495,10 @@ function salvarResultadoNoLote(){
     mostrarAprovacaoCalculadora();
     return false;
   }
+  if(calcMode==='lote'&&activeLoteId){
+    var loteEmEdicao=getLotes().find(function(l){return l.id===activeLoteId;});
+    if(loteEmEdicao&&!canEditLot(loteEmEdicao)){toast('⚠ Você não possui permissão para editar este lote.');return false;}
+  }else if(!requirePermission('lots.create'))return false;
   var veioDeEdicaoDoStatus=calcMode==='lote'&&!!activeLoteId;
   var now=new Date();
   var loteNomeReferencia=((document.getElementById('orc-label-main')||{value:''}).value.trim()||(document.getElementById('orc-label')||{value:''}).value.trim())||'';
@@ -9475,6 +9606,7 @@ function salvarResultadoNoLote(){
   if(!salvouEmLoteExistente) {
     var novoLote={
       id:'lote_'+Date.now(),dataCriacao:orc.data,criadoPor:currentUser,
+      createdByUserId:currentAuthUser&&currentAuthUser.id||null,assignedUserIds:[],organizationId:currentOrganizationId||null,
       status:'embarque',vendedorId:calcVend,
       lot_number:null,lot_name:loteNomeReferencia||null,referenceName:loteNomeReferencia||null,label:loteNomeReferencia||null,
       origemCompra:origemCompra||null,origem:origemCompra||null,
@@ -9747,7 +9879,7 @@ function limparCalculadora(showToast){
   if(showToast)toast('✓ Calculadora limpa para nova cotação');
 }
 function salvarSimulacaoComoPadrao(){
-  if(!PARAM_ADMINS.includes(currentUser)){toast('⚠ Apenas administradores podem definir o padrão');return;}
+  if(!requirePermission('settings.parameters','Apenas usuários autorizados podem definir o padrão.'))return;
   var map={qtd:'qtd',pesoCom:'pesoCom',comissao:'comissao',gmd:'gmd',dias:'dias',
     rendE:'rendEntrada',rendA:'rendAbate',consumoMS:'consumoMS',quebra:'quebra',
     msKG:'msKG',opDia:'opDia',custoArrobaProd:'custoArrobaProd',sanidade:'sanidade',freteCusto:'freteCusto',
@@ -10186,9 +10318,59 @@ function calcular(opts){
   return true;
 }
 
+/* ── USUÁRIOS E ACESSOS ───────────────────────── */
+var usersAccessRows=[];
+var usersAuditRows=[];
+const MANAGEABLE_PERMISSIONS=[
+  ['lots.view_all','Ver todos os lotes'],['lots.change_status','Alterar status'],['realized.edit','Editar realizado'],
+  ['freight.edit','Editar frete'],['b3.create','Criar posições B3'],['b3.edit','Editar posições B3'],
+  ['b3.liquidate','Liquidar posições B3'],['reports.export','Exportar todos os relatórios']
+];
+function dateTimeBR(value){if(!value)return '—';var d=new Date(value);return isNaN(d.getTime())?'—':d.toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'});}
+async function loadUsersAccess(){
+  if(!requirePermission('users.view'))return;
+  var body=document.getElementById('users-table-body');if(body)body.innerHTML='<tr><td colspan="7" class="users-empty">Carregando usuários...</td></tr>';
+  try{
+    var c=getSupabaseClient();
+    var membersRes=await c.from('organization_members').select('*').eq('organization_id',currentOrganizationId).order('created_at',{ascending:false});
+    if(membersRes.error)throw membersRes.error;
+    var members=membersRes.data||[],ids=members.map(function(m){return m.user_id;});
+    var profiles=[];if(ids.length){var profilesRes=await c.from('profiles').select('*').in('id',ids);if(profilesRes.error)throw profilesRes.error;profiles=profilesRes.data||[];}
+    var permissions=[];if(ids.length){var permissionsRes=await c.from('user_permissions').select('*').eq('organization_id',currentOrganizationId).in('user_id',ids);if(!permissionsRes.error)permissions=permissionsRes.data||[];}
+    usersAccessRows=members.map(function(member){var profile=profiles.find(function(p){return p.id===member.user_id;})||{};return Object.assign({},profile,{user_id:member.user_id,role:member.role,member_active:member.active,member_created_at:member.created_at,permissions:permissions.filter(function(p){return p.user_id===member.user_id&&p.allowed;}).map(function(p){return p.permission;})});});
+    var auditRes=await c.from('audit_logs').select('*').eq('organization_id',currentOrganizationId).order('created_at',{ascending:false}).limit(50);usersAuditRows=auditRes.error?[]:(auditRes.data||[]);
+    renderUsersAccess();renderAuditAccess();
+  }catch(e){console.error(e);if(body)body.innerHTML='<tr><td colspan="7" class="users-empty">Não foi possível carregar os usuários.</td></tr>';}
+}
+function renderUsersAccess(){
+  var name=String((document.getElementById('users-filter-name')||{}).value||'').toLowerCase(),email=String((document.getElementById('users-filter-email')||{}).value||'').toLowerCase(),role=(document.getElementById('users-filter-role')||{}).value||'',status=(document.getElementById('users-filter-status')||{}).value||'';
+  var rows=usersAccessRows.filter(function(u){return(!name||String(u.full_name||'').toLowerCase().includes(name))&&(!email||String(u.email||'').toLowerCase().includes(email))&&(!role||u.role===role)&&(!status||u.status===status);});
+  var stats=document.getElementById('users-stats');if(stats){var count=function(s){return usersAccessRows.filter(function(u){return u.status===s;}).length;};stats.innerHTML='<div class="users-stat"><small>Total</small><strong>'+usersAccessRows.length+'</strong></div><div class="users-stat"><small>Ativos</small><strong>'+count('active')+'</strong></div><div class="users-stat"><small>Pendentes</small><strong>'+count('pending')+'</strong></div><div class="users-stat"><small>Bloqueados</small><strong>'+count('blocked')+'</strong></div><div class="users-stat"><small>Exibidos</small><strong>'+rows.length+'</strong></div>';}
+  var body=document.getElementById('users-table-body');if(!body)return;
+  body.innerHTML=rows.length?rows.map(function(u){var canManage=getCurrentRole()==='master'||(getCurrentRole()==='admin'&&u.role!=='master'&&u.role!=='admin');var statusLabel={active:'Ativo',pending:'Pendente',blocked:'Bloqueado',rejected:'Rejeitado'}[u.status]||u.status||'Pendente';return '<tr><td data-label="Nome"><strong>'+escHtml(u.full_name||'Sem nome')+'</strong></td><td data-label="E-mail">'+escHtml(u.email||'—')+'</td><td data-label="Função">'+escHtml(ROLE_LABELS[u.role]||u.role||'—')+'</td><td data-label="Status"><span class="badge">'+escHtml(statusLabel)+'</span></td><td data-label="Último acesso">'+dateTimeBR(u.last_login_at)+'</td><td data-label="Criação">'+dateTimeBR(u.created_at||u.member_created_at)+'</td><td data-label="Ações"><div class="user-actions">'+(canManage?'<button onclick="openUserAccessDialog(\''+u.user_id+'\')">Gerenciar</button>':'<span class="muted">Protegido</span>')+'</div></td></tr>';}).join(''):'<tr><td colspan="7" class="users-empty">Nenhum usuário encontrado.</td></tr>';
+}
+function renderAuditAccess(){var el=document.getElementById('audit-log-list');if(!el)return;el.innerHTML=usersAuditRows.length?usersAuditRows.map(function(a){return '<div style="padding:9px 0;border-bottom:1px solid var(--border)"><strong>'+escHtml(a.action||'alteração')+'</strong> <span class="muted">'+dateTimeBR(a.created_at)+'</span></div>';}).join(''):'Nenhum registro disponível.';}
+async function invokeAdminUser(action,payload){
+  var c=getSupabaseClient();var body=Object.assign({action:action,organizationId:currentOrganizationId,redirectTo:location.origin+location.pathname},payload||{});var result=await c.functions.invoke('admin-users',{body:body});if(result.error)throw result.error;if(result.data&&result.data.error)throw new Error(result.data.error);return result.data;
+}
+function closeUserAccessDialog(){var el=document.getElementById('user-access-dialog');if(el)el.remove();}
+function userRoleOptions(selected){return Object.keys(ROLE_LABELS).filter(function(role){return getCurrentRole()==='master'||(role!=='master'&&role!=='admin');}).map(function(role){return '<option value="'+role+'" '+(role===selected?'selected':'')+'>'+ROLE_LABELS[role]+'</option>';}).join('');}
+function openInviteUser(){
+  if(!requirePermission('users.approve'))return;
+  closeUserAccessDialog();var wrap=document.createElement('div');wrap.id='user-access-dialog';wrap.className='fut-modal-backdrop open';wrap.innerHTML='<div class="fut-modal"><div class="fut-modal-head"><div><div class="fut-modal-title">Adicionar usuário</div><div class="fut-modal-sub">O convite será enviado pelo Supabase Auth.</div></div><button class="fut-modal-close" onclick="closeUserAccessDialog()">×</button></div><div class="g2"><div class="field"><label>Nome completo</label><input id="invite-user-name"></div><div class="field"><label>E-mail</label><input id="invite-user-email" type="email"></div><div class="field"><label>Função inicial</label><select id="invite-user-role">'+userRoleOptions('viewer')+'</select></div></div><div class="fut-modal-actions"><button class="cancel" onclick="closeUserAccessDialog()">Cancelar</button><button class="save" onclick="submitInviteUser()">Enviar convite</button></div></div>';document.body.appendChild(wrap);
+}
+async function submitInviteUser(){try{var email=document.getElementById('invite-user-email').value.trim(),fullName=document.getElementById('invite-user-name').value.trim(),role=document.getElementById('invite-user-role').value;if(!email)throw new Error('Informe o e-mail.');await invokeAdminUser('invite',{email:email,fullName:fullName,role:role});closeUserAccessDialog();toast('✓ Convite enviado');loadUsersAccess();}catch(e){toast('⚠ '+(e.message||'Não foi possível enviar o convite'));}}
+function openUserAccessDialog(userId){
+  var u=usersAccessRows.find(function(row){return row.user_id===userId;});if(!u)return;closeUserAccessDialog();var wrap=document.createElement('div');wrap.id='user-access-dialog';wrap.className='fut-modal-backdrop open';var checks=MANAGEABLE_PERMISSIONS.map(function(p){return '<label style="display:flex;align-items:center;gap:8px;padding:7px 0"><input type="checkbox" class="user-permission-check" value="'+p[0]+'" '+(u.permissions.indexOf(p[0])>=0?'checked':'')+' style="width:auto;min-height:0"> '+p[1]+'</label>';}).join('');wrap.innerHTML='<div class="fut-modal"><div class="fut-modal-head"><div><div class="fut-modal-title">'+escHtml(u.full_name||u.email)+'</div><div class="fut-modal-sub">'+escHtml(u.email||'')+'</div></div><button class="fut-modal-close" onclick="closeUserAccessDialog()">×</button></div><div class="g2"><div class="field"><label>Função</label><select id="manage-user-role">'+userRoleOptions(u.role)+'</select></div><div class="field"><label>Status atual</label><input value="'+escHtml(u.status||'pending')+'" disabled></div></div><div class="cfg-row-lbl" style="margin-top:16px">Permissões adicionais</div>'+checks+'<div class="fut-modal-actions" style="flex-wrap:wrap"><button class="cancel" onclick="manageUserAction(\'reset_password\',\''+u.user_id+'\',\''+escHtml(u.email||'')+'\')">Redefinir senha</button><button class="cancel" onclick="manageUserAction(\'revoke_sessions\',\''+u.user_id+'\')">Encerrar sessões</button>'+(u.status==='pending'?'<button class="save" onclick="manageUserAction(\'approve\',\''+u.user_id+'\')">Aprovar</button><button class="cancel" onclick="manageUserAction(\'reject\',\''+u.user_id+'\')">Recusar</button>':u.status==='blocked'?'<button class="save" onclick="manageUserAction(\'unblock\',\''+u.user_id+'\')">Desbloquear</button>':'<button class="cancel" onclick="manageUserAction(\'block\',\''+u.user_id+'\')">Bloquear</button>')+'<button class="save" onclick="saveUserAccess(\''+u.user_id+'\')">Salvar acesso</button></div></div>';document.body.appendChild(wrap);
+}
+async function manageUserAction(action,userId,email){try{var u=usersAccessRows.find(function(row){return row.user_id===userId;})||{};await invokeAdminUser(action,{userId:userId,email:email||u.email,role:(document.getElementById('manage-user-role')||{}).value||u.role});closeUserAccessDialog();toast('✓ Usuário atualizado');loadUsersAccess();}catch(e){toast('⚠ '+(e.message||'Não foi possível atualizar o usuário'));}}
+async function saveUserAccess(userId){try{var u=usersAccessRows.find(function(row){return row.user_id===userId;})||{},role=document.getElementById('manage-user-role').value,permissions=Array.from(document.querySelectorAll('.user-permission-check:checked')).map(function(el){return el.value;});if(role!==u.role)await invokeAdminUser('role',{userId:userId,role:role});await invokeAdminUser('permissions',{userId:userId,role:role,permissions:permissions});closeUserAccessDialog();toast('✓ Acesso salvo');loadUsersAccess();}catch(e){toast('⚠ '+(e.message||'Não foi possível salvar o acesso'));}}
+
 /* ── CONFIGURAÇÕES ─────────────────────────────── */
 function showCfg(sec){
-  var sections=['vends','frigs','boiteis','transportadoras','params'];
+  var sections=['vends','frigs','boiteis','transportadoras','params','users'];
+  if(sec==='users'&&!hasPermission('users.view')){toast('⚠ Acesso restrito.');return;}
+  if(sec!=='users'&&!hasPermission('settings.operational')&&!hasPermission('settings.view_operational')){toast('⚠ Acesso restrito.');return;}
   sections.forEach(function(s){
     const el=document.getElementById('cfg-'+s);
     if(el)el.style.display=s===sec?'block':'none';
@@ -10199,6 +10381,7 @@ function showCfg(sec){
   if(sec==='boiteis')renderBoitelList();
   if(sec==='transportadoras')renderTransportadoraList();
   if(sec==='params'){loadParamsForm();renderCustomCostList();renderRacasList();}
+  if(sec==='users')loadUsersAccess();
 }
 function loadParamsForm(){
   var p=getParams();
@@ -10210,6 +10393,7 @@ function loadParamsForm(){
   setParamComissaoMode(p.comissaoMode==='val'?'val':'pct');
 }
 function salvarParams(){
+  if(!requirePermission('settings.parameters','Apenas usuários autorizados podem alterar os parâmetros padrão.'))return;
   var cfg=loadConfig();
   if(!cfg.params)cfg.params={};
   ['qtd','pesoCom','valorKG','comissao','gmd','dias','rendE','rendA','consumoMS','quebra','msKG','opDia','custoArrobaProd','sanidade','freteCusto','bonusFrete','freteKm','valorAt','funrural','bonus','desconto','prazoPag'].forEach(function(k){
@@ -10381,6 +10565,7 @@ function hideFrigForm(){
   document.querySelectorAll('[data-frig-id]').forEach(function(c){c.classList.remove('active-edit');});
 }
 function salvarFrigorifico(){
+  if(!requirePermission('settings.operational'))return;
   const nome=document.getElementById('ff-nome').value.trim();
   if(!nome){toast('⚠ Informe o nome');return;}
   const cfg=loadConfig();
@@ -10462,6 +10647,7 @@ function showBoitelForm(id){
 function editarBoitel(id){showBoitelForm(id);}
 function hideBoitelForm(){document.getElementById('boitel-form').style.display='none';}
 function salvarBoitel(){
+  if(!requirePermission('settings.operational'))return;
   var nome=document.getElementById('bf-nome').value.trim();
   if(!nome){toast('⚠ Informe o nome do boitel');return;}
   var cfg=loadConfig();
@@ -10524,6 +10710,7 @@ function showTransportadoraForm(id){
 function hideTransportadoraForm(){var form=document.getElementById('transportadora-form');if(form)form.style.display='none';}
 function editarTransportadora(id){showTransportadoraForm(id);}
 function salvarTransportadora(){
+  if(!requirePermission('settings.operational'))return;
   var nome=(document.getElementById('tf-nome')||{value:''}).value.trim();
   if(!nome){toast('⚠ Informe o nome da transportadora');return;}
   var cfg=loadConfig();
@@ -10665,6 +10852,7 @@ function renderRacasList(){
 }
 
 function salvarRacas(){
+  if(!requirePermission('settings.parameters'))return;
   var cfg=loadConfig();
   var atual=getRacas();
   var out={};
@@ -11644,6 +11832,9 @@ function sanitizarLotes(){
     if(!Array.isArray(l.arquivos)){l.arquivos=[];mudou=true;}
     if(!Array.isArray(l.videosEntrada)){l.videosEntrada=[];mudou=true;}
     if(!Array.isArray(l.videosSaida)){l.videosSaida=[];mudou=true;}
+    if(!Array.isArray(l.assignedUserIds)){l.assignedUserIds=[];mudou=true;}
+    if(!l.organizationId&&currentOrganizationId){l.organizationId=currentOrganizationId;mudou=true;}
+    if(!l.createdByUserId&&currentAuthUser&&l.criadoPor===currentUser){l.createdByUserId=currentAuthUser.id;mudou=true;}
     (l.orcamentos||[]).forEach(function(o){
       if(!o.modeloConta){o.modeloConta='msop';o.modeloLabel=calcModeloLabel('msop');mudou=true;}
       ['lucroLote','lucroAnimal','rent','rentMes','fatLiqLote','investLote'].forEach(function(k){
@@ -11730,14 +11921,35 @@ function initCalcResizableColumns(){
 }
 initCalcResizableColumns();
 
-(function restaurarSessaoLogin(){
-  var u='';
-  try{u=localStorage.getItem(SESSION_KEY)||'';}catch(e){u='';}
-  if(u&&USERS[u]){
-    var inp=document.getElementById('inp-user');if(inp)inp.value=u;
-    entrarApp(u,'home');
+var authBootstrapRunning=false;
+async function initSupabaseAuth(){
+  if(!supabaseIsConfigured()){
+    document.getElementById('login-err').textContent='Configure VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY para entrar.';
+    showAuthView('login');
+    return;
   }
-})();
+  var client=getSupabaseClient();
+  client.auth.onAuthStateChange(function(event,session){
+    if(event==='PASSWORD_RECOVERY')showAuthView('new-password');
+    if(event==='SIGNED_OUT'&&!authBootstrapRunning){
+      document.getElementById('app').style.display='none';
+      document.getElementById('login-screen').style.display='flex';
+      showAuthView('login');
+    }
+  });
+  authBootstrapRunning=true;
+  try{
+    var result=await client.auth.getSession();
+    if(result.error)throw result.error;
+    if(result.data&&result.data.session)await entrarApp(result.data.session.user,'home');
+    else showAuthView('login');
+  }catch(e){
+    console.error('Falha ao restaurar sessão Supabase',e);
+    document.getElementById('login-err').textContent='Não foi possível restaurar sua sessão.';
+    showAuthView('login');
+  }finally{authBootstrapRunning=false;}
+}
+initSupabaseAuth();
 
 </script>
 <div class="fut-modal-backdrop" id="fut-liquidar-modal" aria-hidden="true">
