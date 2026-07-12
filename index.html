@@ -2449,35 +2449,11 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
         <p class="login-title">Bem-vindo ao <strong>VM Agro</strong></p>
         <p class="login-subtitle">Gestão de Lotes</p>
         <div class="auth-view active" id="auth-login-view">
-          <div class="lf"><label>E-mail</label><div class="login-input-wrap"><span class="login-input-icon">✉</span><input type="email" id="inp-user" placeholder="seu@email.com" autocomplete="username"></div></div>
+          <div class="lf"><label>Usuário</label><div class="login-input-wrap"><span class="login-input-icon">●</span><input type="text" id="inp-user" placeholder="Digite seu usuário" autocomplete="username" autocapitalize="none" spellcheck="false"></div></div>
           <div class="lf"><label>Senha</label><div class="login-input-wrap"><span class="login-input-icon">▣</span><input type="password" id="inp-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div></div>
           <div class="login-err" id="login-err"></div>
           <button class="btn-login" id="btn-auth-login" onclick="doLogin()">Entrar</button>
-          <div class="login-forgot"><button class="auth-link" onclick="showAuthView('forgot')">Esqueci minha senha</button></div>
-          <div class="auth-switch">Ainda não possui acesso? <button class="auth-link" onclick="showAuthView('signup')">Criar conta</button></div>
         </div>
-        <div class="auth-view" id="auth-signup-view">
-          <p class="login-title" style="display:block">Criar sua conta</p><p class="login-subtitle" style="display:block">Solicite acesso à plataforma VM Agro</p>
-          <div class="lf"><label>Nome completo</label><div class="login-input-wrap"><input id="signup-name" autocomplete="name"></div></div>
-          <div class="lf"><label>E-mail</label><div class="login-input-wrap"><input type="email" id="signup-email" autocomplete="email"></div></div>
-          <div class="lf"><label>Telefone <small>(opcional)</small></label><div class="login-input-wrap"><input id="signup-phone" inputmode="tel" autocomplete="tel"></div></div>
-          <div class="lf"><label>Área de atuação <small>(opcional)</small></label><div class="login-input-wrap"><input id="signup-area"></div></div>
-          <div class="lf"><label>Senha</label><div class="login-input-wrap"><input type="password" id="signup-password" autocomplete="new-password" oninput="updatePasswordStrength()"></div><div class="password-strength"><span id="password-strength-bar"></span></div></div>
-          <div class="lf"><label>Confirmar senha</label><div class="login-input-wrap"><input type="password" id="signup-confirm" autocomplete="new-password"></div></div>
-          <div class="login-err" id="signup-err"></div><div class="auth-actions"><button class="btn-login" id="btn-auth-signup" onclick="createAccount()">Criar conta</button><button class="auth-secondary" onclick="showAuthView('login')">Voltar para entrar</button></div>
-        </div>
-        <div class="auth-view" id="auth-forgot-view">
-          <p class="login-title" style="display:block">Recuperar senha</p><p class="login-subtitle" style="display:block">Receba as instruções por e-mail</p>
-          <div class="lf"><label>E-mail</label><div class="login-input-wrap"><input type="email" id="forgot-email" autocomplete="email"></div></div>
-          <div class="login-err" id="forgot-message"></div><div class="auth-actions"><button class="btn-login" id="btn-auth-forgot" onclick="requestPasswordReset()">Enviar instruções</button><button class="auth-secondary" onclick="showAuthView('login')">Voltar para entrar</button></div>
-        </div>
-        <div class="auth-view" id="auth-new-password-view">
-          <p class="login-title" style="display:block">Definir nova senha</p>
-          <div class="lf"><label>Nova senha</label><div class="login-input-wrap"><input type="password" id="new-password" autocomplete="new-password"></div></div>
-          <div class="lf"><label>Confirmar senha</label><div class="login-input-wrap"><input type="password" id="new-password-confirm" autocomplete="new-password"></div></div>
-          <div class="login-err" id="new-password-err"></div><button class="btn-login" onclick="saveNewPassword()">Salvar nova senha</button>
-        </div>
-        <div class="auth-view" id="auth-status-view"><div class="auth-status-card"><h3 id="auth-status-title">Aguardando aprovação</h3><p id="auth-status-message"></p><p><strong id="auth-status-email"></strong></p><div class="auth-actions"><button class="btn-login" onclick="refreshAccountStatus()">Atualizar status</button><button class="auth-secondary" onclick="doLogout()">Sair</button></div></div></div>
       </div>
     </div>
   </div>
@@ -3221,7 +3197,6 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
         <button class="csn" onclick="showCfg('boiteis')">Boitéis</button>
         <button class="csn" onclick="showCfg('transportadoras')">Transportadoras</button>
         <button class="csn" id="csn-params" onclick="showCfg('params')">Parâmetros</button>
-        <button class="csn" id="csn-users" onclick="showCfg('users')" style="display:none">Usuários e acessos</button>
       </div>
 
       <!-- VENDEDORES -->
@@ -3483,14 +3458,6 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
         </div>
       </div>
 
-      <div id="cfg-users" style="display:none">
-        <div class="cfg-header"><div><h2>Usuários e acessos</h2><p>Aprovações, funções, bloqueios e histórico</p></div><button class="btn-add" onclick="openInviteUser()">+ Adicionar usuário</button></div>
-        <div class="users-stats" id="users-stats"></div>
-        <div class="users-toolbar"><input id="users-filter-name" placeholder="Nome" oninput="renderUsersAccess()"><input id="users-filter-email" placeholder="E-mail" oninput="renderUsersAccess()"><select id="users-filter-role" onchange="renderUsersAccess()"><option value="">Todas as funções</option><option value="master">Master</option><option value="admin">Administrador</option><option value="manager">Gestor</option><option value="editor">Editor</option><option value="viewer">Visualizador</option><option value="b3_operator">Operador B3</option></select><select id="users-filter-status" onchange="renderUsersAccess()"><option value="">Todos os status</option><option value="pending">Pendente</option><option value="active">Ativo</option><option value="blocked">Bloqueado</option><option value="rejected">Rejeitado</option></select><button class="btn-cancel" onclick="loadUsersAccess()">Atualizar</button></div>
-        <div class="users-table-wrap"><table class="users-table"><thead><tr><th>Nome</th><th>E-mail</th><th>Função</th><th>Status</th><th>Último acesso</th><th>Criação</th><th>Ações</th></tr></thead><tbody id="users-table-body"></tbody></table></div>
-        <div class="card" style="margin-top:16px"><div class="cfg-row-lbl">Histórico de acessos e alterações</div><div id="audit-log-list" class="users-empty">Carregando histórico...</div></div>
-      </div>
-
     </div>
   </div>
 </div>
@@ -3501,42 +3468,42 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 <script src="supabase-config.js"></script>
 <script>
 /* ── DADOS ─────────────────────────────────────── */
-let currentUser='';
-var currentAuthUser=null,currentProfile=null,currentMembership=null,currentOrganizationId='',currentSpecialPermissions=[];
-const ROLE_PERMISSIONS={
-  master:['*'],
-  admin:['home.view','lots.view_all','lots.create','lots.edit_all','lots.delete','lots.change_status','calculator.use','realized.edit','freight.edit','b3.view','b3.edit','reports.export','settings.operational','settings.parameters','users.view','users.approve','users.manage_lower_roles','audit.view'],
-  manager:['home.view','lots.view_all','lots.create','lots.edit_all','lots.change_status','calculator.use','realized.edit','freight.edit','b3.view','reports.export','settings.view_operational'],
-  editor:['home.view','lots.view_assigned','lots.create','lots.edit_assigned','calculator.use','realized.edit_assigned','freight.edit_assigned','reports.export_assigned'],
-  viewer:['home.view','lots.view_allowed','calculator.view','b3.view','reports.export'],
-  b3_operator:['home.view','lots.view_hedge_data','b3.view','b3.create','b3.edit','b3.liquidate','reports.export_b3']
+const USERS={
+  hastagro:'hasta2024',
+  caroline:'csilva@2025',
+  alexmorimoto:'alex@2025',
+  vitormorimoto:'vitor@2025'
 };
-const ROLE_LABELS={master:'Master',admin:'Administrador',manager:'Gestor',editor:'Editor',viewer:'Visualizador',b3_operator:'Operador B3'};
-function getCurrentProfile(){return currentProfile;}
-function getCurrentRole(){return currentMembership&&currentMembership.role||'';}
+const ADMINS=['hastagro','caroline','alexmorimoto'];
+const PARAM_ADMINS=['hastagro','alexmorimoto'];
+const FULL_ACCESS=['hastagro','caroline','alexmorimoto'];
+const SESSION_KEY='vm_agro_session';
+let currentUser='';
+/* Mantidos como compatibilidade dos dados antigos; o login básico não usa perfis do Supabase. */
+var currentAuthUser=null,currentProfile=null,currentMembership=null,currentOrganizationId='',currentSpecialPermissions=[];
+function isAdminUser(username){return ADMINS.indexOf(username===undefined?currentUser:username)>=0;}
+function isParameterAdmin(username){return PARAM_ADMINS.indexOf(username===undefined?currentUser:username)>=0;}
+function hasFullAccess(username){return FULL_ACCESS.indexOf(username===undefined?currentUser:username)>=0;}
+function getCurrentProfile(){return currentUser?{full_name:currentUser,status:'active'}:null;}
+function getCurrentRole(){return isAdminUser()?'admin':'user';}
 function hasPermission(permission){
-  var overrides=(currentSpecialPermissions||[]).filter(function(p){return p.permission===permission;});
-  if(overrides.some(function(p){return p.allowed===false;}))return false;
-  if(overrides.some(function(p){return p.allowed===true;}))return true;
-  var list=ROLE_PERMISSIONS[getCurrentRole()]||[];return list.indexOf('*')>=0||list.indexOf(permission)>=0;
+  if(!currentUser)return false;
+  if(permission==='settings.parameters')return isParameterAdmin();
+  if(String(permission||'').indexOf('users.')===0||permission==='audit.view')return false;
+  if(isAdminUser())return true;
+  return [
+    'home.view','lots.view_allowed','lots.view_assigned','lots.create','lots.edit_assigned',
+    'calculator.use','calculator.view','realized.edit_assigned','freight.edit_assigned',
+    'b3.view','reports.export_assigned','settings.view_operational'
+  ].indexOf(permission)>=0;
 }
 function requirePermission(permission,message){if(hasPermission(permission))return true;toast(typeof message==='string'?message:'Você não possui permissão para realizar esta ação.');return false;}
 function canAccessTab(tab){
-  var map={home:'home.view',lotes:'lots.view_allowed',calc:'calculator.view',futuros:'b3.view',config:'settings.operational'};
-  if(tab==='lotes')return hasPermission('lots.view_all')||hasPermission('lots.view_assigned')||hasPermission('lots.view_allowed')||hasPermission('lots.view_hedge_data');
-  if(tab==='calc')return hasPermission('calculator.use')||hasPermission('calculator.view');
-  if(tab==='config')return hasPermission('settings.operational')||hasPermission('settings.view_operational')||hasPermission('users.view');
   if(tab==='financeiro')return false;
-  return !map[tab]||hasPermission(map[tab]);
+  return ['home','lotes','calc','futuros','config','lote-detail'].indexOf(tab)>=0;
 }
-function canViewLot(lot){
-  if(hasPermission('lots.view_all'))return true;
-  var uid=currentAuthUser&&currentAuthUser.id;if(!uid)return false;
-  if(hasPermission('lots.view_hedge_data'))return true;
-  var assigned=lot&&Array.isArray(lot.assignedUserIds)?lot.assignedUserIds:[];
-  return !!lot&&(lot.createdByUserId===uid||assigned.indexOf(uid)>=0||lot.criadoPor===currentUser);
-}
-function canEditLot(lot){return hasPermission('lots.edit_all')||(hasPermission('lots.edit_assigned')&&canViewLot(lot));}
+function canViewLot(lot){return hasFullAccess()||!!lot&&(!lot.criadoPor||lot.criadoPor===currentUser);}
+function canEditLot(lot){return isAdminUser()||!!lot&&(!lot.criadoPor||lot.criadoPor===currentUser);}
 function applyPermissionToElement(selector,permission){document.querySelectorAll(selector).forEach(function(el){var allowed=hasPermission(permission);el.hidden=!allowed;el.disabled=!allowed;});}
 let calcMode='standalone';
 let activeLoteId=null;
@@ -3912,7 +3879,7 @@ async function excluirDadosBanco(key){
   var res=await client.from(SUPABASE_TABLE)
     .delete()
     .eq('app_id',SUPABASE_APP_ID)
-    .eq('organization_id',currentOrganizationId)
+    .eq('user_key',supabaseUserKey())
     .eq('key',remoteKey);
   if(res.error)throw res.error;
   return true;
@@ -3961,7 +3928,7 @@ async function carregarDadosSupabase(){
     var res=await client.from(SUPABASE_TABLE)
       .select('key,value')
       .eq('app_id',SUPABASE_APP_ID)
-      .eq('organization_id',currentOrganizationId);
+      .eq('user_key',supabaseUserKey());
     if(res.error)throw res.error;
     var rows=res.data||[];
     if(!rows.length){
@@ -4850,68 +4817,61 @@ function bioRows(id,rows){
 }
 
 /* ── LOGIN / LOGOUT ────────────────────────────── */
-function setAuthBusy(buttonId,busy,label){var b=document.getElementById(buttonId);if(!b)return;b.disabled=!!busy;if(!b.dataset.label)b.dataset.label=b.textContent;b.textContent=busy?(label||'Aguarde...'):b.dataset.label;}
-function showAuthView(name){document.querySelectorAll('.auth-view').forEach(function(v){v.classList.remove('active');});var el=document.getElementById('auth-'+name+'-view');if(el)el.classList.add('active');var err=document.getElementById('login-err');if(err)err.textContent='';}
-function authErrorMessage(error){var msg=String(error&&error.message||'').toLowerCase();if(msg.indexOf('invalid login')>=0)return 'E-mail ou senha inválidos.';if(msg.indexOf('already registered')>=0||msg.indexOf('already been registered')>=0)return 'Este e-mail já possui cadastro.';if(msg.indexOf('password')>=0)return 'A senha deve possuir no mínimo 8 caracteres.';return 'Não foi possível concluir. Tente novamente.';}
-function updatePasswordStrength(){var p=(document.getElementById('signup-password')||{}).value||'',score=0;if(p.length>=8)score++;if(/[A-Z]/.test(p)&&/[a-z]/.test(p))score++;if(/\d/.test(p))score++;if(/[^A-Za-z0-9]/.test(p))score++;var bar=document.getElementById('password-strength-bar');if(bar){bar.style.width=(score*25)+'%';bar.style.background=score<2?'#9A3B30':score<4?'#C9A24E':'#6B7056';}}
-async function writeAudit(action,entityType,entityId,previousData,newData){try{var c=getSupabaseClient();if(!c||!currentOrganizationId||!currentAuthUser)return;await c.from('audit_logs').insert({organization_id:currentOrganizationId,user_id:currentAuthUser.id,action:action,entity_type:entityType||null,entity_id:entityId?String(entityId):null,previous_data:previousData||null,new_data:newData||null,user_agent:navigator.userAgent.slice(0,500)});}catch(e){console.warn('Falha ao registrar auditoria',e);}}
-async function loadCurrentAuthContext(user){
-  var c=getSupabaseClient();if(!c||!user)throw new Error('Sessão inválida');
-  var profileRes=await c.from('profiles').select('*').eq('id',user.id).maybeSingle();if(profileRes.error)throw profileRes.error;
-  currentAuthUser=user;currentProfile=profileRes.data||{id:user.id,email:user.email||'',full_name:user.user_metadata&&user.user_metadata.full_name||'',status:'pending'};
-  var memberRes=await c.from('organization_members').select('*,organizations(id,name,slug,active)').eq('user_id',user.id).eq('active',true).maybeSingle();
-  currentMembership=memberRes.data||null;currentOrganizationId=currentMembership&&currentMembership.organization_id||'';
-  currentSpecialPermissions=[];
-  if(currentOrganizationId){var permRes=await c.from('user_permissions').select('permission,allowed').eq('organization_id',currentOrganizationId).eq('user_id',user.id);if(!permRes.error)currentSpecialPermissions=permRes.data||[];}
-  currentUser=currentProfile.full_name||currentProfile.email||user.email||'Usuário';
-  return {profile:currentProfile,membership:currentMembership};
-}
-function showAccountStatus(profile,user){
-  document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';showAuthView('status');
-  var status=profile&&profile.status||'pending',title='Aguardando aprovação',message='Seu cadastro foi recebido e está aguardando aprovação.';
-  if(status==='blocked'){title='Acesso bloqueado';message='Seu acesso está temporariamente bloqueado. Entre em contato com um administrador.';}
-  if(status==='rejected'){title='Acesso não aprovado';message='Seu pedido de acesso não foi aprovado.';}
-  document.getElementById('auth-status-title').textContent=title;document.getElementById('auth-status-message').textContent=message;document.getElementById('auth-status-email').textContent=(user&&user.email)||profile.email||'';
-}
+function writeAudit(){return Promise.resolve();}
 function applyCurrentUserPermissions(){
   document.querySelectorAll('[data-tab-target]').forEach(function(el){var tab=el.getAttribute('data-tab-target');el.style.display=canAccessTab(tab)?'':'none';});
-  var cfg=canAccessTab('config');var tabCfg=document.getElementById('tab-config'),sideCfg=document.getElementById('side-config');if(tabCfg)tabCfg.style.display=cfg?'':'none';if(sideCfg)sideCfg.style.display=cfg?'':'none';
-  var params=document.getElementById('csn-params');if(params)params.style.display=hasPermission('settings.parameters')?'':'none';
-  var users=document.getElementById('csn-users');if(users)users.style.display=hasPermission('users.view')?'':'none';
-  document.querySelectorAll('.header-report').forEach(function(el){el.style.display=(hasPermission('reports.export')||hasPermission('reports.export_assigned')||hasPermission('reports.export_b3'))?'':'none';});
-  if(hasPermission('calculator.view')&&!hasPermission('calculator.use'))document.querySelectorAll('#panel-calc input,#panel-calc select,#panel-calc textarea,#panel-calc button').forEach(function(el){if(!el.closest('.export-wrap'))el.disabled=true;});
-  if(hasPermission('settings.view_operational')&&!hasPermission('settings.operational'))document.querySelectorAll('#panel-config input,#panel-config select,#panel-config textarea,#panel-config .btn-add,#panel-config .btn-save,#panel-config .btn-ic-del').forEach(function(el){el.disabled=true;});
+  var tabCfg=document.getElementById('tab-config'),sideCfg=document.getElementById('side-config');if(tabCfg)tabCfg.style.display='';if(sideCfg)sideCfg.style.display='';
+  document.querySelectorAll('.header-report').forEach(function(el){el.style.display='';});
+  var canManage=isAdminUser();
+  document.querySelectorAll('#cfg-vends input,#cfg-vends select,#cfg-vends textarea,#cfg-vends button,#cfg-frigs input,#cfg-frigs select,#cfg-frigs textarea,#cfg-frigs button,#cfg-boiteis input,#cfg-boiteis select,#cfg-boiteis textarea,#cfg-boiteis button,#cfg-transportadoras input,#cfg-transportadoras select,#cfg-transportadoras textarea,#cfg-transportadoras button').forEach(function(el){el.disabled=!canManage;});
+  var canParams=isParameterAdmin();
+  document.querySelectorAll('#cfg-params input,#cfg-params select,#cfg-params textarea,#cfg-params .btn-save,#cfg-params .btn-add,#cfg-params .btn-ic-del').forEach(function(el){el.disabled=!canParams;});
 }
-async function entrarApp(user,tab){
-  await loadCurrentAuthContext(user);
-  if(currentProfile.status!=='active'||!currentMembership||!currentMembership.active){showAccountStatus(currentProfile,user);return false;}
+async function entrarApp(username,tab){
+  currentUser=String(username||'').trim().toLowerCase();
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').style.display='block';
-  document.getElementById('user-display').textContent=currentProfile.full_name||currentProfile.email;
+  document.getElementById('user-display').textContent=currentUser;
   var err=document.getElementById('login-err');if(err)err.textContent='';
   await carregarDadosSupabase();
   applyCurrentUserPermissions();
   sanitizarLotes();populateTipoSelects();populateFrigSelect();populateBoitelSelect();populateVendSelect();populateFilterVend();populateFilterFrig();populateCalcVendSelect();
   switchTab(canAccessTab(tab||'home')?(tab||'home'):'home');
-  getSupabaseClient().rpc('touch_last_login').then(function(){});
-  writeAudit('auth.login','user',user.id,null,{role:getCurrentRole()});return true;
+  return true;
 }
-async function doLogin(){
-  var email=document.getElementById('inp-user').value.trim().toLowerCase(),password=document.getElementById('inp-pass').value,err=document.getElementById('login-err');err.textContent='';
-  if(!supabaseIsConfigured()){err.textContent='Configure o Supabase para entrar.';return;}
-  setAuthBusy('btn-auth-login',true,'Entrando...');try{var res=await getSupabaseClient().auth.signInWithPassword({email:email,password:password});if(res.error)throw res.error;await entrarApp(res.data.user,'home');}catch(e){console.error(e);err.textContent=authErrorMessage(e);document.getElementById('inp-pass').value='';}finally{setAuthBusy('btn-auth-login',false);}
+function doLogin(){
+  var username=String((document.getElementById('inp-user')||{}).value||'').trim().toLowerCase();
+  var password=String((document.getElementById('inp-pass')||{}).value||'');
+  var err=document.getElementById('login-err');if(err)err.textContent='';
+  if(!Object.prototype.hasOwnProperty.call(USERS,username)||USERS[username]!==password){
+    if(err)err.textContent='Usuário ou senha inválidos.';
+    var pass=document.getElementById('inp-pass');if(pass){pass.value='';pass.focus();}
+    return;
+  }
+  currentUser=username;
+  try{localStorage.setItem(SESSION_KEY,JSON.stringify({username:username,createdAt:Date.now()}));}catch(e){}
+  entrarApp(username,'home');
 }
-async function createAccount(){
-  var name=document.getElementById('signup-name').value.trim(),email=document.getElementById('signup-email').value.trim().toLowerCase(),phone=document.getElementById('signup-phone').value.trim(),area=document.getElementById('signup-area').value.trim(),password=document.getElementById('signup-password').value,confirmPassword=document.getElementById('signup-confirm').value,err=document.getElementById('signup-err');err.textContent='';
-  if(!name){err.textContent='Informe seu nome completo.';return;}if(!/^\S+@\S+\.\S+$/.test(email)){err.textContent='Informe um e-mail válido.';return;}if(password.length<8){err.textContent='A senha deve possuir no mínimo 8 caracteres.';return;}if(password!==confirmPassword){err.textContent='As senhas não são iguais.';return;}
-  setAuthBusy('btn-auth-signup',true,'Criando conta...');try{var res=await getSupabaseClient().auth.signUp({email:email,password:password,options:{data:{full_name:name,phone:phone,area:area}}});if(res.error)throw res.error;if(res.data.session)await getSupabaseClient().auth.signOut();showAuthView('login');document.getElementById('login-err').textContent='Conta criada com sucesso. Seu acesso está aguardando aprovação.';document.getElementById('inp-user').value=email;}catch(e){console.error(e);err.textContent=authErrorMessage(e);}finally{setAuthBusy('btn-auth-signup',false);}
-}
-async function requestPasswordReset(){var email=document.getElementById('forgot-email').value.trim().toLowerCase(),msg=document.getElementById('forgot-message');setAuthBusy('btn-auth-forgot',true,'Enviando...');try{await getSupabaseClient().auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});msg.textContent='Caso exista uma conta associada a esse e-mail, enviaremos as instruções.';}catch(e){console.error(e);msg.textContent='Caso exista uma conta associada a esse e-mail, enviaremos as instruções.';}finally{setAuthBusy('btn-auth-forgot',false);}}
-async function saveNewPassword(){var p=document.getElementById('new-password').value,c=document.getElementById('new-password-confirm').value,err=document.getElementById('new-password-err');if(p.length<8){err.textContent='A senha deve possuir no mínimo 8 caracteres.';return;}if(p!==c){err.textContent='As senhas não são iguais.';return;}var res=await getSupabaseClient().auth.updateUser({password:p});if(res.error){err.textContent=authErrorMessage(res.error);return;}toast('✓ Senha atualizada');showAuthView('login');}
-async function refreshAccountStatus(){var res=await getSupabaseClient().auth.getSession();if(res.data&&res.data.session)await entrarApp(res.data.session.user,'home');else showAuthView('login');}
-async function doLogout(){var userId=currentAuthUser&&currentAuthUser.id;if(userId)writeAudit('auth.logout','user',userId);try{var c=getSupabaseClient();if(c)await c.auth.signOut();}catch(e){console.warn(e);}currentUser='';currentAuthUser=null;currentProfile=null;currentMembership=null;currentOrganizationId='';currentSpecialPermissions=[];supabaseLastLoadUser='';
+function doLogout(){currentUser='';currentAuthUser=null;currentProfile=null;currentMembership=null;currentOrganizationId='';currentSpecialPermissions=[];supabaseLastLoadUser='';
+  try{localStorage.removeItem(SESSION_KEY);}catch(e){}
   document.body.classList.remove('mobile-header-hidden','calc-tab-active');
-  document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';document.getElementById('inp-pass').value='';showAuthView('login');}
+  document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';
+  var user=document.getElementById('inp-user'),pass=document.getElementById('inp-pass');if(user)user.value='';if(pass)pass.value='';
+}
+function restoreBasicSession(){
+  try{
+    var saved=JSON.parse(localStorage.getItem(SESSION_KEY)||'null');
+    var username=String(saved&&saved.username||'').trim().toLowerCase();
+    if(username&&Object.prototype.hasOwnProperty.call(USERS,username)){
+      currentUser=username;
+      var inp=document.getElementById('inp-user');if(inp)inp.value=username;
+      entrarApp(username,'home');
+      return true;
+    }
+  }catch(e){console.warn('Não foi possível restaurar a sessão.',e);}
+  try{localStorage.removeItem(SESSION_KEY);}catch(e){}
+  return false;
+}
 
 /* ── TABS ──────────────────────────────────────── */
 function syncDesktopSidebar(tab){
@@ -4936,7 +4896,7 @@ function switchTab(tab){
   if(tab==='futuros')renderFuturos();
   if(tab==='financeiro')renderFinanceiro();
   if(tab==='config'){
-    showCfg(hasPermission('settings.operational')?'vends':'users');
+    showCfg('vends');
   }
   if(tab==='calc'&&calcMode==='standalone'&&!calcStandaloneInitialized)abrirCalcStandalone();
   ensureExportControls();
@@ -10318,59 +10278,10 @@ function calcular(opts){
   return true;
 }
 
-/* ── USUÁRIOS E ACESSOS ───────────────────────── */
-var usersAccessRows=[];
-var usersAuditRows=[];
-const MANAGEABLE_PERMISSIONS=[
-  ['lots.view_all','Ver todos os lotes'],['lots.change_status','Alterar status'],['realized.edit','Editar realizado'],
-  ['freight.edit','Editar frete'],['b3.create','Criar posições B3'],['b3.edit','Editar posições B3'],
-  ['b3.liquidate','Liquidar posições B3'],['reports.export','Exportar todos os relatórios']
-];
-function dateTimeBR(value){if(!value)return '—';var d=new Date(value);return isNaN(d.getTime())?'—':d.toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'});}
-async function loadUsersAccess(){
-  if(!requirePermission('users.view'))return;
-  var body=document.getElementById('users-table-body');if(body)body.innerHTML='<tr><td colspan="7" class="users-empty">Carregando usuários...</td></tr>';
-  try{
-    var c=getSupabaseClient();
-    var membersRes=await c.from('organization_members').select('*').eq('organization_id',currentOrganizationId).order('created_at',{ascending:false});
-    if(membersRes.error)throw membersRes.error;
-    var members=membersRes.data||[],ids=members.map(function(m){return m.user_id;});
-    var profiles=[];if(ids.length){var profilesRes=await c.from('profiles').select('*').in('id',ids);if(profilesRes.error)throw profilesRes.error;profiles=profilesRes.data||[];}
-    var permissions=[];if(ids.length){var permissionsRes=await c.from('user_permissions').select('*').eq('organization_id',currentOrganizationId).in('user_id',ids);if(!permissionsRes.error)permissions=permissionsRes.data||[];}
-    usersAccessRows=members.map(function(member){var profile=profiles.find(function(p){return p.id===member.user_id;})||{};return Object.assign({},profile,{user_id:member.user_id,role:member.role,member_active:member.active,member_created_at:member.created_at,permissions:permissions.filter(function(p){return p.user_id===member.user_id&&p.allowed;}).map(function(p){return p.permission;})});});
-    var auditRes=await c.from('audit_logs').select('*').eq('organization_id',currentOrganizationId).order('created_at',{ascending:false}).limit(50);usersAuditRows=auditRes.error?[]:(auditRes.data||[]);
-    renderUsersAccess();renderAuditAccess();
-  }catch(e){console.error(e);if(body)body.innerHTML='<tr><td colspan="7" class="users-empty">Não foi possível carregar os usuários.</td></tr>';}
-}
-function renderUsersAccess(){
-  var name=String((document.getElementById('users-filter-name')||{}).value||'').toLowerCase(),email=String((document.getElementById('users-filter-email')||{}).value||'').toLowerCase(),role=(document.getElementById('users-filter-role')||{}).value||'',status=(document.getElementById('users-filter-status')||{}).value||'';
-  var rows=usersAccessRows.filter(function(u){return(!name||String(u.full_name||'').toLowerCase().includes(name))&&(!email||String(u.email||'').toLowerCase().includes(email))&&(!role||u.role===role)&&(!status||u.status===status);});
-  var stats=document.getElementById('users-stats');if(stats){var count=function(s){return usersAccessRows.filter(function(u){return u.status===s;}).length;};stats.innerHTML='<div class="users-stat"><small>Total</small><strong>'+usersAccessRows.length+'</strong></div><div class="users-stat"><small>Ativos</small><strong>'+count('active')+'</strong></div><div class="users-stat"><small>Pendentes</small><strong>'+count('pending')+'</strong></div><div class="users-stat"><small>Bloqueados</small><strong>'+count('blocked')+'</strong></div><div class="users-stat"><small>Exibidos</small><strong>'+rows.length+'</strong></div>';}
-  var body=document.getElementById('users-table-body');if(!body)return;
-  body.innerHTML=rows.length?rows.map(function(u){var canManage=getCurrentRole()==='master'||(getCurrentRole()==='admin'&&u.role!=='master'&&u.role!=='admin');var statusLabel={active:'Ativo',pending:'Pendente',blocked:'Bloqueado',rejected:'Rejeitado'}[u.status]||u.status||'Pendente';return '<tr><td data-label="Nome"><strong>'+escHtml(u.full_name||'Sem nome')+'</strong></td><td data-label="E-mail">'+escHtml(u.email||'—')+'</td><td data-label="Função">'+escHtml(ROLE_LABELS[u.role]||u.role||'—')+'</td><td data-label="Status"><span class="badge">'+escHtml(statusLabel)+'</span></td><td data-label="Último acesso">'+dateTimeBR(u.last_login_at)+'</td><td data-label="Criação">'+dateTimeBR(u.created_at||u.member_created_at)+'</td><td data-label="Ações"><div class="user-actions">'+(canManage?'<button onclick="openUserAccessDialog(\''+u.user_id+'\')">Gerenciar</button>':'<span class="muted">Protegido</span>')+'</div></td></tr>';}).join(''):'<tr><td colspan="7" class="users-empty">Nenhum usuário encontrado.</td></tr>';
-}
-function renderAuditAccess(){var el=document.getElementById('audit-log-list');if(!el)return;el.innerHTML=usersAuditRows.length?usersAuditRows.map(function(a){return '<div style="padding:9px 0;border-bottom:1px solid var(--border)"><strong>'+escHtml(a.action||'alteração')+'</strong> <span class="muted">'+dateTimeBR(a.created_at)+'</span></div>';}).join(''):'Nenhum registro disponível.';}
-async function invokeAdminUser(action,payload){
-  var c=getSupabaseClient();var body=Object.assign({action:action,organizationId:currentOrganizationId,redirectTo:location.origin+location.pathname},payload||{});var result=await c.functions.invoke('admin-users',{body:body});if(result.error)throw result.error;if(result.data&&result.data.error)throw new Error(result.data.error);return result.data;
-}
-function closeUserAccessDialog(){var el=document.getElementById('user-access-dialog');if(el)el.remove();}
-function userRoleOptions(selected){return Object.keys(ROLE_LABELS).filter(function(role){return getCurrentRole()==='master'||(role!=='master'&&role!=='admin');}).map(function(role){return '<option value="'+role+'" '+(role===selected?'selected':'')+'>'+ROLE_LABELS[role]+'</option>';}).join('');}
-function openInviteUser(){
-  if(!requirePermission('users.approve'))return;
-  closeUserAccessDialog();var wrap=document.createElement('div');wrap.id='user-access-dialog';wrap.className='fut-modal-backdrop open';wrap.innerHTML='<div class="fut-modal"><div class="fut-modal-head"><div><div class="fut-modal-title">Adicionar usuário</div><div class="fut-modal-sub">O convite será enviado pelo Supabase Auth.</div></div><button class="fut-modal-close" onclick="closeUserAccessDialog()">×</button></div><div class="g2"><div class="field"><label>Nome completo</label><input id="invite-user-name"></div><div class="field"><label>E-mail</label><input id="invite-user-email" type="email"></div><div class="field"><label>Função inicial</label><select id="invite-user-role">'+userRoleOptions('viewer')+'</select></div></div><div class="fut-modal-actions"><button class="cancel" onclick="closeUserAccessDialog()">Cancelar</button><button class="save" onclick="submitInviteUser()">Enviar convite</button></div></div>';document.body.appendChild(wrap);
-}
-async function submitInviteUser(){try{var email=document.getElementById('invite-user-email').value.trim(),fullName=document.getElementById('invite-user-name').value.trim(),role=document.getElementById('invite-user-role').value;if(!email)throw new Error('Informe o e-mail.');await invokeAdminUser('invite',{email:email,fullName:fullName,role:role});closeUserAccessDialog();toast('✓ Convite enviado');loadUsersAccess();}catch(e){toast('⚠ '+(e.message||'Não foi possível enviar o convite'));}}
-function openUserAccessDialog(userId){
-  var u=usersAccessRows.find(function(row){return row.user_id===userId;});if(!u)return;closeUserAccessDialog();var wrap=document.createElement('div');wrap.id='user-access-dialog';wrap.className='fut-modal-backdrop open';var checks=MANAGEABLE_PERMISSIONS.map(function(p){return '<label style="display:flex;align-items:center;gap:8px;padding:7px 0"><input type="checkbox" class="user-permission-check" value="'+p[0]+'" '+(u.permissions.indexOf(p[0])>=0?'checked':'')+' style="width:auto;min-height:0"> '+p[1]+'</label>';}).join('');wrap.innerHTML='<div class="fut-modal"><div class="fut-modal-head"><div><div class="fut-modal-title">'+escHtml(u.full_name||u.email)+'</div><div class="fut-modal-sub">'+escHtml(u.email||'')+'</div></div><button class="fut-modal-close" onclick="closeUserAccessDialog()">×</button></div><div class="g2"><div class="field"><label>Função</label><select id="manage-user-role">'+userRoleOptions(u.role)+'</select></div><div class="field"><label>Status atual</label><input value="'+escHtml(u.status||'pending')+'" disabled></div></div><div class="cfg-row-lbl" style="margin-top:16px">Permissões adicionais</div>'+checks+'<div class="fut-modal-actions" style="flex-wrap:wrap"><button class="cancel" onclick="manageUserAction(\'reset_password\',\''+u.user_id+'\',\''+escHtml(u.email||'')+'\')">Redefinir senha</button><button class="cancel" onclick="manageUserAction(\'revoke_sessions\',\''+u.user_id+'\')">Encerrar sessões</button>'+(u.status==='pending'?'<button class="save" onclick="manageUserAction(\'approve\',\''+u.user_id+'\')">Aprovar</button><button class="cancel" onclick="manageUserAction(\'reject\',\''+u.user_id+'\')">Recusar</button>':u.status==='blocked'?'<button class="save" onclick="manageUserAction(\'unblock\',\''+u.user_id+'\')">Desbloquear</button>':'<button class="cancel" onclick="manageUserAction(\'block\',\''+u.user_id+'\')">Bloquear</button>')+'<button class="save" onclick="saveUserAccess(\''+u.user_id+'\')">Salvar acesso</button></div></div>';document.body.appendChild(wrap);
-}
-async function manageUserAction(action,userId,email){try{var u=usersAccessRows.find(function(row){return row.user_id===userId;})||{};await invokeAdminUser(action,{userId:userId,email:email||u.email,role:(document.getElementById('manage-user-role')||{}).value||u.role});closeUserAccessDialog();toast('✓ Usuário atualizado');loadUsersAccess();}catch(e){toast('⚠ '+(e.message||'Não foi possível atualizar o usuário'));}}
-async function saveUserAccess(userId){try{var u=usersAccessRows.find(function(row){return row.user_id===userId;})||{},role=document.getElementById('manage-user-role').value,permissions=Array.from(document.querySelectorAll('.user-permission-check:checked')).map(function(el){return el.value;});if(role!==u.role)await invokeAdminUser('role',{userId:userId,role:role});await invokeAdminUser('permissions',{userId:userId,role:role,permissions:permissions});closeUserAccessDialog();toast('✓ Acesso salvo');loadUsersAccess();}catch(e){toast('⚠ '+(e.message||'Não foi possível salvar o acesso'));}}
-
 /* ── CONFIGURAÇÕES ─────────────────────────────── */
 function showCfg(sec){
-  var sections=['vends','frigs','boiteis','transportadoras','params','users'];
-  if(sec==='users'&&!hasPermission('users.view')){toast('⚠ Acesso restrito.');return;}
-  if(sec!=='users'&&!hasPermission('settings.operational')&&!hasPermission('settings.view_operational')){toast('⚠ Acesso restrito.');return;}
+  var sections=['vends','frigs','boiteis','transportadoras','params'];
+  if(sections.indexOf(sec)<0)sec='vends';
   sections.forEach(function(s){
     const el=document.getElementById('cfg-'+s);
     if(el)el.style.display=s===sec?'block':'none';
@@ -10381,7 +10292,7 @@ function showCfg(sec){
   if(sec==='boiteis')renderBoitelList();
   if(sec==='transportadoras')renderTransportadoraList();
   if(sec==='params'){loadParamsForm();renderCustomCostList();renderRacasList();}
-  if(sec==='users')loadUsersAccess();
+  applyCurrentUserPermissions();
 }
 function loadParamsForm(){
   var p=getParams();
@@ -11921,35 +11832,7 @@ function initCalcResizableColumns(){
 }
 initCalcResizableColumns();
 
-var authBootstrapRunning=false;
-async function initSupabaseAuth(){
-  if(!supabaseIsConfigured()){
-    document.getElementById('login-err').textContent='Configure VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY para entrar.';
-    showAuthView('login');
-    return;
-  }
-  var client=getSupabaseClient();
-  client.auth.onAuthStateChange(function(event,session){
-    if(event==='PASSWORD_RECOVERY')showAuthView('new-password');
-    if(event==='SIGNED_OUT'&&!authBootstrapRunning){
-      document.getElementById('app').style.display='none';
-      document.getElementById('login-screen').style.display='flex';
-      showAuthView('login');
-    }
-  });
-  authBootstrapRunning=true;
-  try{
-    var result=await client.auth.getSession();
-    if(result.error)throw result.error;
-    if(result.data&&result.data.session)await entrarApp(result.data.session.user,'home');
-    else showAuthView('login');
-  }catch(e){
-    console.error('Falha ao restaurar sessão Supabase',e);
-    document.getElementById('login-err').textContent='Não foi possível restaurar sua sessão.';
-    showAuthView('login');
-  }finally{authBootstrapRunning=false;}
-}
-initSupabaseAuth();
+restoreBasicSession();
 
 </script>
 <div class="fut-modal-backdrop" id="fut-liquidar-modal" aria-hidden="true">
