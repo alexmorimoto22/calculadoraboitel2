@@ -384,35 +384,6 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 .bonus-val.pos{color:var(--green);}
 .bonus-val.neg{color:var(--red);}
 
-/* ─ FRETE REALIZADO ───────────────────────────── */
-.frete-realizado-card{background:#fffdf7;border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:14px;padding:14px;margin:12px 0;box-shadow:0 4px 14px rgba(13,27,42,.035);}
-.frete-realizado-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid var(--border);}
-.frete-realizado-head h4{margin:0;color:var(--navy);font-size:12px;font-weight:900;letter-spacing:1.1px;text-transform:uppercase;}
-.frete-realizado-head p{margin:3px 0 0;color:var(--text-3);font-size:10px;line-height:1.35;}
-.frete-realizado-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,.62fr);gap:10px;align-items:start;}
-.frete-realizado-grid .field{margin:0!important;min-width:0;}
-.frete-realizado-grid .field label{min-height:20px;font-size:9px!important;letter-spacing:.85px;}
-.frete-realizado-grid .field input,.frete-realizado-grid .field select{min-height:42px!important;font-size:14px!important;}
-.frete-realizado-new{display:none;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-top:8px;align-items:end;}
-.frete-realizado-new.show{display:grid;}
-.frete-realizado-new .field{margin:0!important;}
-.frete-realizado-new .btn-ep-detail{height:42px;white-space:nowrap;}
-.frete-realizado-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px;}
-.frete-realizado-summary div{min-width:0;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:8px 10px;}
-.frete-realizado-summary span{display:block;color:var(--text-3);font-size:8px;font-weight:800;letter-spacing:.75px;text-transform:uppercase;}
-.frete-realizado-summary strong{display:block;margin-top:4px;color:var(--navy);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.frete-realizado-summary .frete-realizado-diff.positive strong{color:var(--green);}
-.frete-realizado-summary .frete-realizado-diff.negative strong{color:var(--red);}
-.frete-realizado-actions{display:flex;justify-content:flex-end;margin-top:10px;}
-@media(max-width:768px){
-  .frete-realizado-card{padding:11px;margin:10px 0;}
-  .frete-realizado-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
-  .frete-realizado-grid .field input,.frete-realizado-grid .field select{min-height:44px!important;font-size:16px!important;}
-  .frete-realizado-new{grid-template-columns:1fr;}
-  .frete-realizado-summary{gap:6px;}
-  .frete-realizado-summary div{padding:8px;}
-  .frete-realizado-summary strong{font-size:12px;}
-}
 .bonus-val.neu{color:var(--text-2);}
 .empty-state{text-align:center;padding:48px 24px;color:var(--text-3);font-size:13px;line-height:1.6;}
 
@@ -3495,7 +3466,7 @@ function hasPermission(permission){
   if(isAdminUser())return true;
   return [
     'home.view','lots.view_allowed','lots.view_assigned','lots.create','lots.edit_assigned',
-    'calculator.use','calculator.view','realized.edit_assigned','freight.edit_assigned',
+    'calculator.use','calculator.view','realized.edit_assigned',
     'b3.view','reports.export_assigned','settings.view_operational'
   ].indexOf(permission)>=0;
 }
@@ -3788,6 +3759,7 @@ const TIPO_LABEL=new Proxy({},{get:function(t,k){return labelRaca(k);},has:funct
 /* ── STORAGE ───────────────────────────────────── */
 const CONFIG_KEY='hasta_config_v3';
 const LOTES_KEY='hasta_lotes_v4';
+const LOT_SEQUENCE_KEY='vm_agro_last_lot_number';
 const FUTUROS_KEY='hasta_futuros_b3_v1';
 const FIN_TX_KEY='vmagro_financeiro_lancamentos_v1';
 const FIN_DOC_KEY='vmagro_financeiro_notas_v1';
@@ -3797,6 +3769,7 @@ const SUPABASE_TABLE='vm_agro_data';
 const SUPABASE_LOCAL_KEYS={};
 SUPABASE_LOCAL_KEYS[CONFIG_KEY]='config';
 SUPABASE_LOCAL_KEYS[LOTES_KEY]='lotes';
+SUPABASE_LOCAL_KEYS[LOT_SEQUENCE_KEY]='lot_sequence';
 SUPABASE_LOCAL_KEYS[FUTUROS_KEY]='futuros';
 SUPABASE_LOCAL_KEYS[FIN_TX_KEY]='financeiro_lancamentos';
 SUPABASE_LOCAL_KEYS[FIN_DOC_KEY]='financeiro_notas';
@@ -3989,7 +3962,46 @@ function getFrigs(){return loadConfig().frigorificos;}
 function getVends(){return loadConfig().vendedores||[];}
 function getBoiteis(){return loadConfig().boiteis||[];}
 function getParams(){var p=Object.assign({},dfParams(),loadConfig().params||{});if(p&&typeof p.funrural==='number'&&p.funrural>0&&p.funrural<0.05)p.funrural=p.funrural*100;return p;}
-function getLotes(){try{return JSON.parse(localStorage.getItem(LOTES_KEY)||'[]');}catch(e){return[];}}
+function neutralizarAjusteFreteRealizadoLegado(lote){
+  if(!lote)return false;
+  var aj=lote.ajusteReal||lote.apuracao;
+  if(!aj||!aj.realizedFreightApplied||aj.realizedFreightNeutralized)return false;
+  if(aj.realizedFreightAdjustment===undefined||aj.realizedFreightAdjustment===null)return false;
+  var ajuste=finNum(aj.realizedFreightAdjustment);
+  var orc=(lote.orcamentos&&lote.orcamentos[0])||{};
+  if(aj.custoReal!==undefined&&aj.custoReal!==null){
+    var capital=Math.max(0,finNum(aj.custoReal)-ajuste);
+    var outros=aj.outrosCustosReal!==undefined&&aj.outrosCustosReal!==null?finNum(aj.outrosCustosReal):0;
+    var venda=vendaRealizadaEsperada(lote,orc,aj);
+    var faturamento=aj.receitaFinalReal!==undefined&&aj.receitaFinalReal!==null?finNum(aj.receitaFinalReal):(aj.receitaReal!==undefined&&aj.receitaReal!==null?finNum(aj.receitaReal):venda.liquido);
+    var lucro=faturamento-capital-outros;
+    var qtd=finNum(aj.qtdReal||orc.qtd||lote.qtd);
+    var prazo=prazoDiasResultadoLote(lote,orc);
+    aj.custoReal=capital;
+    aj.custoTotalReal=capital+outros;
+    aj.lucroReal=lucro;
+    aj.lucroAnimalReal=qtd>0?lucro/qtd:0;
+    aj.rentReal=capital>0?lucro/capital:0;
+    aj.rentMesReal=prazo>0?aj.rentReal/(prazo/30):0;
+  }
+  aj.realizedFreightApplied=false;
+  aj.realizedFreightNeutralized=true;
+  aj.realizedFreightNeutralizedAt=new Date().toISOString();
+  if(lote.ajusteReal)lote.ajusteReal=aj;
+  if(lote.apuracao)lote.apuracao=aj;
+  lote.realizedData=Object.assign({},aj);
+  return true;
+}
+function getLotes(){
+  try{
+    var lotes=JSON.parse(localStorage.getItem(LOTES_KEY)||'[]');
+    if(!Array.isArray(lotes))return [];
+    var mudou=false;
+    lotes.forEach(function(lote){if(neutralizarAjusteFreteRealizadoLegado(lote))mudou=true;});
+    if(mudou)localStorage.setItem(LOTES_KEY,JSON.stringify(lotes));
+    return lotes;
+  }catch(e){return[];}
+}
 function saveLotes(a){localStorage.setItem(LOTES_KEY,JSON.stringify(a));}
 function getFuturos(){try{return JSON.parse(localStorage.getItem(FUTUROS_KEY)||'[]');}catch(e){return[];}}
 function saveFuturos(a){localStorage.setItem(FUTUROS_KEY,JSON.stringify(a));}
@@ -6291,136 +6303,6 @@ function freteProjetadoLote(lote,orc){
   var unitario=calcularFreteUnitarioOrc(orc);
   return Math.max(0,finNum(unitario.liquido)*qtd);
 }
-function freteRealizadoValor(lote){
-  var f=lote&&lote.realizedFreight;
-  if(!f||f.totalAmount===undefined||f.totalAmount===null||String(f.totalAmount).trim()==='')return null;
-  return finNum(f.totalAmount);
-}
-function resumoFreteRealizado(lote,orc){
-  var projetado=freteProjetadoLote(lote,orc);
-  var realizado=freteRealizadoValor(lote);
-  return {projetado:projetado,realizado:realizado,diferenca:realizado===null?null:realizado-projetado};
-}
-function renderFreteRealizadoHtml(lote,orc){
-  if(['embarque','confinando','escalado','abatido','recebido'].indexOf(lote.status)<0)return '';
-  var dados=resumoFreteRealizado(lote,orc);
-  var salvo=lote.realizedFreight||{};
-  var opts='<option value="">Selecione a transportadora...</option>';
-  getTransportadoras().forEach(function(t){
-    var selected=String(salvo.transporterId||'')===String(t.id);
-    if(t.ativa===false&&!selected)return;
-    opts+='<option value="'+escHtml(t.id)+'"'+(selected?' selected':'')+'>'+escHtml(t.nome)+(t.ativa===false?' (inativa)':'')+'</option>';
-  });
-  opts+='<option value="__new__">+ Nova transportadora</option>';
-  var diffClass=dados.diferenca===null?'neutral':(dados.diferenca<0?'positive':(dados.diferenca>0?'negative':'neutral'));
-  var diffText=dados.diferenca===null?'—':((dados.diferenca>0?'+':'')+fmt(dados.diferenca));
-  return '<section class="frete-realizado-card" id="ep-frete-realizado">'
-    +'<div class="frete-realizado-head"><div><h4>Frete realizado</h4><p>Registre o valor efetivo sem alterar o frete projetado da simulação.</p></div></div>'
-    +'<div class="frete-realizado-grid">'
-      +'<div class="field"><label>Transportadora</label><select id="ep-frete-transportadora" onchange="handleFreteTransportadoraSelect(this)">'+opts+'</select></div>'
-      +'<div class="field"><label>Valor total do frete</label><input type="text" inputmode="decimal" id="ep-frete-realizado-valor" value="'+(dados.realizado===null?'':brNum(dados.realizado,2))+'" placeholder="7.500,00" onblur="formatarFreteRealizado(this)"><div class="hint">R$ total efetivamente pago.</div></div>'
-    +'</div>'
-    +'<div class="frete-realizado-new" id="ep-frete-transportadora-nova"><div class="field"><label>Nova transportadora</label><input type="text" id="ep-frete-transportadora-nome" placeholder="Nome da transportadora"></div><button type="button" class="btn-ep-detail" onclick="salvarNovaTransportadoraFrete()">Adicionar</button></div>'
-    +'<div class="frete-realizado-summary">'
-      +'<div><span>Frete projetado</span><strong id="ep-frete-projetado">'+fmt(dados.projetado)+'</strong></div>'
-      +'<div><span>Frete realizado</span><strong id="ep-frete-realizado-resumo">'+(dados.realizado===null?'—':fmt(dados.realizado))+'</strong></div>'
-      +'<div class="frete-realizado-diff '+diffClass+'" id="ep-frete-diferenca-box"><span>Diferença</span><strong id="ep-frete-diferenca">'+diffText+'</strong></div>'
-    +'</div>'
-    +'<div class="frete-realizado-actions"><button type="button" class="btn-ep-save" onclick="salvarFreteRealizado()">Salvar frete realizado</button></div>'
-  +'</section>';
-}
-function handleFreteTransportadoraSelect(select){
-  var form=document.getElementById('ep-frete-transportadora-nova');
-  if(!form)return;
-  var show=select&&select.value==='__new__';
-  form.classList.toggle('show',show);
-  if(show){select.value='';var input=document.getElementById('ep-frete-transportadora-nome');if(input)input.focus();}
-}
-function salvarNovaTransportadoraFrete(){
-  var input=document.getElementById('ep-frete-transportadora-nome');
-  var nome=(input&&input.value||'').trim();
-  if(!nome){toast('⚠ Informe o nome da transportadora');return;}
-  var cfg=loadConfig();
-  if(!Array.isArray(cfg.transportadoras))cfg.transportadoras=[];
-  var item={id:'transport_'+Date.now(),nome:nome,telefone:'',ativa:true};
-  cfg.transportadoras.push(item);
-  saveConfig(cfg);
-  var select=document.getElementById('ep-frete-transportadora');
-  if(select){var option=document.createElement('option');option.value=item.id;option.textContent=item.nome;option.selected=true;select.insertBefore(option,select.querySelector('option[value="__new__"]'));}
-  var form=document.getElementById('ep-frete-transportadora-nova');if(form)form.classList.remove('show');
-  toast('✓ Transportadora adicionada');
-}
-function formatarFreteRealizado(el){
-  if(!el||String(el.value||'').trim()==='')return;
-  el.value=brNum(finNum(el.value),2);
-}
-function recalcularFinanceiroRealizadoPorFrete(lote){
-  var orc=(lote.orcamentos&&lote.orcamentos[0])||{};
-  var aj=Object.assign({},lote.ajusteReal||lote.apuracao||{});
-  var resumo=resumoFreteRealizado(lote,orc);
-  if(resumo.realizado===null)return;
-  var capitalAtual=aj.custoReal!==undefined&&aj.custoReal!==null?finNum(aj.custoReal):finNum(orc.investLote);
-  var ajusteAnterior=aj.realizedFreightApplied?finNum(aj.realizedFreightAdjustment):0;
-  var capitalBase=capitalAtual-ajusteAnterior;
-  var ajusteNovo=resumo.diferenca||0;
-  var capitalNovo=capitalBase+ajusteNovo;
-  var venda=vendaRealizadaEsperada(lote,orc,aj);
-  var faturamento=aj.receitaFinalReal!==undefined&&aj.receitaFinalReal!==null?finNum(aj.receitaFinalReal):(aj.receitaReal!==undefined&&aj.receitaReal!==null?finNum(aj.receitaReal):venda.liquido);
-  var outros=aj.outrosCustosReal!==undefined&&aj.outrosCustosReal!==null?finNum(aj.outrosCustosReal):0;
-  var lucro=faturamento-capitalNovo-outros;
-  var prazo=prazoDiasResultadoLote(lote,orc);
-  aj.custoReal=capitalNovo;
-  aj.realizedFreightApplied=true;
-  aj.realizedFreightProjected=resumo.projetado;
-  aj.realizedFreightActual=resumo.realizado;
-  aj.realizedFreightAdjustment=ajusteNovo;
-  aj.custoTotalReal=capitalNovo+outros;
-  aj.lucroReal=lucro;
-  aj.lucroAnimalReal=finNum(aj.qtdReal||orc.qtd||lote.qtd)>0?lucro/finNum(aj.qtdReal||orc.qtd||lote.qtd):0;
-  aj.rentReal=capitalNovo>0?lucro/capitalNovo:0;
-  aj.rentMesReal=prazo>0?aj.rentReal/(prazo/30):0;
-  aj.updatedAt=new Date().toISOString();
-  lote.ajusteReal=aj;
-  lote.realizedData=Object.assign({},aj);
-  lote.realizedUpdatedAt=aj.updatedAt;
-  lote.realizedStatus=statusRealizadoLote(lote).key;
-}
-function atualizarResumoFreteRealizadoPainel(lote){
-  var resumo=resumoFreteRealizado(lote,(lote.orcamentos&&lote.orcamentos[0])||{});
-  var projetado=document.getElementById('ep-frete-projetado');
-  var realizado=document.getElementById('ep-frete-realizado-resumo');
-  var diff=document.getElementById('ep-frete-diferenca');
-  var box=document.getElementById('ep-frete-diferenca-box');
-  if(projetado)projetado.textContent=fmt(resumo.projetado);
-  if(realizado)realizado.textContent=resumo.realizado===null?'—':fmt(resumo.realizado);
-  if(diff)diff.textContent=resumo.diferenca===null?'—':((resumo.diferenca>0?'+':'')+fmt(resumo.diferenca));
-  if(box){box.classList.remove('positive','negative','neutral');box.classList.add(resumo.diferenca===null?'neutral':(resumo.diferenca<0?'positive':(resumo.diferenca>0?'negative':'neutral')));}
-}
-function salvarFreteRealizado(){
-  if(!_editLoteId)return;
-  var arr=getLotes();
-  var index=arr.findIndex(function(l){return l.id===_editLoteId;});
-  if(index<0)return;
-  if(!(hasPermission('freight.edit')||(hasPermission('freight.edit_assigned')&&canEditLot(arr[index])))){toast('⚠ Sem permissão para editar o frete deste lote.');return;}
-  var transporter=document.getElementById('ep-frete-transportadora');
-  var valor=document.getElementById('ep-frete-realizado-valor');
-  if(!transporter||!transporter.value){toast('⚠ Selecione a transportadora');return;}
-  if(!valor||String(valor.value||'').trim()===''){toast('⚠ Informe o valor total do frete');return;}
-  var amount=finNum(valor.value);
-  var item=getTransportadoras().find(function(t){return String(t.id)===String(transporter.value);});
-  if(!item){toast('⚠ Transportadora não encontrada');return;}
-  arr[index].realizedFreight={transporterId:item.id,transporterName:item.nome,totalAmount:amount,updatedAt:new Date().toISOString()};
-  recalcularFinanceiroRealizadoPorFrete(arr[index]);
-  saveLotes(arr);
-  valor.value=brNum(amount,2);
-  atualizarResumoFreteRealizadoPainel(arr[index]);
-  var capital=document.getElementById('ep-real-capital');
-  if(capital&&arr[index].ajusteReal)capital.value=brNum(arr[index].ajusteReal.custoReal,2);
-  if(document.getElementById('ep-real-fat'))atualizarRealizadoPainel();
-  atualizarComparativoPainel();
-  renderHome();renderDashboard();
-  toast('✓ Frete realizado salvo com sucesso.');
-}
 
 function openEditPanel(loteId, cardEl){
   var ep=document.getElementById('edit-panel');
@@ -6495,7 +6377,6 @@ function openEditPanel(loteId, cardEl){
   var videosEntradaHtml=renderEpVideosHtml(lote,'entrada');
   var videosSaidaHtml=renderEpVideosHtml(lote,'saida');
   var contratosPrecoHtml=renderContratosPrecoStatusHtml(lote);
-  var freteRealizadoHtml=renderFreteRealizadoHtml(lote,o);
   var realHtml='';
   var comparativoHtml='';
   var resultadoFinalHtml='';
@@ -6615,7 +6496,6 @@ function openEditPanel(loteId, cardEl){
       +'<div class="field" style="margin:0"><label>Número do lote</label><input type="text" inputmode="numeric" pattern="[0-9]*" id="ep-lot-number" value="'+escHtml(numeroLote)+'" placeholder="Ex: 1"></div>'
       +'<div class="field" style="margin:0"><label>Nome / Referência <span style="font-size:9px;color:var(--text-3);font-weight:400;">(opcional)</span></label><input type="text" id="ep-lot-name" value="'+escHtml(nomeLote)+'" placeholder="Ex: Murilo Duque"></div>'
     +'</div>'
-    +freteRealizadoHtml
     +contratosPrecoHtml
     // Vendedor
     +'<div class="ep-section">Vendedor</div>'
@@ -7059,15 +6939,6 @@ function aplicarRealizadoPainel(lote){
     dataApuracao:new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}),
     updatedAt:new Date().toISOString()
   };
-  // Mantem o frete realizado salvo ao atualizar os demais dados finais.
-  // O capital já traz o ajuste; estes metadados evitam aplicar a diferença duas vezes.
-  if(lote.realizedFreight){
-    var freteResumo=resumoFreteRealizado(lote,lote.orcamentos&&lote.orcamentos[0]);
-    lote.ajusteReal.realizedFreightApplied=true;
-    lote.ajusteReal.realizedFreightProjected=freteResumo.projetado;
-    lote.ajusteReal.realizedFreightActual=freteResumo.realizado;
-    lote.ajusteReal.realizedFreightAdjustment=freteResumo.diferenca||0;
-  }
   if(!lote.projectedData)lote.projectedData=resultadoProjetadoLote(lote,lote.orcamentos&&lote.orcamentos[0]);
   lote.realizedData=Object.assign({},lote.ajusteReal);
   lote.realizedUpdatedAt=lote.ajusteReal.updatedAt;
@@ -8665,25 +8536,67 @@ function getConfinamentoLote(lote){
     ||(o&&o.boitelSnapshot&&(o.boitelSnapshot.boitelNome||o.boitelSnapshot.nome))
     ||(o&&o.boitelNome)||lote&&lote.boitelNome||'Manual / sem boitel').trim();
 }
-function proximoNumeroLote(lotes,lote){
-  var chave=getConfinamentoLote(lote).toLowerCase();
-  var usados={};
-  (lotes||[]).forEach(function(item){
-    if(getConfinamentoLote(item).toLowerCase()!==chave)return;
-    var numero=getNumeroLote(item);
-    if(numero)usados[numero]=true;
-  });
-  var proximo=1;
-  while(usados[String(proximo)])proximo++;
+function getHighestExistingLotNumber(lotes){
+  return (lotes||[]).reduce(function(maior,lote){
+    var numero=parseInt(getNumeroLote(lote),10);
+    return isFinite(numero)&&numero>maior?numero:maior;
+  },0);
+}
+function getLastIssuedLotNumber(){
+  var numero=parseInt(localStorage.getItem(LOT_SEQUENCE_KEY)||'0',10);
+  return isFinite(numero)&&numero>0?numero:0;
+}
+function updateGlobalLotSequence(numero){
+  numero=parseInt(numero,10);
+  if(!isFinite(numero)||numero<1)return getLastIssuedLotNumber();
+  var atual=getLastIssuedLotNumber();
+  if(numero>atual)localStorage.setItem(LOT_SEQUENCE_KEY,String(numero));
+  return Math.max(atual,numero);
+}
+function proximoNumeroLote(lotes){
+  return String(Math.max(getHighestExistingLotNumber(lotes),getLastIssuedLotNumber())+1);
+}
+async function reserveGlobalLotNumber(lotes){
+  var minimo=Math.max(getHighestExistingLotNumber(lotes),getLastIssuedLotNumber());
+  if(supabaseIsConfigured()){
+    try{
+      var resposta=await getSupabaseClient().rpc('get_next_vm_agro_lot_number',{
+        p_app_id:SUPABASE_APP_ID,
+        p_user_key:supabaseUserKey(),
+        p_minimum:minimo
+      });
+      if(!resposta.error&&resposta.data!==undefined&&resposta.data!==null){
+        var remoto=parseInt(Array.isArray(resposta.data)?resposta.data[0]:resposta.data,10);
+        if(isFinite(remoto)&&remoto>minimo){updateGlobalLotSequence(remoto);return String(remoto);}
+      }
+      if(resposta.error)console.warn('Contador central indisponível; usando sequência local reconciliada.',resposta.error);
+    }catch(err){console.warn('Falha ao reservar número global no Supabase; usando fallback local.',err);}
+  }
+  var proximo=minimo+1;
+  updateGlobalLotSequence(proximo);
   return String(proximo);
 }
+function isLotNumberAvailable(numero,lotes,loteId){
+  numero=normalizarNumeroLote(numero);
+  return !!numero&&!(lotes||[]).some(function(lote){return String(lote.id)!==String(loteId)&&getNumeroLote(lote)===numero;});
+}
+var avisoNumerosLoteDuplicados=false;
 function garantirNumerosLote(lotes){
   var mudou=false;
+  var vistos={};
   (lotes||[]).forEach(function(lote){
-    if(getNumeroLote(lote))return;
-    lote.lot_number=proximoNumeroLote(lotes,lote);
+    var existente=getNumeroLote(lote);
+    if(existente){
+      if(vistos[existente]&&!avisoNumerosLoteDuplicados){console.warn('Foram encontrados números de lote duplicados em registros antigos.');avisoNumerosLoteDuplicados=true;}
+      vistos[existente]=true;
+      return;
+    }
+    lote.lot_number=proximoNumeroLote(lotes);
+    updateGlobalLotSequence(lote.lot_number);
+    vistos[lote.lot_number]=true;
     mudou=true;
   });
+  updateGlobalLotSequence(getHighestExistingLotNumber(lotes));
   return mudou;
 }
 function aplicarIdentificacaoLote(lote,lotes){
@@ -8695,12 +8608,12 @@ function aplicarIdentificacaoLote(lote,lotes){
     toast('⚠ Informe um número de lote válido.');
     return false;
   }
-  var confinamento=getConfinamentoLote(lote).toLowerCase();
-  var repetido=(lotes||[]).some(function(outro){
-    return outro.id!==lote.id&&getConfinamentoLote(outro).toLowerCase()===confinamento&&getNumeroLote(outro)===numero;
-  });
-  if(repetido&&!confirm('Já existe um Lote '+numero+' neste confinamento. Deseja manter mesmo assim?'))return false;
+  if(!isLotNumberAvailable(numero,lotes,lote.id)){
+    toast('⚠ Este número de lote já está sendo utilizado por outro lote.');
+    return false;
+  }
   lote.lot_number=numero;
+  updateGlobalLotSequence(numero);
   if(nomeEl){
     var nome=nomeEl.value.trim();
     setLoteNomeReferencia(lote,nome);
@@ -9452,7 +9365,8 @@ function setOrcStatus(aprovado){
     }
   }
 }
-function salvarResultadoNoLote(){
+var lotNumberReservationPending=false;
+async function salvarResultadoNoLote(){
   if(!_orcAprovado){
     mostrarAprovacaoCalculadora();
     return false;
@@ -9566,6 +9480,8 @@ function salvarResultadoNoLote(){
     }
   }
   if(!salvouEmLoteExistente) {
+    if(lotNumberReservationPending){toast('⚠ Aguarde a reserva do número do lote.');return false;}
+    lotNumberReservationPending=true;
     var novoLote={
       id:'lote_'+Date.now(),dataCriacao:orc.data,criadoPor:currentUser,
       createdByUserId:currentAuthUser&&currentAuthUser.id||null,assignedUserIds:[],organizationId:currentOrganizationId||null,
@@ -9577,11 +9493,12 @@ function salvarResultadoNoLote(){
       obs:'',relatorio:'',arquivos:[],videosEntrada:[],videosSaida:[],
       orcamentos:[orc],confRecord:null,abateRecord:null,apuracao:null
     };
-    novoLote.lot_number=proximoNumeroLote(arr,novoLote);
+    novoLote.lot_number=await reserveGlobalLotNumber(arr);
     arr.unshift(novoLote);
     if(calcMode!=='lote')activeLoteId=null;
   }
   saveLotes(arr);
+  lotNumberReservationPending=false;
   // Show confirmation bar
   var card=document.getElementById('orc-action-card');
   if(card){
@@ -11061,13 +10978,12 @@ function buildProjectedExportRows(lotes){
   return rows;
 }
 function buildRealizedExportRows(lotes){
-  var rows=[['Lote','Situação realizado','Qtd','Peso entrada','Peso abate','GMD','Dias','Rend. carcaça','Eficiência biológica','@ produzidas','Custo/@ produzida','Faturamento','Capital','Custo total','Lucro','% operação','% ao mês','Transportadora','Frete projetado','Frete realizado','Diferença frete','Atualizado em']];
+  var rows=[['Lote','Situação realizado','Qtd','Peso entrada','Peso abate','GMD','Dias','Rend. carcaça','Eficiência biológica','@ produzidas','Custo/@ produzida','Faturamento','Capital','Custo total','Lucro','% operação','% ao mês','Atualizado em']];
   lotes.forEach(function(l){
     var o=l.orcamentos&&l.orcamentos[0];if(!o)return;
     var r=resultadoRealizadoLote(l,o,l.ajusteReal||l.apuracao);
     var st=statusRealizadoLote(l);
-    var frete=resumoFreteRealizado(l,o),transportadora=(l.realizedFreight&&l.realizedFreight.transporterName)||'—';
-    rows.push([getLoteNomeReferencia(l,o)||l.id,st.label,r?exportRealValue(r.qtd,'cab'):'—',r?exportRealValue(r.pesoEntrada,'kg'):'—',r?exportRealValue(r.pesoAbate,'kg'):'—',r?exportRealValue(r.gmd,'gmd'):'—',r?exportRealValue(r.dias,'dias'):'—',r?brNum(r.rendA,2)+'%':'—',r?exportRealValue(r.efic,'efic'):'—',r?exportRealValue(r.arrobasProduzidas,'arroba'):'—',r?exportRealValue(r.custoArroba,'money'):'—',r?exportRealValue(r.faturamento,'money'):'—',r?exportRealValue(r.capital,'money'):'—',r?exportRealValue(r.custoTotal,'money'):'—',r?exportRealValue(r.lucro,'money'):'—',r?exportRealValue(r.rent,'pct'):'—',r?exportRealValue(r.rentMes,'pct'):'—',transportadora,exportRealValue(frete.projetado,'money'),frete.realizado===null?'—':exportRealValue(frete.realizado,'money'),frete.diferenca===null?'—':exportRealValue(frete.diferenca,'money'),(l.ajusteReal&&l.ajusteReal.updatedAt)||'']);
+    rows.push([getLoteNomeReferencia(l,o)||l.id,st.label,r?exportRealValue(r.qtd,'cab'):'—',r?exportRealValue(r.pesoEntrada,'kg'):'—',r?exportRealValue(r.pesoAbate,'kg'):'—',r?exportRealValue(r.gmd,'gmd'):'—',r?exportRealValue(r.dias,'dias'):'—',r?brNum(r.rendA,2)+'%':'—',r?exportRealValue(r.efic,'efic'):'—',r?exportRealValue(r.arrobasProduzidas,'arroba'):'—',r?exportRealValue(r.custoArroba,'money'):'—',r?exportRealValue(r.faturamento,'money'):'—',r?exportRealValue(r.capital,'money'):'—',r?exportRealValue(r.custoTotal,'money'):'—',r?exportRealValue(r.lucro,'money'):'—',r?exportRealValue(r.rent,'pct'):'—',r?exportRealValue(r.rentMes,'pct'):'—',(l.ajusteReal&&l.ajusteReal.updatedAt)||'']);
   });
   return rows;
 }
@@ -11247,10 +11163,6 @@ function buildCalculatorReportData(){
   var origem=calculatorReportText('orc-origem');
   var origemParts=origem?origem.split(/\s*[-/]\s*/):[];
   var lote=activeLoteId?getLotes().find(function(l){return String(l.id)===String(activeLoteId);}):null;
-  var freteRealizadoResumo=lote?resumoFreteRealizado(lote,(lote.orcamentos&&lote.orcamentos[0])||{}):{
-    projetado:(freteLiquidoAnimal||0)*qty,realizado:null,diferenca:null
-  };
-  var transportadoraRealizada=(lote&&lote.realizedFreight&&lote.realizedFreight.transporterName)||null;
   var loteNum=lote?(lote.lot_number??lote.lotNumber??lote.numeroLote??null):null;
   var vendedor=calculatorReportSelect('calc-vend','A definir');
   var modalidade=calcModeloLabel(getCalcModelo());
@@ -11278,9 +11190,7 @@ function buildCalculatorReportData(){
     transport:{distanceKm:calculatorReportInput('freteKm'),costKm:calculatorReportInput('freteCusto'),grossTotal:freteBrutoAnimal!==null?freteBrutoAnimal*qty:null,
       grossAnimal:freteBrutoAnimal,bonusAnimal:bonusFreteAnimal,bonusTotal:bonusFreteAnimal!==null?bonusFreteAnimal*qty:null,
       netAnimal:freteLiquidoAnimal,netTotal:freteLiquidoAnimal!==null?freteLiquidoAnimal*qty:null,shrinkPct:quebra,
-      shrinkKg:pesoCompra!==null&&pesoChegada!==null?pesoCompra-pesoChegada:null,originWeight:pesoCompra,arrivalWeight:pesoChegada,
-      transporterRealized:transportadoraRealizada,freightProjected:freteRealizadoResumo.projetado,
-      freightRealized:freteRealizadoResumo.realizado,freightDifference:freteRealizadoResumo.diferenca},
+      shrinkKg:pesoCompra!==null&&pesoChegada!==null?pesoCompra-pesoChegada:null,originWeight:pesoCompra,arrivalWeight:pesoChegada},
     confinement:{modality:modalidade,boitel:boitel,days:dias,entryDate:calculatorReportText('dataEntradaPrev'),slaughterDate:calculatorReportText('dataAbatePrev'),
       receiptDate:calculatorReportText('dataRecebimentoPrev'),gmd:calculatorReportInput('gmd'),dryMatterDaily:consumoAnimal!==null&&dias?consumoAnimal/dias:null,
       dryMatterAnimal:consumoAnimal,dryMatterLot:consumoAnimal!==null?consumoAnimal*qty:null,dryMatterPrice:calculatorReportInput('msKG'),
@@ -11326,7 +11236,7 @@ function calculatorReportSectionItems(data){
       calculatorReportItem('Nome / referência',i.reference),calculatorReportItem('Número do lote',i.lotNumber),calculatorReportItem('Data da simulação',i.simulationAt),calculatorReportItem('Data da exportação',i.exportedAt),calculatorReportItem('Usuário',i.user),calculatorReportItem('Vendedor',i.seller),calculatorReportItem('Origem',i.origin),calculatorReportItem('Confinamento',i.confinement),calculatorReportItem('Raça / categoria',i.category),calculatorReportItem('Quantidade',i.quantity,'number','cab.'),calculatorReportItem('Modalidade',i.modality),calculatorReportItem('Situação',i.situation)
     ],
     'Compra e Transporte':[
-      calculatorReportItem('Peso médio de compra',p.weightAverage,'number','kg'),calculatorReportItem('Peso total de compra',p.weightTotal,'number','kg'),calculatorReportItem('Rendimento de entrada',p.yieldEntry,'percent','%'),calculatorReportItem('@ entrada / animal',p.arrobasEntryAnimal,'number','@'),calculatorReportItem('@ totais de entrada',p.arrobasEntryTotal,'number','@'),calculatorReportItem('Preço de compra / @',p.priceArroba,'money','R$/@'),calculatorReportItem('Preço de compra / kg',p.priceKg,'money','R$/kg'),calculatorReportItem('Compra / animal',p.purchaseAnimal,'money','R$'),calculatorReportItem('Compra total',p.purchaseTotal,'money','R$'),calculatorReportItem('Comissão / animal',p.commissionAnimal,'money','R$'),calculatorReportItem('Comissão total',p.commissionTotal,'money','R$'),calculatorReportItem('Distância',t.distanceKm,'number','km'),calculatorReportItem('Custo por km',t.costKm,'money','R$/km'),calculatorReportItem('Frete bruto / animal',t.grossAnimal,'money','R$'),calculatorReportItem('Frete bruto total',t.grossTotal,'money','R$'),calculatorReportItem('Bônus frete / animal',t.bonusAnimal,'money','R$'),calculatorReportItem('Bônus frete total',t.bonusTotal,'money','R$'),calculatorReportItem('Frete líquido / animal',t.netAnimal,'money','R$'),calculatorReportItem('Frete líquido total',t.netTotal,'money','R$'),calculatorReportItem('Transportadora realizada',t.transporterRealized),calculatorReportItem('Frete projetado',t.freightProjected,'money','R$'),calculatorReportItem('Frete realizado',t.freightRealized,'money','R$'),calculatorReportItem('Diferença do frete',t.freightDifference,'money','R$'),calculatorReportItem('Quebra',t.shrinkPct,'percent','%'),calculatorReportItem('Quebra em kg',t.shrinkKg,'number','kg')
+      calculatorReportItem('Peso médio de compra',p.weightAverage,'number','kg'),calculatorReportItem('Peso total de compra',p.weightTotal,'number','kg'),calculatorReportItem('Rendimento de entrada',p.yieldEntry,'percent','%'),calculatorReportItem('@ entrada / animal',p.arrobasEntryAnimal,'number','@'),calculatorReportItem('@ totais de entrada',p.arrobasEntryTotal,'number','@'),calculatorReportItem('Preço de compra / @',p.priceArroba,'money','R$/@'),calculatorReportItem('Preço de compra / kg',p.priceKg,'money','R$/kg'),calculatorReportItem('Compra / animal',p.purchaseAnimal,'money','R$'),calculatorReportItem('Compra total',p.purchaseTotal,'money','R$'),calculatorReportItem('Comissão / animal',p.commissionAnimal,'money','R$'),calculatorReportItem('Comissão total',p.commissionTotal,'money','R$'),calculatorReportItem('Distância',t.distanceKm,'number','km'),calculatorReportItem('Custo por km',t.costKm,'money','R$/km'),calculatorReportItem('Frete bruto / animal',t.grossAnimal,'money','R$'),calculatorReportItem('Frete bruto total',t.grossTotal,'money','R$'),calculatorReportItem('Bônus frete / animal',t.bonusAnimal,'money','R$'),calculatorReportItem('Bônus frete total',t.bonusTotal,'money','R$'),calculatorReportItem('Frete líquido / animal',t.netAnimal,'money','R$'),calculatorReportItem('Frete líquido total',t.netTotal,'money','R$'),calculatorReportItem('Quebra',t.shrinkPct,'percent','%'),calculatorReportItem('Quebra em kg',t.shrinkKg,'number','kg')
     ],
     'Confinamento':[
       calculatorReportItem('Modalidade',c.modality),calculatorReportItem('Boitel',c.boitel),calculatorReportItem('Dias',c.days,'number','dias'),calculatorReportItem('Data de entrada',c.entryDate),calculatorReportItem('Data de abate',c.slaughterDate),calculatorReportItem('Data de recebimento',c.receiptDate),calculatorReportItem('GMD',c.gmd,'number','kg/dia'),calculatorReportItem('MS diária',c.dryMatterDaily,'number','kg MS'),calculatorReportItem('MS total / animal',c.dryMatterAnimal,'number','kg MS'),calculatorReportItem('MS total do lote',c.dryMatterLot,'number','kg MS'),calculatorReportItem('Matéria seca',c.dryMatterPrice,'money','R$/kg'),calculatorReportItem('Operacional',c.operationalAnimalDay,'money','R$/animal/dia'),calculatorReportItem('Sanidade',c.healthAnimal,'money','R$/animal'),calculatorReportItem('Confinamento / animal',c.confinementAnimal,'money','R$'),calculatorReportItem('Confinamento total',c.confinementTotal,'money','R$')
