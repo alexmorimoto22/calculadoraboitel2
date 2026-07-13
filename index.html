@@ -2393,7 +2393,256 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .user-actions{display:flex;gap:5px;flex-wrap:wrap}.user-actions button{min-height:30px;border:1px solid var(--border);border-radius:6px;background:#fff;font-size:9px;font-weight:800;cursor:pointer}.user-actions .primary{background:var(--navy);color:#fff}
   .users-empty{padding:30px;text-align:center;color:var(--text-3)}
   @media(max-width:768px){.auth-view input,.auth-view select,.auth-view button{font-size:16px!important}.users-stats{grid-template-columns:repeat(2,1fr)}.users-toolbar{grid-template-columns:1fr}.users-table-wrap{border:0;background:transparent;overflow:visible}.users-table{min-width:0;display:block}.users-table thead{display:none}.users-table tbody{display:grid;gap:10px}.users-table tr{display:block;background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px}.users-table td{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px}.users-table td::before{content:attr(data-label);font-size:9px;font-weight:800;text-transform:uppercase;color:var(--text-3)}.users-table td:last-child{display:block;border:0}.user-actions{margin-top:8px}}
-	</style>
+/* ─ STATUS MOBILE · COLUNAS VISÍVEIS ─ */
++/* Seletor independente de informacoes dos cards do Status mobile. */
+.status-mobile-columns-trigger,
+.status-mobile-columns-backdrop,
+.status-mobile-columns-sheet {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  body.status-mobile-columns-open {
+    overflow: hidden !important;
+  }
+
+  .status-mobile-columns-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 36px;
+    padding: 7px 12px;
+    border: 1px solid rgba(201, 162, 78, .48);
+    border-radius: 8px;
+    background: #fff;
+    color: #0d1b2a;
+    font: inherit;
+    font-size: 12px !important;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .status-mobile-columns-trigger svg {
+    width: 15px;
+    height: 15px;
+    flex: 0 0 auto;
+  }
+
+  .status-mobile-columns-trigger-wrap {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin: 8px 0;
+  }
+
+  .status-mobile-columns-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 10040;
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    background: rgba(13, 27, 42, .48);
+    transition: opacity .18s ease, visibility .18s ease;
+  }
+
+  .status-mobile-columns-sheet {
+    position: fixed;
+    z-index: 10041;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    max-height: min(82vh, 720px);
+    padding: 0 16px calc(14px + env(safe-area-inset-bottom));
+    border: 1px solid rgba(201, 162, 78, .5);
+    border-bottom: 0;
+    border-radius: 16px 16px 0 0;
+    background: #fdfbf7;
+    color: #0d1b2a;
+    box-shadow: 0 -14px 40px rgba(13, 27, 42, .2);
+    transform: translateY(104%);
+    transition: transform .22s ease;
+  }
+
+  .status-mobile-columns-open .status-mobile-columns-backdrop {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .status-mobile-columns-open .status-mobile-columns-sheet {
+    transform: translateY(0);
+  }
+
+  .status-mobile-columns-sheet-handle {
+    width: 38px;
+    height: 4px;
+    margin: 8px auto 4px;
+    border-radius: 999px;
+    background: rgba(138, 121, 103, .38);
+  }
+
+  .status-mobile-columns-sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0 10px;
+    border-bottom: 1px solid rgba(201, 162, 78, .3);
+  }
+
+  .status-mobile-columns-sheet-title {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.2;
+  }
+
+  .status-mobile-columns-sheet-subtitle {
+    margin: 3px 0 0;
+    color: #8a7967;
+    font-size: 12px;
+    line-height: 1.3;
+  }
+
+  .status-mobile-columns-close {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    min-height: 36px;
+    padding: 0;
+    border: 1px solid rgba(138, 121, 103, .25);
+    border-radius: 50%;
+    background: #fff;
+    color: #0d1b2a;
+    font-size: 22px !important;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .status-mobile-columns-sheet-body {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 10px 2px 6px;
+  }
+
+  .status-mobile-columns-group + .status-mobile-columns-group {
+    margin-top: 12px;
+  }
+
+  .status-mobile-columns-group-title {
+    margin: 0 0 6px;
+    color: #8a7967;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .status-mobile-columns-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .status-mobile-columns-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 39px;
+    padding: 7px 9px;
+    border: 1px solid rgba(216, 203, 181, .82);
+    border-radius: 7px;
+    background: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .status-mobile-columns-option input {
+    width: 17px !important;
+    min-width: 17px !important;
+    height: 17px !important;
+    min-height: 17px !important;
+    margin: 0;
+    accent-color: #0d4f8b;
+  }
+
+  .status-mobile-columns-sheet-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(201, 162, 78, .3);
+  }
+
+  .status-mobile-columns-action {
+    min-height: 42px;
+    padding: 9px 12px;
+    border: 1px solid rgba(201, 162, 78, .55);
+    border-radius: 8px;
+    background: #fff;
+    color: #0d1b2a;
+    font-size: 13px !important;
+    font-weight: 750;
+    cursor: pointer;
+  }
+
+  .status-mobile-columns-action-primary {
+    grid-column: 1 / -1;
+    background: #0d1b2a;
+    color: #fff;
+  }
+
+  [data-status-mobile-field][hidden],
+  [data-status-mobile-field].status-mobile-field-hidden {
+    display: none !important;
+  }
+
+  .status-mobile-metrics,
+  .status-card-metrics,
+  .status-mobile-card-metrics,
+  .status-mobile-info-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px !important;
+    min-width: 0;
+    overflow: visible !important;
+  }
+
+  [data-status-mobile-field] {
+    min-width: 0;
+  }
+
+  [data-status-mobile-field="capital"],
+  [data-status-mobile-field="faturamento"],
+  [data-status-mobile-field="lucro"] {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 349px) {
+  .status-mobile-columns-options {
+    grid-template-columns: 1fr;
+  }
+
+  .status-mobile-metrics,
+  .status-card-metrics,
+  .status-mobile-card-metrics,
+  .status-mobile-info-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  [data-status-mobile-field="capital"],
+  [data-status-mobile-field="faturamento"],
+  [data-status-mobile-field="lucro"] {
+    grid-column: span 3;
+  }
+}
+    </style>
 </head>
 <body>
 
@@ -11754,6 +12003,347 @@ initCalcResizableColumns();
 
 restoreBasicSession();
 
+/* ─ STATUS MOBILE · COLUNAS VISÍVEIS ─ */
++(function () {
+  'use strict';
+
+  var STATUS_MOBILE_VISIBLE_FIELDS_KEY = 'vm_agro_status_mobile_visible_fields';
+  var FIELD_DEFS = [
+    { key: 'qtd', label: 'Quantidade', group: 'Operacao' },
+    { key: 'confinamento', label: 'Confinamento', group: 'Operacao' },
+    { key: 'origem', label: 'Origem', group: 'Operacao' },
+    { key: 'vendedor', label: 'Vendedor', group: 'Operacao' },
+    { key: 'entrada', label: 'Entrada', group: 'Datas' },
+    { key: 'abate', label: 'Abate', group: 'Datas' },
+    { key: 'recebimento', label: 'Recebimento', group: 'Datas' },
+    { key: 'b3', label: 'B3', group: 'Protecao B3' },
+    { key: 'trava', label: 'Trava', group: 'Protecao B3' },
+    { key: 'capital', label: 'Capital', group: 'Financeiro' },
+    { key: 'faturamento', label: 'Faturamento', group: 'Financeiro' },
+    { key: 'lucro', label: 'Lucro', group: 'Financeiro' },
+    { key: 'rent', label: '% operacao', group: 'Financeiro' },
+    { key: 'rentmes', label: '% mes', group: 'Financeiro' },
+    { key: 'eficiencia', label: 'Eficiencia origem', group: 'Tecnico' },
+    { key: 'eficienciaChegada', label: 'Eficiencia chegada', group: 'Tecnico' }
+  ];
+  var DEFAULT_FIELDS = ['qtd', 'entrada', 'abate', 'b3', 'trava', 'capital', 'lucro', 'rentmes'];
+  var ALLOWED = FIELD_DEFS.reduce(function (map, item) {
+    map[item.key] = true;
+    return map;
+  }, {});
+  var GROUPS = ['Operacao', 'Datas', 'Protecao B3', 'Financeiro', 'Tecnico'];
+  var observer;
+  var scheduled = false;
+
+  function sanitizeFields(value) {
+    if (!Array.isArray(value)) return DEFAULT_FIELDS.slice();
+    var seen = {};
+    return value.filter(function (key) {
+      if (!ALLOWED[key] || seen[key]) return false;
+      seen[key] = true;
+      return true;
+    });
+  }
+
+  function getStatusMobileVisibleFields() {
+    try {
+      var raw = localStorage.getItem(STATUS_MOBILE_VISIBLE_FIELDS_KEY);
+      if (raw === null) return DEFAULT_FIELDS.slice();
+      return sanitizeFields(JSON.parse(raw));
+    } catch (error) {
+      return DEFAULT_FIELDS.slice();
+    }
+  }
+
+  function setStatusMobileVisibleFields(fields) {
+    var safe = sanitizeFields(fields);
+    try {
+      localStorage.setItem(STATUS_MOBILE_VISIBLE_FIELDS_KEY, JSON.stringify(safe));
+    } catch (error) {
+      /* A interface continua funcional mesmo sem armazenamento local. */
+    }
+    return safe;
+  }
+
+  function resetStatusMobileVisibleFields() {
+    setStatusMobileVisibleFields(DEFAULT_FIELDS);
+    syncCheckboxes(DEFAULT_FIELDS);
+    refreshStatusMobileColumns(true);
+    showToast('Colunas restauradas para o padrão.');
+    return DEFAULT_FIELDS.slice();
+  }
+
+  function isStatusMobileFieldVisible(key) {
+    return getStatusMobileVisibleFields().indexOf(key) !== -1;
+  }
+
+  function isMobile() {
+    return window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+  }
+
+  function getStatusPanel() {
+    return document.querySelector('#panel-status, #status-panel, [data-panel="status"], .panel-status, .status-panel');
+  }
+
+  function panelIsVisible(panel) {
+    if (!panel) return false;
+    var style = window.getComputedStyle(panel);
+    return style.display !== 'none' && style.visibility !== 'hidden' && !panel.hidden;
+  }
+
+  function buildSheet() {
+    if (document.getElementById('status-mobile-columns-sheet-v2')) return;
+
+    var backdrop = document.createElement('div');
+    backdrop.className = 'status-mobile-columns-backdrop';
+    backdrop.id = 'status-mobile-columns-backdrop-v2';
+    backdrop.setAttribute('aria-hidden', 'true');
+
+    var sheet = document.createElement('aside');
+    sheet.className = 'status-mobile-columns-sheet';
+    sheet.id = 'status-mobile-columns-sheet-v2';
+    sheet.setAttribute('role', 'dialog');
+    sheet.setAttribute('aria-modal', 'true');
+    sheet.setAttribute('aria-labelledby', 'status-mobile-columns-title-v2');
+    sheet.innerHTML =
+      '<div class="status-mobile-columns-sheet-handle"></div>' +
+      '<div class="status-mobile-columns-sheet-header">' +
+        '<div><h2 class="status-mobile-columns-sheet-title" id="status-mobile-columns-title-v2">Informacoes visiveis</h2>' +
+        '<p class="status-mobile-columns-sheet-subtitle">Escolha o que aparece nos cards do Status.</p></div>' +
+        '<button type="button" class="status-mobile-columns-close" aria-label="Fechar">&times;</button>' +
+      '</div>' +
+      '<div class="status-mobile-columns-sheet-body"></div>' +
+      '<div class="status-mobile-columns-sheet-actions">' +
+        '<button type="button" class="status-mobile-columns-action status-mobile-columns-reset">Restaurar padrao</button>' +
+        '<button type="button" class="status-mobile-columns-action status-mobile-columns-cancel">Cancelar</button>' +
+        '<button type="button" class="status-mobile-columns-action status-mobile-columns-action-primary status-mobile-columns-apply">Aplicar</button>' +
+      '</div>';
+
+    var body = sheet.querySelector('.status-mobile-columns-sheet-body');
+    GROUPS.forEach(function (group) {
+      var section = document.createElement('section');
+      section.className = 'status-mobile-columns-group';
+      var title = document.createElement('h3');
+      title.className = 'status-mobile-columns-group-title';
+      title.textContent = group;
+      var options = document.createElement('div');
+      options.className = 'status-mobile-columns-options';
+      FIELD_DEFS.filter(function (field) { return field.group === group; }).forEach(function (field) {
+        var option = document.createElement('label');
+        option.className = 'status-mobile-columns-option';
+        option.innerHTML = '<input type="checkbox" value="' + field.key + '"><span>' + field.label + '</span>';
+        options.appendChild(option);
+      });
+      section.appendChild(title);
+      section.appendChild(options);
+      body.appendChild(section);
+    });
+
+    document.body.appendChild(backdrop);
+    document.body.appendChild(sheet);
+
+    backdrop.addEventListener('click', closeStatusMobileColumns);
+    sheet.querySelector('.status-mobile-columns-close').addEventListener('click', closeStatusMobileColumns);
+    sheet.querySelector('.status-mobile-columns-cancel').addEventListener('click', closeStatusMobileColumns);
+    sheet.querySelector('.status-mobile-columns-apply').addEventListener('click', applyStatusMobileColumns);
+    sheet.querySelector('.status-mobile-columns-reset').addEventListener('click', resetStatusMobileVisibleFields);
+  }
+
+  function syncCheckboxes(fields) {
+    var sheet = document.getElementById('status-mobile-columns-sheet-v2');
+    if (!sheet) return;
+    var visible = fields || getStatusMobileVisibleFields();
+    sheet.querySelectorAll('input[type="checkbox"]').forEach(function (input) {
+      input.checked = visible.indexOf(input.value) !== -1;
+    });
+  }
+
+  function openStatusMobileColumns() {
+    buildSheet();
+    syncCheckboxes();
+    document.body.classList.add('status-mobile-columns-open');
+    var backdrop = document.getElementById('status-mobile-columns-backdrop-v2');
+    if (backdrop) backdrop.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeStatusMobileColumns() {
+    document.body.classList.remove('status-mobile-columns-open');
+    var backdrop = document.getElementById('status-mobile-columns-backdrop-v2');
+    if (backdrop) backdrop.setAttribute('aria-hidden', 'true');
+  }
+
+  function applyStatusMobileColumns() {
+    var sheet = document.getElementById('status-mobile-columns-sheet-v2');
+    if (!sheet) return;
+    var fields = Array.prototype.map.call(sheet.querySelectorAll('input[type="checkbox"]:checked'), function (input) {
+      return input.value;
+    });
+    setStatusMobileVisibleFields(fields);
+    closeStatusMobileColumns();
+    refreshStatusMobileColumns(true);
+  }
+
+  function ensureTrigger() {
+    var panel = getStatusPanel();
+    var current = document.getElementById('status-mobile-columns-trigger-v2');
+    if (!panel) {
+      if (current) current.style.display = 'none';
+      return;
+    }
+    if (!current) {
+      var wrap = document.createElement('div');
+      wrap.className = 'status-mobile-columns-trigger-wrap';
+      current = document.createElement('button');
+      current.type = 'button';
+      current.id = 'status-mobile-columns-trigger-v2';
+      current.className = 'status-mobile-columns-trigger';
+      current.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Colunas</span>';
+      current.addEventListener('click', openStatusMobileColumns);
+      wrap.appendChild(current);
+
+      var anchor = panel.querySelector('.status-mobile-filter-header, .status-filter-header, .status-list-toolbar, .status-toolbar, .status-mobile-toolbar, .status-count');
+      if (anchor && anchor.parentNode) {
+        anchor.parentNode.insertBefore(wrap, anchor.nextSibling);
+      } else {
+        var list = panel.querySelector('.status-mobile-list, .status-cards, .status-list, table');
+        if (list && list.parentNode) list.parentNode.insertBefore(wrap, list);
+        else panel.insertBefore(wrap, panel.firstChild);
+      }
+    }
+    current.style.display = isMobile() && panelIsVisible(panel) ? '' : 'none';
+  }
+
+  function normalizeText(value) {
+    return String(value || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function inferField(node) {
+    var explicit = node.getAttribute('data-status-field') || node.getAttribute('data-field') || node.getAttribute('data-key') || '';
+    if (ALLOWED[explicit]) return explicit;
+    var labelNode = node.querySelector && node.querySelector('[data-label], .label, .metric-label, .status-label, dt, small');
+    var text = normalizeText(labelNode ? labelNode.textContent : node.getAttribute('aria-label') || '');
+    if (!text) return '';
+    if (/eficiencia.*chegada/.test(text)) return 'eficienciaChegada';
+    if (/eficiencia.*origem/.test(text)) return 'eficiencia';
+    if (/faturamento|fat\. lote/.test(text)) return 'faturamento';
+    if (/capital/.test(text)) return 'capital';
+    if (/lucro/.test(text)) return 'lucro';
+    if (/%.*mes|rent.*mes/.test(text)) return 'rentmes';
+    if (/%.*oper|rentabilidade/.test(text)) return 'rent';
+    if (/receb/.test(text)) return 'recebimento';
+    if (/abate/.test(text)) return 'abate';
+    if (/entrada/.test(text)) return 'entrada';
+    if (/confinamento|boitel/.test(text)) return 'confinamento';
+    if (/origem/.test(text)) return 'origem';
+    if (/vendedor/.test(text)) return 'vendedor';
+    if (/quantidade|qtd|cabecas|cab\./.test(text)) return 'qtd';
+    if (/trava|travado|parcial|aberto/.test(text)) return 'trava';
+    if (/b3|contrato/.test(text)) return 'b3';
+    return '';
+  }
+
+  function decorateCards(panel) {
+    if (!panel) return;
+    var candidates = panel.querySelectorAll(
+      '[data-status-mobile-field], [data-status-field], [data-field], ' +
+      '.status-mobile-metric, .status-card-metric, .status-metric, .card-metric, ' +
+      '.status-mobile-info, .status-card-info-item, .status-detail-item'
+    );
+    candidates.forEach(function (node) {
+      var field = node.getAttribute('data-status-mobile-field') || inferField(node);
+      if (ALLOWED[field]) node.setAttribute('data-status-mobile-field', field);
+    });
+  }
+
+  function applyVisibility() {
+    var visible = getStatusMobileVisibleFields();
+    var panel = getStatusPanel();
+    if (!panel) return;
+    decorateCards(panel);
+    panel.querySelectorAll('[data-status-mobile-field]').forEach(function (node) {
+      var field = node.getAttribute('data-status-mobile-field');
+      var hidden = visible.indexOf(field) === -1;
+      node.hidden = hidden;
+      node.classList.toggle('status-mobile-field-hidden', hidden);
+    });
+  }
+
+  function refreshStatusMobileColumns(preserveScroll) {
+    var x = window.scrollX;
+    var y = window.scrollY;
+    var panel = getStatusPanel();
+    var panelTop = panel ? panel.scrollTop : 0;
+    var panelLeft = panel ? panel.scrollLeft : 0;
+    ensureTrigger();
+    applyVisibility();
+    if (preserveScroll) {
+      requestAnimationFrame(function () {
+        window.scrollTo(x, y);
+        var currentPanel = getStatusPanel();
+        if (currentPanel) {
+          currentPanel.scrollTop = panelTop;
+          currentPanel.scrollLeft = panelLeft;
+        }
+      });
+    }
+    document.dispatchEvent(new CustomEvent('statusMobileVisibleFieldsChanged', {
+      detail: { fields: getStatusMobileVisibleFields() }
+    }));
+  }
+
+  function scheduleRefresh() {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(function () {
+      scheduled = false;
+      refreshStatusMobileColumns(false);
+    });
+  }
+
+  function showToast(message) {
+    if (typeof window.toast === 'function') {
+      window.toast(message);
+      return;
+    }
+    if (typeof window.showToast === 'function') {
+      window.showToast(message);
+      return;
+    }
+    var toast = document.createElement('div');
+    toast.textContent = message;
+    toast.style.cssText = 'position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));z-index:10060;transform:translateX(-50%);padding:10px 14px;border-radius:8px;background:#0d1b2a;color:#fff;font:600 13px system-ui;box-shadow:0 8px 24px rgba(0,0,0,.2);white-space:nowrap';
+    document.body.appendChild(toast);
+    setTimeout(function () { toast.remove(); }, 2200);
+  }
+
+  window.STATUS_MOBILE_VISIBLE_FIELDS_KEY = STATUS_MOBILE_VISIBLE_FIELDS_KEY;
+  window.getStatusMobileVisibleFields = getStatusMobileVisibleFields;
+  window.setStatusMobileVisibleFields = setStatusMobileVisibleFields;
+  window.resetStatusMobileVisibleFields = resetStatusMobileVisibleFields;
+  window.isStatusMobileFieldVisible = isStatusMobileFieldVisible;
+  window.openStatusMobileColumns = openStatusMobileColumns;
+  window.closeStatusMobileColumns = closeStatusMobileColumns;
+  window.applyStatusMobileColumns = applyStatusMobileColumns;
+
+  function init() {
+    buildSheet();
+    refreshStatusMobileColumns(false);
+    observer = new MutationObserver(scheduleRefresh);
+    observer.observe(document.body, { childList: true, subtree: true });
+    window.addEventListener('resize', scheduleRefresh, { passive: true });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') closeStatusMobileColumns();
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
 </script>
 <div class="fut-modal-backdrop" id="fut-liquidar-modal" aria-hidden="true">
   <div class="fut-modal" role="dialog" aria-modal="true" aria-labelledby="fut-liquidar-title">
@@ -11780,7 +12370,5 @@ restoreBasicSession();
   </div>
 </div>
 <div id="toast"></div>
-<link rel="stylesheet" href="./status-mobile-columns-v2.css">
-<script src="./status-mobile-columns-v2.js"></script>
 </body>
 </html>
