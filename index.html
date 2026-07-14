@@ -560,8 +560,8 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .fut-filters select{height:38px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:0 34px 0 12px;font-family:'Inter',sans-serif;font-size:12px;color:var(--text);outline:none;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238A7967' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;min-width:150px;}
   .fut-filters input{height:38px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:0 12px;font-family:'Inter',sans-serif;font-size:12px;color:var(--text);outline:none;min-width:130px;box-sizing:border-box;}
   .fut-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:14px;background:#fff;}
-  .fut-table{width:100%;min-width:760px;border-collapse:separate;border-spacing:0;}
-  .fut-table th{background:rgba(13,27,42,.035);border-bottom:1px solid var(--border);padding:10px 10px;text-align:left;font-size:8.5px;font-weight:850;letter-spacing:.9px;text-transform:uppercase;color:var(--taupe);white-space:nowrap;}
+  .fut-table{width:100%;min-width:760px;border-collapse:separate;border-spacing:0;table-layout:fixed;}
+  .fut-table th{position:relative;background:rgba(13,27,42,.035);border-bottom:1px solid var(--border);padding:0;text-align:left;font-size:8.5px;font-weight:850;letter-spacing:.9px;text-transform:uppercase;color:var(--taupe);white-space:nowrap;}
   .fut-table td{border-bottom:1px solid var(--border);padding:12px 10px;font-size:11.5px;color:var(--text);font-weight:650;vertical-align:middle;white-space:nowrap;}
   .fut-table tr:last-child td{border-bottom:none;}
   .fut-table tbody tr:hover{background:rgba(201,162,78,.055);}
@@ -572,6 +572,27 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 .fut-action{border:1px solid var(--border);background:#fff;border-radius:8px;color:var(--text-2);font-family:'Inter',sans-serif;font-size:10px;font-weight:800;padding:7px 9px;cursor:pointer;margin-right:4px;}
 .fut-action:hover{border-color:var(--accent);color:var(--accent);}
 .fut-action.danger{background:rgba(154,59,48,.06);border-color:rgba(154,59,48,.18);color:var(--red);}
+  .fut-table-controls{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 10px;}
+  .fut-table-hint{font-size:10px;color:var(--text-3);font-weight:650;}
+  .fut-table-actions{position:relative;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+  .fut-table-actions select{height:32px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--text);font:inherit;font-size:10px;font-weight:750;padding:0 26px 0 9px;outline:none;}
+  .fut-column-panel{position:absolute;right:0;top:calc(100% + 8px);z-index:35;width:250px;max-height:420px;overflow:auto;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 18px 42px rgba(13,27,42,.18);padding:12px;display:none;}
+  .fut-column-panel.open{display:block;}
+  .fut-column-panel-title{font-size:13px;font-weight:850;color:var(--text);margin-bottom:5px;}
+  .fut-column-panel-sub{font-size:10px;color:var(--text-3);line-height:1.35;margin-bottom:8px;}
+  .fut-column-option{display:flex;align-items:center;gap:8px;border-top:1px solid rgba(216,203,181,.55);padding:8px 0;font-size:11px;font-weight:700;color:var(--text-2);}
+  .fut-column-option input{width:16px;height:16px;accent-color:var(--accent);}
+  .fut-table-head-line{display:flex;align-items:center;gap:2px;min-height:42px;padding:0 5px 0 10px;}
+  .fut-table-sort{display:flex;align-items:center;min-width:0;flex:1;min-height:34px;padding:8px 2px 8px 0;border:0;background:transparent;color:inherit;font:inherit;font-size:8.5px;font-weight:850;letter-spacing:.9px;text-transform:uppercase;text-align:left;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .fut-table-sort:hover{color:var(--navy);background:rgba(201,162,78,.08);}
+  .fut-sort-mark{margin-left:5px;color:var(--accent);font-size:12px;line-height:1;}
+  .fut-filter-toggle{width:24px;height:24px;flex:0 0 auto;display:grid;place-items:center;border:0;border-radius:6px;background:transparent;color:var(--taupe);font-size:14px;line-height:1;cursor:pointer;}
+  .fut-filter-toggle:hover,.fut-filter-toggle.is-open{background:rgba(201,162,78,.13);color:var(--navy);}
+  .fut-header-filter-popup{position:absolute;top:calc(100% - 3px);left:4px;z-index:12;width:max(170px,calc(100% - 8px));padding:8px;background:#fff;border:1px solid var(--border);border-radius:9px;box-shadow:0 12px 26px rgba(13,27,42,.16);}
+  .fut-header-filter-popup select,.fut-header-filter-popup input{width:100%;height:32px;box-sizing:border-box;border:1px solid var(--border);border-radius:7px;background:#fff;color:var(--text);font:inherit;font-size:10px;padding:0 8px;outline:none;}
+  .fut-header-filter-popup select{padding-right:20px;}
+  .fut-col-resizer{position:absolute;top:0;right:-3px;bottom:0;width:7px;cursor:col-resize;z-index:2;}
+  .fut-col-resizer:hover,.fut-col-resizer:active{background:rgba(201,162,78,.34);}
 .fut-action.success{background:rgba(107,112,86,.08);border-color:rgba(107,112,86,.22);color:var(--green);}
 .fut-action.warn{background:rgba(201,162,78,.12);border-color:rgba(201,162,78,.28);color:#8a4b05;}
 .fut-liq-history{margin-top:6px;font-size:10px;color:var(--text-3);line-height:1.35;white-space:normal;}
@@ -1267,6 +1288,11 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	    .fut-filters{display:grid;grid-template-columns:1fr 1fr;width:100%;}
 	    .fut-filters select,.fut-filters input{width:100%;min-width:0;}
 	    .fut-table-wrap{display:none;}
+	    .fut-table-controls{align-items:stretch;}
+	    .fut-table-hint{width:100%;}
+	    .fut-table-actions{width:100%;}
+	    .fut-table-actions select{flex:1;min-width:0;}
+	    .fut-column-panel{left:0;right:auto;width:min(280px,100%);}
 	    .fut-mobile-list{display:block;}
 	    .fut-modal-grid{grid-template-columns:1fr;}
 	    .h-pipeline{overflow-x:auto;grid-template-columns:repeat(5,minmax(70px,1fr));scrollbar-width:none;}
@@ -2379,8 +2405,8 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   #panel-futuros .fut-toolbar{margin-bottom:9px;}
   #panel-futuros .fut-table-wrap{max-height:calc(100vh - 520px);overflow:auto;}
   #panel-futuros .fut-table{min-width:980px;}
-  #panel-futuros .fut-table th{position:sticky;top:0;z-index:3;padding:8px 10px;background:#fbfaf5;}
-  #panel-futuros .fut-table td{padding:9px 10px;font-size:11px;}
+  #panel-futuros .fut-table th{position:sticky;top:0;z-index:3;padding:0;background:#fbfaf5;box-sizing:border-box;}
+  #panel-futuros .fut-table td{padding:9px 10px;font-size:11px;box-sizing:border-box;overflow:hidden;text-overflow:ellipsis;}
 }
 
   /* ── EXPORTAÇÃO DE RELATÓRIOS ───────────────────── */
@@ -3944,32 +3970,18 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
               <div class="home-panel-title">Todos os contratos</div>
               <div class="home-panel-note" id="fut-list-note">—</div>
             </div>
-            <div class="fut-filters">
-              <select id="fut-filter-status" onchange="renderFuturos()">
-                <option value="todos">Todos</option>
-                <option value="aberto">Abertos</option>
-                <option value="parcial">Parciais</option>
-                <option value="liquidado">Liquidados</option>
-                <option value="cancelado">Cancelados</option>
-              </select>
-              <select id="fut-filter-operacao" onchange="renderFuturos()">
-                <option value="todos">Hedge + Livres</option>
-                <option value="hedge">Hedge vinculado</option>
-                <option value="livre">Operação livre</option>
-              </select>
-              <select id="fut-filter-lado" onchange="renderFuturos()">
-                <option value="todos">Compra + Venda</option>
-                <option value="compra">Compra</option>
-                <option value="venda">Venda</option>
-              </select>
-              <select id="fut-filter-lote" onchange="renderFuturos()"></select>
-              <input id="fut-filter-codigo" placeholder="Código B3" oninput="renderFuturos()">
-              <input id="fut-filter-vencimento" type="month" onchange="renderFuturos()">
+          </div>
+          <div class="fut-table-controls">
+            <div class="fut-table-hint">Clique no título da coluna para ordenar. Arraste a borda do título para ajustar a largura.</div>
+            <div class="fut-table-actions">
+              <button type="button" class="status-view-btn" onclick="toggleFutColumnsPanel()">Colunas visíveis</button>
+              <button type="button" class="status-view-btn" onclick="resetFutColumns()">Restaurar</button>
+              <div id="fut-column-panel" class="fut-column-panel"></div>
             </div>
           </div>
           <div class="fut-table-wrap">
             <table class="fut-table">
-              <thead><tr><th>Status</th><th>Tipo</th><th>Lote / operação</th><th>Código</th><th>Lado</th><th>Qtd original</th><th>Aberto</th><th>Liquidado</th><th>Abertura</th><th>Liquidação média</th><th>Resultado realizado</th><th>Resultado aberto</th><th>Ações</th></tr></thead>
+              <thead><tr id="fut-table-head"></tr></thead>
               <tbody id="fut-list"></tbody>
             </table>
           </div>
@@ -4367,6 +4379,23 @@ var statusSortState=(function(){
   try{return JSON.parse(localStorage.getItem(STATUS_SORT_KEY)||'{}')||{};}catch(e){return {};}
 })();
 if(!statusSortState.key){statusSortState={key:'status',dir:'asc'};}
+var FUT_COLS=[
+  {key:'status',label:'Status',w:84},{key:'tipo',label:'Tipo',w:82},{key:'lote',label:'Lote / operação',w:210},
+  {key:'confinamento',label:'Confinamento',w:128},{key:'origem',label:'Origem',w:128},{key:'qtdLote',label:'Qtd lote',w:82},
+  {key:'entradaLote',label:'Entrada',w:96},{key:'faturamentoLote',label:'Fat. lote',w:132},{key:'codigo',label:'Código',w:122},
+  {key:'lado',label:'Lado',w:76},{key:'qtdOriginal',label:'Qtd original',w:92},{key:'aberto',label:'Aberto',w:82},
+  {key:'liquidado',label:'Liquidado',w:92},{key:'abertura',label:'Abertura',w:118},{key:'liquidacao',label:'Liquidação média',w:126},
+  {key:'resultadoRealizado',label:'Resultado realizado',w:138},{key:'resultadoAberto',label:'Resultado aberto',w:122},{key:'acoes',label:'Ações',w:270,fixed:true}
+];
+var FUT_COL_VISIBLE_KEY='vm_fut_cols_visible_v1';
+var FUT_COL_WIDTH_KEY='vm_fut_cols_width_v1';
+var FUT_SORT_KEY='vm_fut_sort_v1';
+var futSortState=(function(){
+  try{return JSON.parse(localStorage.getItem(FUT_SORT_KEY)||'{}')||{};}catch(e){return {};}
+})();
+if(!futSortState.key){futSortState={key:'abertura',dir:'desc'};}
+var futColumnFilters={status:'',tipo:'',lote:'',confinamento:'',origem:'',qtdLote:'',entradaLote:'',faturamentoLote:'',codigo:'',lado:'',qtdOriginal:'',aberto:'',liquidado:'',abertura:'',liquidacao:'',resultadoRealizado:'',resultadoAberto:''};
+var futOpenHeaderFilter='';
 
 const DEFAULT_RACAS={
   nelore:    {nome:'Nelore',                     rendE:50,rendA:56,gmd:1.30,ms:1.8,qExtra:0.0, desc:'Melhor rendimento de carcaça. Alta rusticidade. Carne magra. Ideal para acabamento rápido.'},
@@ -6702,6 +6731,187 @@ function verLiquidacoesFuturo(id){
     return (i+1)+'. '+fmtContratosB3(l.qtdContratos)+' ctr · '+(l.data?dateBRFromIso(l.data):'sem data')+' · R$ '+fmtNum(l.preco,2)+'/@ · '+fmt(res);
   }).join('\n'));
 }
+function getFutColVisible(){
+  var saved={};
+  try{saved=JSON.parse(localStorage.getItem(FUT_COL_VISIBLE_KEY)||'{}')||{};}catch(e){saved={};}
+  var out={};
+  FUT_COLS.forEach(function(c){out[c.key]=c.fixed?true:saved[c.key]!==false;});
+  return out;
+}
+function getFutColWidths(){
+  try{return JSON.parse(localStorage.getItem(FUT_COL_WIDTH_KEY)||'{}')||{};}catch(e){return {};}
+}
+function futColWidth(key){
+  var col=FUT_COLS.find(function(c){return c.key===key;});
+  var saved=getFutColWidths();
+  return Math.max(56,parseFloat(saved[key]||(col&&col.w)||100)||100);
+}
+function futVisibleCols(){
+  var visible=getFutColVisible();
+  return FUT_COLS.filter(function(c){return visible[c.key]!==false;});
+}
+function futColumnStyle(key){
+  var width=futColWidth(key);
+  return ' style="width:'+width+'px;min-width:'+width+'px;max-width:'+width+'px"';
+}
+function applyFutTableLayout(){
+  var visible=futVisibleCols();
+  var total=visible.reduce(function(sum,c){return sum+futColWidth(c.key);},0);
+  var table=document.querySelector('#panel-futuros .fut-table');
+  if(table){
+    var host=table.parentElement;
+    table.style.width=Math.max(total,(host&&host.clientWidth)||0)+'px';
+    table.style.minWidth=total+'px';
+  }
+  visible.forEach(function(c){
+    var width=futColWidth(c.key)+'px';
+    document.querySelectorAll('#panel-futuros [data-fut-col="'+c.key+'"]').forEach(function(el){
+      el.style.width=width;el.style.minWidth=width;el.style.maxWidth=width;
+    });
+  });
+}
+function renderFutColumnsPanel(){
+  var panel=document.getElementById('fut-column-panel');
+  if(!panel)return;
+  var visible=getFutColVisible();
+  panel.innerHTML='<div class="fut-column-panel-title">Informações visíveis</div>'
+    +'<div class="fut-column-panel-sub">Escolha as colunas da tabela de contratos.</div>'
+    +FUT_COLS.filter(function(c){return !c.fixed;}).map(function(c){
+      return '<label class="fut-column-option"><input type="checkbox"'+(visible[c.key]!==false?' checked':'')+' onchange="setFutColumnVisible(\''+c.key+'\',this.checked)"><span>'+escHtml(c.label)+'</span></label>';
+    }).join('');
+}
+function toggleFutColumnsPanel(){
+  var panel=document.getElementById('fut-column-panel');
+  if(!panel)return;
+  renderFutColumnsPanel();
+  panel.classList.toggle('open');
+}
+function setFutColumnVisible(key,checked){
+  var visible=getFutColVisible();
+  visible[key]=!!checked;
+  var visibleData=FUT_COLS.filter(function(c){return !c.fixed&&visible[c.key]!==false;});
+  if(visibleData.length<2){visible.status=true;visible.lote=true;}
+  try{localStorage.setItem(FUT_COL_VISIBLE_KEY,JSON.stringify(visible));}catch(e){}
+  renderFuturos();
+  var panel=document.getElementById('fut-column-panel');
+  if(panel)panel.classList.add('open');
+}
+function resetFutColumns(){
+  try{localStorage.removeItem(FUT_COL_VISIBLE_KEY);localStorage.removeItem(FUT_COL_WIDTH_KEY);}catch(e){}
+  renderFuturos();
+}
+function setFutSort(key,dir){
+  var nextDir=dir||((futSortState.key===key&&futSortState.dir==='asc')?'desc':'asc');
+  futSortState={key:key||'abertura',dir:nextDir};
+  try{localStorage.setItem(FUT_SORT_KEY,JSON.stringify(futSortState));}catch(e){}
+  renderFuturos();
+}
+var futResizeState=null;
+function startFutColumnResize(ev,key){
+  ev.preventDefault();ev.stopPropagation();
+  futResizeState={key:key,startX:ev.clientX,startW:futColWidth(key)};
+  document.addEventListener('mousemove',moveFutColumnResize);
+  document.addEventListener('mouseup',endFutColumnResize,{once:true});
+}
+function moveFutColumnResize(ev){
+  if(!futResizeState)return;
+  var widths=getFutColWidths();
+  widths[futResizeState.key]=Math.max(56,futResizeState.startW+(ev.clientX-futResizeState.startX));
+  try{localStorage.setItem(FUT_COL_WIDTH_KEY,JSON.stringify(widths));}catch(e){}
+  applyFutTableLayout();
+}
+function endFutColumnResize(){
+  futResizeState=null;
+  document.removeEventListener('mousemove',moveFutColumnResize);
+}
+function futuroDadosLote(lote){
+  if(!lote)return {confinamento:'—',origem:'—',qtd:'—',qtdRaw:0,entrada:'—',entradaIso:'',faturamento:'—',faturamentoRaw:0};
+  var o=(lote.orcamentos&&lote.orcamentos[0])||{};
+  var ajuste=lote.ajusteReal||lote.apuracao||{};
+  var entradaIso=ajuste.dataEntradaReal||(lote.confRecord&&lote.confRecord.dataEntrada)||o.dataEntradaPrev||'';
+  var confinamento=(o.precificacaoSnapshot&&o.precificacaoSnapshot.boitelNome)
+    ||(o.boitelSnapshot&&(o.boitelSnapshot.boitelNome||o.boitelSnapshot.nome))
+    ||o.boitelNome||lote.boitelNome||'Manual / sem boitel';
+  var origem=lote.origemCompra||lote.origem||o.origemCompra_orc||o.origemCompra||'—';
+  var qtdRaw=parseFloat(lote.qtd||o.qtd)||0;
+  var metric=resultadoStatusLote(lote,o);
+  var faturamentoRaw=o?parseFloat(metric.faturamento)||0:0;
+  return {
+    confinamento:confinamento,origem:origem,qtd:qtdRaw?qtdRaw.toLocaleString('pt-BR',{maximumFractionDigits:0})+' cab.':'—',qtdRaw:qtdRaw,
+    entrada:entradaIso?dateBRFromIso(entradaIso):'—',entradaIso:entradaIso,
+    faturamento:o?fmt(faturamentoRaw):'—',faturamentoRaw:faturamentoRaw
+  };
+}
+function futSortComparable(value){
+  if(typeof value==='number')return value;
+  if(/^\d{4}-\d{2}-\d{2}/.test(String(value||'')))return String(value);
+  return _statusNorm(value);
+}
+function updateFutColumnFilter(key,value){
+  futColumnFilters[key]=value||'';
+  renderFuturos();
+}
+function toggleFutHeaderFilter(ev,key){
+  ev.preventDefault();ev.stopPropagation();
+  var abrir=futOpenHeaderFilter!==key;
+  futOpenHeaderFilter=abrir?key:'';
+  renderFuturos();
+  if(abrir){
+    var select=document.getElementById('fut-header-filter-'+key);
+    if(select){
+      select.focus();
+      try{if(select.showPicker)select.showPicker();}catch(e){}
+    }
+  }
+}
+function futTableFilterHtml(key,options){
+  var value=futColumnFilters[key]||'';
+  if(key==='acoes')return '';
+  return '<select id="fut-header-filter-'+key+'" onchange="updateFutColumnFilter(\''+key+'\',this.value)"><option value="">Todos</option>'+options.map(function(option){return '<option value="'+escHtml(option.value)+'"'+(value===String(option.value)?' selected':'')+'>'+escHtml(option.label)+'</option>';}).join('')+'</select>';
+}
+function futColumnFilterValue(c,r,lote,dados,key){
+  if(key==='status')return r.status||'';
+  if(key==='tipo')return r.operacao||'';
+  if(key==='lote')return lote?lote.id:'';
+  if(key==='confinamento')return dados.confinamento;
+  if(key==='origem')return dados.origem;
+  if(key==='qtdLote')return dados.qtd;
+  if(key==='entradaLote')return dados.entrada+' '+dados.entradaIso;
+  if(key==='faturamentoLote')return dados.faturamento;
+  if(key==='codigo')return (gerarCodigoB3(c.vencimento)||c.codigo||'')+' '+(c.vencimento||'');
+  if(key==='lado')return r.lado||'';
+  if(key==='qtdOriginal')return fmtContratosB3(r.qtdContratos||0);
+  if(key==='aberto')return fmtContratosB3(r.qtdAberta||0);
+  if(key==='liquidado')return fmtContratosB3(r.qtdLiquidada||0);
+  if(key==='abertura')return String(c.dataVenda||'')+' '+String(r.precoVenda||'');
+  if(key==='liquidacao')return String(c.dataCompra||'')+' '+String(r.precoCompra||'');
+  if(key==='resultadoRealizado')return String(r.resultado||'');
+  if(key==='resultadoAberto')return String(r.qtdAberta||'');
+  return '';
+}
+function futHeaderFilterOptions(key,arr,loteMap){
+  if(key==='acoes')return [];
+  var found={};
+  arr.forEach(function(c){
+    var r=futuroResultado(c);
+    var lote=loteMap[c.loteId]||getLotes().find(function(l){return l.id===c.loteId;});
+    var dados=futuroDadosLote(lote);
+    var value=futColumnFilterValue(c,r,lote,dados,key);
+    if(key==='lote'&&!c.loteId){value='livre';}
+    if(value===null||value===undefined||String(value).trim()===''||String(value)==='—')return;
+    var label=String(value);
+    if(key==='status')label=futuroStatusLabel(r.status);
+    if(key==='tipo')label=r.operacao==='livre'?'Livre':'Hedge';
+    if(key==='lote')label=c.loteId?loteLabelB3(lote):'Operações livres';
+    if(key==='lado')label=r.lado==='compra'?'Compra':'Venda';
+    if(key==='abertura')label=(c.dataVenda?dateBRFromIso(c.dataVenda)+' · ':'')+'R$ '+fmtNum(r.precoVenda||0,2)+'/@';
+    if(key==='liquidacao')label=r.qtdLiquidada?((c.dataCompra?dateBRFromIso(c.dataCompra)+' · ':'')+'R$ '+fmtNum(r.precoCompra||0,2)+'/@'):'Aberto';
+    if(key==='resultadoRealizado')label=r.qtdLiquidada?fmt(r.resultado):'Sem resultado';
+    if(key==='resultadoAberto')label=fmtContratosB3(r.qtdAberta||0)+' ctr';
+    found[String(value)]={value:String(value),label:label};
+  });
+  return Object.keys(found).map(function(k){return found[k];}).sort(function(a,b){return String(a.label).localeCompare(String(b.label),'pt-BR',{numeric:true});});
+}
 function renderFuturos(){
   fillFuturoLoteSelects();
   var lotes=lotesDisponiveisB3();
@@ -6712,21 +6922,16 @@ function renderFuturos(){
     if(linked&&!canViewLot(linked))return false;
     return !c.loteId||loteMap[c.loteId]||!!linked;
   });
-  var filtroStatus=(document.getElementById('fut-filter-status')||{}).value||'todos';
-  var filtroOperacao=(document.getElementById('fut-filter-operacao')||{}).value||'todos';
-  var filtroLado=(document.getElementById('fut-filter-lado')||{}).value||'todos';
-  var filtroLote=(document.getElementById('fut-filter-lote')||{}).value||'todos';
-  var filtroCodigo=String((document.getElementById('fut-filter-codigo')||{}).value||'').trim().toUpperCase();
-  var filtroVenc=(document.getElementById('fut-filter-vencimento')||{}).value||'';
   var filtrados=arr.filter(function(c){
     var r=futuroResultado(c);
-    var codigo=String(gerarCodigoB3(c.vencimento)||c.codigo||'').toUpperCase();
-    return (filtroStatus==='todos'||r.status===filtroStatus)
-      &&(filtroOperacao==='todos'||r.operacao===filtroOperacao)
-      &&(filtroLado==='todos'||r.lado===filtroLado)
-      &&(filtroLote==='todos'||(filtroLote==='livre'&&!c.loteId)||c.loteId===filtroLote)
-      &&(!filtroCodigo||codigo.indexOf(filtroCodigo)>=0)
-      &&(!filtroVenc||c.vencimento===filtroVenc);
+    var lote=loteMap[c.loteId]||getLotes().find(function(l){return l.id===c.loteId;});
+    var dados=futuroDadosLote(lote);
+    return FUT_COLS.filter(function(col){return !col.fixed;}).every(function(col){
+      var filtro=String(futColumnFilters[col.key]||'').trim();
+      if(!filtro||filtro==='todos')return true;
+      if(col.key==='lote'&&filtro==='livre')return !c.loteId;
+      return _statusNorm(futColumnFilterValue(c,r,lote,dados,col.key)).indexOf(_statusNorm(filtro))>=0;
+    });
   });
   var total={registros:arr.length,contratos:0,abertos:0,liquidados:0,arrobas:0,resultado:0};
   arr.forEach(function(c){
@@ -6750,17 +6955,57 @@ function renderFuturos(){
   var list=document.getElementById('fut-list');
   var mobileList=document.getElementById('fut-mobile-list');
   if(!list)return;
+  var visibleCols=futVisibleCols();
+  var head=document.getElementById('fut-table-head');
+  if(head){
+    head.innerHTML=visibleCols.map(function(col){
+      var active=futSortState.key===col.key;
+      var mark=active?(futSortState.dir==='asc'?'↑':'↓'):'';
+      var title=col.key==='acoes'?'<span class="fut-table-sort">'+escHtml(col.label)+'</span>'
+        :'<button type="button" class="fut-table-sort" onclick="setFutSort(\''+col.key+'\')">'+escHtml(col.label)+'<span class="fut-sort-mark">'+mark+'</span></button>';
+      var filter=futTableFilterHtml(col.key,futHeaderFilterOptions(col.key,arr,loteMap));
+      var isOpen=futOpenHeaderFilter===col.key;
+      var trigger=filter?'<button type="button" class="fut-filter-toggle'+(isOpen?' is-open':'')+'" title="Filtrar '+escHtml(col.label)+'" onclick="toggleFutHeaderFilter(event,\''+col.key+'\')">⌄</button>':'';
+      var popup=filter&&isOpen?'<div class="fut-header-filter-popup">'+filter+'</div>':'';
+      return '<th data-fut-col="'+col.key+'"'+futColumnStyle(col.key)+'><div class="fut-table-head-line">'+title+trigger+'</div>'+popup+'<span class="fut-col-resizer" onmousedown="startFutColumnResize(event,\''+col.key+'\')"></span></th>';
+    }).join('');
+  }
+  renderFutColumnsPanel();
   if(!filtrados.length){
-    list.innerHTML='<tr><td colspan="13" style="text-align:center;color:var(--text-3);padding:24px;">Nenhum contrato encontrado.</td></tr>';
+    list.innerHTML='<tr><td colspan="'+visibleCols.length+'" style="text-align:center;color:var(--text-3);padding:24px;">Nenhum contrato encontrado.</td></tr>';
     if(mobileList)mobileList.innerHTML='<div class="home-empty-small">Nenhum contrato encontrado.</div>';
+    applyFutTableLayout();
     return;
   }
-  filtrados.sort(function(a,b){return String(b.dataVenda||b.atualizadoEm||'').localeCompare(String(a.dataVenda||a.atualizadoEm||''));});
-  var rows=[];
-  var cards=[];
-  filtrados.forEach(function(c){
+  var registros=filtrados.map(function(c){
     var r=futuroResultado(c);
     var lote=loteMap[c.loteId]||getLotes().find(function(l){return l.id===c.loteId;});
+    return {c:c,r:r,lote:lote,dadosLote:futuroDadosLote(lote)};
+  });
+  registros.sort(function(a,b){
+    var key=futSortState.key||'abertura';
+    var av,bv;
+    if(key==='status'){av=a.r.status;bv=b.r.status;}
+    else if(key==='tipo'){av=a.r.operacao;bv=b.r.operacao;}
+    else if(key==='lote'){av=a.lote?loteLabelB3(a.lote):(a.c.operacaoNome||'Operação livre');bv=b.lote?loteLabelB3(b.lote):(b.c.operacaoNome||'Operação livre');}
+    else if(key==='confinamento'||key==='origem'||key==='qtdLote'||key==='entradaLote'||key==='faturamentoLote'){av=a.dadosLote[key.replace('Lote','')];bv=b.dadosLote[key.replace('Lote','')];if(key==='qtdLote'){av=a.dadosLote.qtdRaw;bv=b.dadosLote.qtdRaw;}if(key==='entradaLote'){av=a.dadosLote.entradaIso;bv=b.dadosLote.entradaIso;}if(key==='faturamentoLote'){av=a.dadosLote.faturamentoRaw;bv=b.dadosLote.faturamentoRaw;}}
+    else if(key==='codigo'){av=gerarCodigoB3(a.c.vencimento)||a.c.codigo||'';bv=gerarCodigoB3(b.c.vencimento)||b.c.codigo||'';}
+    else if(key==='lado'){av=a.r.lado;bv=b.r.lado;}
+    else if(key==='qtdOriginal'){av=a.r.qtdContratos||0;bv=b.r.qtdContratos||0;}
+    else if(key==='aberto'){av=a.r.qtdAberta||0;bv=b.r.qtdAberta||0;}
+    else if(key==='liquidado'){av=a.r.qtdLiquidada||0;bv=b.r.qtdLiquidada||0;}
+    else if(key==='liquidacao'){av=a.c.dataCompra||'';bv=b.c.dataCompra||'';}
+    else if(key==='resultadoRealizado'){av=a.r.resultado||0;bv=b.r.resultado||0;}
+    else if(key==='resultadoAberto'){av=a.r.qtdAberta||0;bv=b.r.qtdAberta||0;}
+    else {av=a.c.dataVenda||a.c.atualizadoEm||'';bv=b.c.dataVenda||b.c.atualizadoEm||'';}
+    av=futSortComparable(av);bv=futSortComparable(bv);
+    var result=(typeof av==='number'&&typeof bv==='number')?(av-bv):String(av).localeCompare(String(bv),'pt-BR',{numeric:true});
+    return result*(futSortState.dir==='asc'?1:-1);
+  });
+  var rows=[];
+  var cards=[];
+  registros.forEach(function(registro){
+    var c=registro.c,r=registro.r,lote=registro.lote,dadosLote=registro.dadosLote;
     var tipo=c.tipo==='direto'?'Direto':'Bolsa B3';
     var st='<span class="badge '+futuroStatusClass(r.status)+'">'+escHtml(futuroStatusLabel(r.status))+'</span>';
     var contrato=escHtml(gerarCodigoB3(c.vencimento)||c.codigo||'Contrato B3');
@@ -6781,21 +7026,18 @@ function renderFuturos(){
       +(r.liquidacoes.length?'<button class="fut-action" onclick="verLiquidacoesFuturo(\''+c.id+'\')">Histórico</button>':'')
       +(r.status!=='cancelado'?'<button class="fut-action warn" onclick="cancelarFuturo(\''+c.id+'\')">Cancelar</button>':'')
       +'<button class="fut-action danger" onclick="deletarFuturo(\''+c.id+'\')">Excluir</button>';
-    rows.push('<tr>'
-      +'<td>'+st+'</td>'
-      +'<td><span class="strong">'+(r.operacao==='livre'?'Livre':'Hedge')+'</span><div class="muted">'+escHtml(tipo)+'</div></td>'
-      +'<td><span class="strong">'+loteNome+'</span><div class="muted">'+loteStatus+'</div></td>'
-      +'<td>'+contratoComMes+'<div class="muted">'+escHtml(c.vencimento||'Sem vencimento')+'</div></td>'
-      +'<td>'+escHtml(r.lado==='compra'?'Compra':'Venda')+'</td>'
-      +'<td>'+fmtContratosB3(r.qtdContratos||0)+' ctr</td>'
-      +'<td>'+fmtContratosB3(r.qtdAberta||0)+' ctr</td>'
-      +'<td>'+fmtContratosB3(r.qtdLiquidada||0)+' ctr</td>'
-      +'<td class="money">'+abertura+'<div class="muted">'+vendaData+'</div></td>'
-      +'<td class="money">'+liq+'<div class="muted">'+liqData+'</div></td>'
-      +'<td class="money '+resClass+'">'+resultado+'</td>'
-      +'<td class="money">Em aberto</td>'
-      +'<td>'+actions+'</td>'
-    +'</tr>');
+    var cells={
+      status:st,
+      tipo:'<span class="strong">'+(r.operacao==='livre'?'Livre':'Hedge')+'</span><div class="muted">'+escHtml(tipo)+'</div>',
+      lote:'<span class="strong">'+loteNome+'</span><div class="muted">'+loteStatus+'</div>',
+      confinamento:escHtml(dadosLote.confinamento),origem:escHtml(dadosLote.origem),qtdLote:escHtml(dadosLote.qtd),entradaLote:escHtml(dadosLote.entrada),
+      faturamentoLote:'<span class="money">'+escHtml(dadosLote.faturamento)+'</span>',
+      codigo:contratoComMes+'<div class="muted">'+escHtml(c.vencimento||'Sem vencimento')+'</div>',lado:escHtml(r.lado==='compra'?'Compra':'Venda'),
+      qtdOriginal:fmtContratosB3(r.qtdContratos||0)+' ctr',aberto:fmtContratosB3(r.qtdAberta||0)+' ctr',liquidado:fmtContratosB3(r.qtdLiquidada||0)+' ctr',
+      abertura:'<span class="money">'+abertura+'</span><div class="muted">'+vendaData+'</div>',liquidacao:'<span class="money">'+liq+'</span><div class="muted">'+liqData+'</div>',
+      resultadoRealizado:'<span class="money '+resClass+'">'+resultado+'</span>',resultadoAberto:'<span class="money">Em aberto</span>',acoes:actions
+    };
+    rows.push('<tr>'+visibleCols.map(function(col){return '<td data-fut-col="'+col.key+'"'+futColumnStyle(col.key)+'>'+cells[col.key]+'</td>';}).join('')+'</tr>');
     cards.push('<details class="fut-mobile-card">'
       +'<summary>'
         +'<div class="fut-mobile-top"><div><div class="fut-mobile-title">'+contratoComMes+'</div><div class="fut-mobile-sub">'+loteNome+' · '+loteStatus+'</div><div class="fut-mobile-expand">Toque para ver detalhes</div></div>'+st+'</div>'
@@ -6811,13 +7053,17 @@ function renderFuturos(){
         +'<div class="fut-mobile-cell"><div class="fut-mobile-label">Abertura</div><div class="fut-mobile-value">'+abertura+'<div class="muted">'+vendaData+'</div></div></div>'
         +'<div class="fut-mobile-cell"><div class="fut-mobile-label">Liquidação</div><div class="fut-mobile-value">'+liq+'<div class="muted">'+liqData+'</div></div></div>'
         +'<div class="fut-mobile-cell"><div class="fut-mobile-label">Resultado</div><div class="fut-mobile-value '+resClass+'">'+resultado+'</div></div>'
-        +'<div class="fut-mobile-cell"><div class="fut-mobile-label">Tipo</div><div class="fut-mobile-value">'+escHtml(tipo)+'</div></div>'
+        +'<div class="fut-mobile-cell"><div class="fut-mobile-label">Confinamento</div><div class="fut-mobile-value">'+escHtml(dadosLote.confinamento)+'</div></div>'
+        +'<div class="fut-mobile-cell"><div class="fut-mobile-label">Origem</div><div class="fut-mobile-value">'+escHtml(dadosLote.origem)+'</div></div>'
+        +'<div class="fut-mobile-cell"><div class="fut-mobile-label">Qtd / entrada</div><div class="fut-mobile-value">'+escHtml(dadosLote.qtd)+'<div class="muted">'+escHtml(dadosLote.entrada)+'</div></div></div>'
+        +'<div class="fut-mobile-cell"><div class="fut-mobile-label">Faturamento lote</div><div class="fut-mobile-value">'+escHtml(dadosLote.faturamento)+'</div></div>'
       +'</div>'
       +'<div class="fut-mobile-actions">'+actions+'</div>'
     +'</details>');
   });
   list.innerHTML=rows.join('');
   if(mobileList)mobileList.innerHTML=cards.join('');
+  applyFutTableLayout();
 }
 function abrirLoteNoStatus(loteId){
   if(!loteId)return;
@@ -11976,24 +12222,24 @@ function buildStatusExportData(){
 }
 function buildB3ExportData(){
   var filters=[
-    ['Status',exportSelectText('fut-filter-status')],
-    ['Tipo de operação',exportSelectText('fut-filter-operacao')],
-    ['Lado',exportSelectText('fut-filter-lado')],
-    ['Lote',exportSelectText('fut-filter-lote')],
-    ['Código',exportVal('fut-filter-codigo')],
-    ['Vencimento',exportVal('fut-filter-vencimento')]
+    ['Status',futColumnFilters.status||'todos'],
+    ['Tipo de operação',futColumnFilters.tipo||'todos'],
+    ['Lado',futColumnFilters.lado||'todos'],
+    ['Lote',futColumnFilters.lote||'todos'],
+    ['Código',futColumnFilters.codigo||''],
+    ['Vencimento','']
   ];
   var resumo=exportSummaryCards('#panel-futuros','.fut-card','.fut-card-label','.fut-card-value','.fut-card-sub');
   var lotes=lotesDisponiveisB3();
   var loteMap={};
   lotes.forEach(function(l){loteMap[l.id]=l;});
-  var filtroStatus=(document.getElementById('fut-filter-status')||{}).value||'todos';
-  var filtroOperacao=(document.getElementById('fut-filter-operacao')||{}).value||'todos';
-  var filtroLado=(document.getElementById('fut-filter-lado')||{}).value||'todos';
-  var filtroLote=(document.getElementById('fut-filter-lote')||{}).value||'todos';
-  var filtroCodigo=String((document.getElementById('fut-filter-codigo')||{}).value||'').trim().toUpperCase();
-  var filtroVenc=(document.getElementById('fut-filter-vencimento')||{}).value||'';
-  var contratos=[['Status','Tipo operação','Lote / operação','Código','Vencimento','Lado','Qtd original','Qtd aberta','Qtd liquidada','Preço abertura','Data abertura','Liquidação média','Resultado realizado','Custos']];
+  var filtroStatus=futColumnFilters.status||'todos';
+  var filtroOperacao=futColumnFilters.tipo||'todos';
+  var filtroLado=futColumnFilters.lado||'todos';
+  var filtroLote=futColumnFilters.lote||'todos';
+  var filtroCodigo=String(futColumnFilters.codigo||'').trim().toUpperCase();
+  var filtroVenc='';
+  var contratos=[['Status','Tipo operação','Lote / operação','Confinamento','Origem','Qtd lote','Data entrada','Faturamento lote','Código','Vencimento','Lado','Qtd original','Qtd aberta','Qtd liquidada','Preço abertura','Data abertura','Liquidação média','Resultado realizado','Custos']];
   getFuturos().filter(function(c){
     var r=futuroResultado(c);
     var codigo=String(gerarCodigoB3(c.vencimento)||c.codigo||'').toUpperCase();
@@ -12006,10 +12252,16 @@ function buildB3ExportData(){
   }).forEach(function(c){
     var r=futuroResultado(c);
     var lote=loteMap[c.loteId]||getLotes().find(function(l){return l.id===c.loteId;});
+    var dadosLote=futuroDadosLote(lote);
     contratos.push([
       futuroStatusLabel(r.status),
       r.operacao==='livre'?'Livre / especulativa':'Hedge vinculado a lote',
       lote?loteLabelB3(lote):(c.operacaoNome||'Operação livre'),
+      dadosLote.confinamento,
+      dadosLote.origem,
+      dadosLote.qtd,
+      dadosLote.entrada,
+      dadosLote.faturamento,
       gerarCodigoB3(c.vencimento)||c.codigo||'Contrato B3',
       c.vencimento||'',
       r.lado==='compra'?'Compra':'Venda',
