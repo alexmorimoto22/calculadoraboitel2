@@ -1577,6 +1577,31 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 
 /* ── FINANCEIRO / CAIXA ───────────────────────────── */
 #panel-financeiro{width:min(1560px,calc(100vw - 48px));margin-left:50%;transform:translateX(-50%);}
+#panel-caixa{width:min(1320px,calc(100vw - 48px));margin-left:50%;transform:translateX(-50%);}
+.cash-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:14px;padding:16px 18px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(135deg,rgba(255,253,247,.9),rgba(242,237,227,.84));box-shadow:0 8px 24px rgba(13,27,42,.06);}
+.cash-title{font-size:25px;font-weight:950;color:var(--navy);line-height:1.05;}
+.cash-sub{font-size:12px;color:var(--taupe);margin-top:5px;line-height:1.45;}
+.cash-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px;}
+.cash-kpi{background:#fff;border:1px solid var(--border);border-radius:13px;padding:14px;box-shadow:0 4px 16px rgba(13,27,42,.05);min-width:0;}
+.cash-kpi.free{background:var(--navy);border-color:var(--navy);}
+.cash-label{display:block;font-size:8.5px;font-weight:900;letter-spacing:1.05px;text-transform:uppercase;color:var(--taupe);margin-bottom:7px;}
+.cash-kpi.free .cash-label{color:rgba(255,255,255,.65);}
+.cash-value{font-size:21px;font-weight:950;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cash-kpi.free .cash-value{color:#fff;}
+.cash-manual-input{width:100%;box-sizing:border-box;min-height:38px;border:1px solid var(--border);border-radius:9px;background:var(--input-bg);color:var(--navy);font:inherit;font-size:17px;font-weight:950;padding:8px 10px;outline:none;}
+.cash-manual-input:focus{border-color:var(--accent);background:#fff;}
+.cash-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;}
+.cash-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:15px;box-shadow:0 5px 18px rgba(13,27,42,.05);min-width:0;}
+.cash-card-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:4px;}
+.cash-card-title{font-size:15px;font-weight:950;color:var(--navy);}
+.cash-card-total{font-size:13px;font-weight:900;color:var(--green);white-space:nowrap;}
+.cash-card.payable .cash-card-total{color:var(--red);}
+.cash-table{width:100%;border-collapse:collapse;}
+.cash-table th{padding:9px 7px;text-align:left;font-size:8px;font-weight:900;letter-spacing:.85px;text-transform:uppercase;color:var(--taupe);border-bottom:1px solid var(--border);}
+.cash-table td{padding:10px 7px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;color:var(--text);vertical-align:top;}
+.cash-table tr:last-child td{border-bottom:0;}
+.cash-table .cash-money{text-align:right;font-weight:950;white-space:nowrap;}
+.cash-empty{padding:22px 8px 8px;text-align:center;color:var(--text-3);font-size:11px;}
 .fin-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:14px;padding:16px 18px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(135deg,rgba(255,253,247,.9),rgba(242,237,227,.84));box-shadow:0 8px 24px rgba(13,27,42,.06);}
 .fin-title{font-size:25px;font-weight:950;color:var(--navy);line-height:1.05;}
 .fin-sub{font-size:12px;color:var(--taupe);margin-top:5px;max-width:780px;line-height:1.45;}
@@ -1639,7 +1664,13 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 .fin-mini-label{font-size:8px;font-weight:900;letter-spacing:.75px;text-transform:uppercase;color:var(--taupe);margin-bottom:4px;}
 .fin-mini-value{font-size:14px;font-weight:950;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 @media(max-width:900px){
-  #panel-financeiro{width:100%;max-width:100%;margin-left:0;transform:none;padding-bottom:94px;}
+  #panel-financeiro,#panel-caixa{width:100%;max-width:100%;margin-left:0;transform:none;padding-bottom:94px;}
+  .cash-hero{display:block;padding:14px;}
+  .cash-kpis{grid-template-columns:1fr 1fr;gap:8px;}
+  .cash-kpi{padding:11px;}
+  .cash-value{font-size:16px;}
+  .cash-grid{grid-template-columns:1fr;gap:10px;}
+  .cash-card{padding:12px;}
   .fin-hero{display:grid;gap:10px;padding:14px;}
   .fin-actions{justify-content:flex-start;}
   .fin-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
@@ -2327,7 +2358,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
     overflow:hidden;
     padding-bottom:20px;
   }
-  #panel-home,#panel-lotes,#panel-futuros,#panel-financeiro{
+  #panel-home,#panel-lotes,#panel-futuros,#panel-financeiro,#panel-caixa{
     width:100%!important;max-width:none!important;margin-left:0!important;transform:none!important;
   }
 
@@ -3366,6 +3397,9 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
     <button class="desktop-nav" data-tab-target="futuros" onclick="switchTab('futuros')">
       <span>B3</span><small>Contratos e travas</small>
     </button>
+    <button class="desktop-nav" data-tab-target="caixa" onclick="switchTab('caixa')">
+      <span>Caixa</span><small>Pagamentos e recebimentos</small>
+    </button>
     <button class="desktop-nav" data-tab-target="calc" onclick="switchTab('calc')">
       <span>Calculadora</span><small>Nova simulação</small>
     </button>
@@ -3379,6 +3413,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
     <button class="tab-btn" data-tab-target="lotes" onclick="switchTab('lotes')"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 6h12"></path><path d="M8 12h12"></path><path d="M8 18h12"></path><path d="M4 6h.01"></path><path d="M4 12h.01"></path><path d="M4 18h.01"></path></svg></span><span class="tab-label">Status</span></button>
     <button class="tab-btn tab-calc-mobile active" data-tab-target="calc" onclick="switchTab('calc')"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="3"></rect><path d="M8 7h8"></path><path d="M8.5 11.5h.01"></path><path d="M12 11.5h.01"></path><path d="M15.5 11.5h.01"></path><path d="M8.5 15h.01"></path><path d="M12 15h.01"></path><path d="M15.5 15h.01"></path></svg></span><span class="tab-label">Calculadora</span></button>
     <button class="tab-btn" data-tab-target="futuros" onclick="switchTab('futuros')"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19V5"></path><path d="M4 19h16"></path><path d="m7 15 4-4 3 3 5-7"></path><path d="M17 7h2v2"></path></svg></span><span class="tab-label">B3</span></button>
+    <button class="tab-btn" data-tab-target="caixa" onclick="switchTab('caixa')"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 10h18"></path><path d="M7 15h2"></path><path d="M13 15h4"></path></svg></span><span class="tab-label">Caixa</span></button>
     <!-- Financeiro mantido no histórico do arquivo; aba oculta temporariamente para testes. -->
     <button class="tab-btn" data-hidden-history="financeiro" data-tab-target="financeiro" onclick="switchTab('financeiro')" style="display:none"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 10h18"></path><path d="M7 15h2"></path><path d="M13 15h4"></path></svg></span><span class="tab-label">Financeiro</span></button>
     <button class="tab-btn" id="tab-config" data-tab-target="config" onclick="switchTab('config')" style="display:none"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3a2 2 0 0 1 4 0v.09A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9c.22.35.56.7 1 .9.35.16.73.2 1.1.2H21a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51.9Z"></path></svg></span><span class="tab-label">Configurações</span></button>
@@ -3990,6 +4025,11 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
       </div>
     </div>
 
+    <!-- ─── PAINEL CAIXA ───────────────────────────── -->
+    <div id="panel-caixa" style="display:none">
+      <div id="cash-content"></div>
+    </div>
+
     <!-- ─── PAINEL FINANCEIRO / CAIXA ───────────────── -->
     <div id="panel-financeiro" style="display:none">
       <div class="fin-hero">
@@ -4352,7 +4392,7 @@ function hasPermission(permission){
 function requirePermission(permission,message){if(hasPermission(permission))return true;toast(typeof message==='string'?message:'Você não possui permissão para realizar esta ação.');return false;}
 function canAccessTab(tab){
   if(tab==='financeiro')return false;
-  return ['home','lotes','calc','futuros','config','lote-detail'].indexOf(tab)>=0;
+  return ['home','lotes','calc','futuros','caixa','config','lote-detail'].indexOf(tab)>=0;
 }
 function canViewLot(lot){return hasFullAccess()||!!lot&&(!lot.criadoPor||lot.criadoPor===currentUser);}
 function canEditLot(lot){return isAdminUser()||!!lot&&(!lot.criadoPor||lot.criadoPor===currentUser);}
@@ -5044,6 +5084,59 @@ function finLoteRecebIso(lote,orc){
   var entrada=finLoteEntradaIso(lote,orc);
   if(entrada&&orc)return finAddDaysIso(entrada,(parseInt(orc.dias)||0)+(parseInt(orc.prazoPag)||0));
   return '';
+}
+var CAIXA_MANUAL_KEY='vmagro_caixa_manual_v1';
+function getCaixaManual(){
+  try{return finNum(localStorage.getItem(CAIXA_MANUAL_KEY)||0);}catch(e){return 0;}
+}
+function salvarCaixaManual(valor){
+  try{localStorage.setItem(CAIXA_MANUAL_KEY,String(finNum(valor)));}catch(e){}
+  renderCaixa();
+}
+function renderCaixa(){
+  var content=document.getElementById('cash-content');
+  if(!content)return;
+  var pagar=[],receber=[];
+  getLotes().filter(canViewLot).forEach(function(lote){
+    var orc=(lote.orcamentos&&lote.orcamentos[0])||null;
+    if(!orc)return;
+    var metric=resultadoStatusLote(lote,orc);
+    var item={
+      lote:finLotLabel(lote.id),
+      qtd:(parseFloat(lote.qtd||orc.qtd)||0).toLocaleString('pt-BR',{maximumFractionDigits:0})+' cab.',
+      dataEntrada:finLoteEntradaIso(lote,orc),
+      dataRecebimento:finLoteRecebIso(lote,orc),
+      capital:parseFloat(metric.capital)||0,
+      faturamento:parseFloat(metric.faturamento)||0
+    };
+    if(lote.status==='embarque')pagar.push(item);
+    if(lote.status==='abatido')receber.push(item);
+  });
+  pagar.sort(function(a,b){return String(a.dataEntrada||'').localeCompare(String(b.dataEntrada||''));});
+  receber.sort(function(a,b){return String(a.dataRecebimento||'').localeCompare(String(b.dataRecebimento||''));});
+  var caixa=getCaixaManual();
+  var totalPagar=pagar.reduce(function(total,item){return total+item.capital;},0);
+  var totalReceber=receber.reduce(function(total,item){return total+item.faturamento;},0);
+  var livre=caixa+totalReceber-totalPagar;
+  function tableRows(items,tipo){
+    if(!items.length)return '<tr><td colspan="3"><div class="cash-empty">Nenhum lote nesta etapa.</div></td></tr>';
+    return items.map(function(item){
+      var data=tipo==='pagar'?item.dataEntrada:item.dataRecebimento;
+      var valor=tipo==='pagar'?item.capital:item.faturamento;
+      return '<tr><td><div class="fin-strong">'+escHtml(item.lote)+'</div><div class="fin-muted">'+escHtml(item.qtd)+'</div></td><td>'+finDateBR(data)+'</td><td class="cash-money">'+fmt(valor)+'</td></tr>';
+    }).join('');
+  }
+  content.innerHTML='<div class="cash-hero"><div><div class="cash-title">Caixa</div><div class="cash-sub">Visão do saldo disponível, pagamentos dos lotes em embarque e recebimentos dos lotes abatidos.</div></div></div>'
+    +'<div class="cash-kpis">'
+      +'<div class="cash-kpi"><label class="cash-label" for="cash-manual-input">Caixa</label><input id="cash-manual-input" class="cash-manual-input" type="text" inputmode="decimal" value="'+escHtml(fmtNum(caixa,2))+'" onchange="salvarCaixaManual(this.value)"></div>'
+      +'<div class="cash-kpi"><span class="cash-label">A pagar</span><div class="cash-value">'+fmt(totalPagar)+'</div></div>'
+      +'<div class="cash-kpi"><span class="cash-label">A receber</span><div class="cash-value">'+fmt(totalReceber)+'</div></div>'
+      +'<div class="cash-kpi free"><span class="cash-label">Caixa livre</span><div class="cash-value">'+fmt(livre)+'</div></div>'
+    +'</div>'
+    +'<div class="cash-grid">'
+      +'<section class="cash-card payable"><div class="cash-card-head"><div class="cash-card-title">A pagar</div><div class="cash-card-total">'+fmt(totalPagar)+'</div></div><table class="cash-table"><thead><tr><th>Lote</th><th>Entrada</th><th style="text-align:right">Capital investido</th></tr></thead><tbody>'+tableRows(pagar,'pagar')+'</tbody></table></section>'
+      +'<section class="cash-card"><div class="cash-card-head"><div class="cash-card-title">A receber</div><div class="cash-card-total">'+fmt(totalReceber)+'</div></div><table class="cash-table"><thead><tr><th>Lote</th><th>Recebimento</th><th style="text-align:right">Fat. lote</th></tr></thead><tbody>'+tableRows(receber,'receber')+'</tbody></table></section>'
+    +'</div>';
 }
 function finAutoLancamentosLotes(){
   var out=[];
@@ -5808,7 +5901,7 @@ function switchTab(tab){
     toast('⚠ Você não possui permissão para acessar esta área.');
     return false;
   }
-  ['home','lotes','lote-detail','futuros','financeiro','calc','config'].forEach(t=>{const p=document.getElementById('panel-'+t);if(p)p.style.display='none';});
+  ['home','lotes','lote-detail','futuros','caixa','financeiro','calc','config'].forEach(t=>{const p=document.getElementById('panel-'+t);if(p)p.style.display='none';});
   document.getElementById('panel-'+tab).style.display='block';
   document.body.classList.toggle('calc-tab-active',tab==='calc');
   document.querySelectorAll('.tab-btn').forEach(function(b){
@@ -5818,6 +5911,7 @@ function switchTab(tab){
   if(tab==='home')renderHome();
   if(tab==='lotes'){renderLotes();}
   if(tab==='futuros')renderFuturos();
+  if(tab==='caixa')renderCaixa();
   if(tab==='financeiro')renderFinanceiro();
   if(tab==='config'){
     showCfg('vends');
