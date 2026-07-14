@@ -3502,9 +3502,9 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
       <div class="section-label">Lote</div>
       <div class="card buy-card">
         <div class="g2 calc-wide-grid-4">
-          <div class="field"><label>Quantidade de Animais</label><input type="number" id="qtd" value="50" min="1"></div>
-          <div class="field"><label>Peso de Compra (kg)</label><input type="number" id="pesoCom" value="420" step="0.1"></div>
-          <div class="field"><label>Rendimento Carcaça Entrada (%)</label><input type="number" id="rendEntrada" value="50" step="0.5" min="1" max="100"><div class="hint">Ex: 50 = 50% de rendimento</div></div>
+          <div class="field"><label>Quantidade de Animais</label><div class="unit-input"><span class="unit-input-prefix">cab.</span><input type="number" id="qtd" value="50" min="1"></div></div>
+          <div class="field"><label>Peso de Compra (kg)</label><div class="unit-input"><span class="unit-input-prefix">kg</span><input type="number" id="pesoCom" value="420" step="0.1"></div></div>
+          <div class="field"><label>Rendimento Carcaça Entrada (%)</label><div class="unit-input"><span class="unit-input-prefix">%</span><input type="number" id="rendEntrada" value="50" step="0.5" min="1" max="100"></div><div class="hint">Ex: 50 = 50% de rendimento</div></div>
           <div class="field">
             <div class="field-label-row"><label>Preço Compra</label><div class="mode-toggle single"><button type="button" class="mt-btn active" id="btn-preco-mode" onclick="togglePrecoMode()">R$/@</button></div></div>
             <div class="unit-input"><span class="unit-input-prefix" id="preco-compra-prefix">R$/@</span><input type="number" id="valorKG" value="12.50" step="0.01" style="display:none"><input type="number" id="valorAt_compra" value="280" step="1"></div>
@@ -3527,10 +3527,10 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
       <div class="section-label">Transporte e Quebra</div>
       <div class="card">
         <div class="g3 calc-wide-grid-4">
-          <div class="field"><label>Distância (km)</label><input type="number" id="freteKm" value="150" step="1" min="0" oninput="recalcularQuebra()"></div>
-          <div class="field"><label>Custo R$/km</label><input type="number" id="freteCusto" value="4.50" step="0.01" min="0"><div class="hint">Frete = km × R$/km ÷ qtd animais</div></div>
-          <div class="field"><label>Bônus Frete R$/animal</label><input type="number" id="bonusFrete" value="0" step="0.50" min="0"><div class="hint">Desconto/rebate no frete</div></div>
-          <div class="field"><label>Quebra (%)</label><input type="number" id="quebra" value="4.0" step="0.01" min="0" max="20"></div>
+          <div class="field"><label>Distância (km)</label><div class="unit-input"><span class="unit-input-prefix">km</span><input type="number" id="freteKm" value="150" step="1" min="0" oninput="recalcularQuebra()"></div></div>
+          <div class="field"><label>Custo R$/km</label><div class="unit-input"><span class="unit-input-prefix">R$</span><input type="number" id="freteCusto" value="4.50" step="0.01" min="0"></div><div class="hint">Frete = km × R$/km ÷ qtd animais</div></div>
+          <div class="field"><label>Bônus Frete R$/animal</label><div class="unit-input"><span class="unit-input-prefix">R$</span><input type="number" id="bonusFrete" value="0" step="0.50" min="0"></div><div class="hint">Desconto/rebate no frete</div></div>
+          <div class="field"><label>Quebra (%)</label><div class="unit-input"><span class="unit-input-prefix">%</span><input type="text" inputmode="decimal" data-decimal="1" id="quebra" value="4,00" step="0.01" min="0" max="20" placeholder="0,00"></div><div class="hint">Aceita quebra menor que 1%: ex. 0,45%.</div></div>
         </div>
         <div class="quebra-bd" id="quebra-bd"></div>
         <div class="g3" style="margin-top:12px">
@@ -3561,16 +3561,16 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
           <div class="hint">Ao selecionar, preenche os custos cadastrados em Configurações.</div>
         </div>
         <div class="g3 only-ms">
-          <div class="field"><label>Matéria Seca R$/kg</label><input type="number" id="msKG" value="1.20" step="0.01"></div>
-          <div class="field"><label>Operacional R$/animal/dia</label><input type="number" id="opDia" value="2.00" step="0.01"></div>
-          <div class="field"><label>Consumo MS (% do peso vivo/dia)</label><input type="number" id="consumoMS" value="1.8" step="0.1" min="0.1" max="15"></div>
+          <div class="field"><label>Matéria Seca R$/kg</label><div class="unit-input"><span class="unit-input-prefix">R$</span><input type="number" id="msKG" value="1.20" step="0.01"></div></div>
+          <div class="field"><label>Operacional R$/animal/dia</label><div class="unit-input"><span class="unit-input-prefix">R$</span><input type="number" id="opDia" value="2.00" step="0.01"></div></div>
+          <div class="field"><label>Consumo MS (% do peso vivo/dia)</label><div class="unit-input"><span class="unit-input-prefix">%</span><input type="number" id="consumoMS" value="1.8" step="0.1" min="0.1" max="15"></div></div>
         </div>
         <div class="g2 only-atprod" style="margin-top:4px">
           <div class="field"><label>Custo boitel R$/@ produzida</label><input type="number" id="custoArrobaProd" value="0" step="0.50" min="0"><div class="hint">Alternativa: cobrança por @ produzida usando peso de chegada.</div></div>
           <div class="field"><label>@ produzidas / animal</label><input type="text" id="arrobasProdBoitel" value="—" readonly><div class="hint">Atualiza conforme os dados: @ abate - @ chegada.</div></div>
         </div>
         <div class="g2 calc-wide-grid-4" style="margin-top:4px">
-          <div class="field"><label>Sanidade R$/animal</label><input type="number" id="sanidade" value="15.00" step="0.01"></div>
+          <div class="field"><label>Sanidade R$/animal</label><div class="unit-input"><span class="unit-input-prefix">R$</span><input type="number" id="sanidade" value="15.00" step="0.01"></div></div>
           <div class="field"><label>Dias de Confinamento</label><input type="number" id="dias" value="100" min="1" oninput="atualizarDatas()"></div>
           <div class="field"><label>Prazo de Recebimento (dias)</label><input type="number" id="prazoPag" value="7" step="1" min="0" oninput="atualizarDatas()"><div class="hint">Dias após abate. Afeta rent./mês.</div></div>
           <div class="field"><label>Data prevista entrada <span style="color:var(--text-3);font-weight:400">(opcional)</span></label><input type="date" id="dataEntradaPrev" oninput="atualizarDatas()"><div class="hint" id="hint-datas">Informe a data de entrada para ver abate e recebimento</div></div>
@@ -3582,7 +3582,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
           <div class="field"><label>Peso final em kg</label><input type="text" id="pesoFinalKg" value="—" readonly><div class="hint">Peso de chegada + GMD × dias.</div></div>
         </div>
         <div class="g2" style="margin-top:4px">
-          <div class="field"><label>Rendimento Carcaça Abate (%)</label><input type="number" id="rendAbate" value="56" step="0.5" min="1" max="100"></div>
+          <div class="field"><label>Rendimento Carcaça Abate (%)</label><div class="unit-input"><span class="unit-input-prefix">%</span><input type="number" id="rendAbate" value="56" step="0.5" min="1" max="100"></div></div>
           <div class="field"><label>@ abate</label><input type="text" id="arrobasAbateCalc" value="—" readonly><div class="hint">Peso final × rendimento de abate ÷ 15.</div></div>
         </div>
         <div class="g4" style="margin-top:4px">
