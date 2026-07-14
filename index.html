@@ -1479,9 +1479,9 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	    #panel-lotes .status-mobile-icon svg{width:19px;height:19px;}
 	    #panel-lotes .status-mobile-title{font-size:20px;}
 	    #panel-lotes .status-mobile-sub{font-size:12px;line-height:1.2;}
-	    #panel-lotes .status-table-body{gap:8px!important;}
-	    #panel-lotes .status-row{grid-template-columns:62px minmax(0,1fr) auto!important;gap:7px 8px!important;padding:10px!important;border-radius:12px!important;box-shadow:0 5px 16px rgba(13,27,42,.07)!important;}
-	    #panel-lotes .status-row::before{min-width:52px;height:26px;padding:0 8px;border-radius:8px;font-size:11px;box-shadow:none;}
+	    #panel-lotes .status-table-body{gap:7px!important;}
+	    #panel-lotes .status-row{grid-template-columns:58px minmax(0,1fr) auto!important;gap:5px 7px!important;padding:9px 10px!important;border-radius:12px!important;box-shadow:0 5px 16px rgba(13,27,42,.07)!important;}
+	    #panel-lotes .status-row::before{min-width:48px;height:24px;padding:0 7px;border-radius:7px;font-size:10px;box-shadow:none;}
 	    #panel-lotes .status-row>.status-cell{display:none!important;}
 	    #panel-lotes .status-row>.status-cell:nth-child(4){display:block!important;grid-column:2!important;grid-row:1!important;align-self:center!important;background:transparent!important;border:none!important;padding:0!important;min-width:0!important;}
 	    #panel-lotes .status-row>.status-cell:nth-child(1){display:flex!important;grid-column:3!important;grid-row:1!important;align-self:center!important;justify-self:end!important;background:transparent!important;border:none!important;padding:0!important;}
@@ -1499,17 +1499,19 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	    #panel-lotes .status-row.active-edit>.status-cell:nth-child(15),
 	    #panel-lotes .status-row.active-edit>.status-cell:nth-child(16){display:none!important;}
 	    #panel-lotes .status-seq-pc{display:none!important;}
-	    #panel-lotes .status-cell-title{font-size:12.5px!important;line-height:1.15!important;max-width:100%!important;}
+	    #panel-lotes .status-cell-title{font-size:12px!important;line-height:1.15!important;max-width:100%!important;}
 	    #panel-lotes .status-cell-sub{display:none!important;}
-	    #panel-lotes .badge{font-size:8.5px!important;padding:5px 8px!important;letter-spacing:.35px!important;}
-	    #panel-lotes .status-mobile-line{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px 8px;grid-column:1/-1;grid-row:2;overflow:visible!important;white-space:normal!important;padding-top:3px;font-size:10.5px;line-height:1.15;}
+	    #panel-lotes .badge{font-size:8px!important;padding:4px 7px!important;letter-spacing:.35px!important;}
+	    #panel-lotes .status-mobile-line{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px 6px;grid-column:1/-1;grid-row:2;overflow:visible!important;white-space:normal!important;padding-top:2px;font-size:9.5px;line-height:1.12;}
 	    #panel-lotes .status-mobile-line i,#panel-lotes .status-mobile-line b{display:none!important;}
 	    #panel-lotes .status-mobile-line span{display:block!important;min-width:0!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-	    #panel-lotes .status-mobile-line em{display:block;font-style:normal;font-size:8px;font-weight:850;letter-spacing:.55px;text-transform:uppercase;color:var(--taupe);margin-bottom:2px;}
+	    #panel-lotes .status-mobile-line em{display:block;font-style:normal;font-size:7.2px;font-weight:850;letter-spacing:.45px;text-transform:uppercase;color:var(--taupe);margin-bottom:2px;}
 	    #panel-lotes .status-mobile-line .money,
 	    #panel-lotes .status-mobile-line .profit,
 	    #panel-lotes .status-mobile-line .rate{font-weight:900;}
 	    #panel-lotes .status-mobile-line .rate{text-align:right;}
+	    #panel-lotes .status-mobile-line .vendor,
+	    #panel-lotes .status-mobile-line .confinement{color:var(--text-2);font-weight:750;}
 	    #panel-lotes .status-mobile-hint{margin-top:9px;padding:8px 10px;font-size:11px;border-radius:12px;}
 	  }
 
@@ -8775,10 +8777,12 @@ function renderLotes(){
       +'<span><em>Entrada</em>'+escHtml(dataEntradaCurta)+'</span>'
       +'<span><em>Abate</em>'+escHtml(dataAbateCurta)+'</span>'
       +'<span><em>B3</em>'+escHtml(b3Cobertura)+'</span>'
+      +'<span class="vendor" title="'+escHtml(vendedorVal)+'"><em>Vendedor</em>'+escHtml(vendedorVal)+'</span>'
       +'<span class="muted"><em>Trava</em>'+escHtml(b3Estado)+'</span>'
       +'<span class="money"><em>Capital</em>'+escHtml(fmtCompactMoney(capital))+'</span>'
       +'<span class="profit"><em>Lucro</em>'+escHtml(fmtCompactMoney(lucro))+'</span>'
       +'<span class="rate"><em>% mês</em>'+escHtml(rentMesVal)+'</span>'
+      +'<span class="confinement" title="'+escHtml(confinamento)+'"><em>Boitel</em>'+escHtml(confinamento)+'</span>'
     +'</div>';
     return '<div class="status-row" style="grid-template-columns:'+statusGridTemplate()+'" data-lid="'+l.id+'" data-lote-seq="'+escHtml(numeroLote)+'" data-status="'+(l.status||'embarque')+'" draggable="true"'+attrs+'>'
       +statusLabel
