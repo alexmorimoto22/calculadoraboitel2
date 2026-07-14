@@ -888,10 +888,22 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .ep .field input,.ep .field select{border-radius:8px;border-width:1.5px;min-height:40px;font-weight:650;}
   .ep .field input:focus,.ep .field select:focus,.ep textarea:focus{box-shadow:0 0 0 3px rgba(13,27,42,.08);}
   .ep-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;}
+  .ep-quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px;}
+  .ep-quick-field{min-width:0;}
+  .ep-quick-field label{display:block;margin:0 0 5px;color:var(--text-3);font-size:9px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;}
+  .ep-note-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start;}
   .btn-ep-save{background:var(--green);color:#fff;border:none;border-radius:7px;padding:9px 18px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
   .btn-ep-detail{background:none;border:1px solid var(--border);color:var(--text-2);border-radius:7px;padding:9px 14px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;}
   .btn-ep-detail:hover{border-color:var(--accent);color:var(--accent);}
 	  .ep-result-summary{background:var(--surface2);border-radius:8px;padding:12px 14px;margin-bottom:4px;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+	  .ep-sim-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:4px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+	  .ep-sim-block{min-width:0;padding:13px 14px;}
+	  .ep-sim-block+.ep-sim-block{border-left:1px solid var(--border);}
+	  .ep-sim-title{margin:0 0 10px;color:var(--navy);font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;}
+	  .ep-sim-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 12px;}
+	  .ep-sim-item{min-width:0;color:var(--text-2);font-size:10px;line-height:1.2;}
+	  .ep-sim-item span{display:block;color:var(--text-3);font-size:9px;}
+	  .ep-sim-item strong{display:block;margin-top:2px;color:var(--text);font-size:12px;font-weight:750;line-height:1.18;overflow-wrap:anywhere;}
 	  .pxr-wrap{border:1px solid var(--border);border-radius:10px;overflow:auto;background:#fff;margin-bottom:10px;}
 	  .pxr-table{width:100%;min-width:700px;border-collapse:collapse;font-size:11px;}
 	  .pxr-table th,.pxr-table td{padding:9px 10px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap;}
@@ -940,6 +952,9 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	  .realizado-metric-card .metric-value.negative{color:var(--red);}
 	  .realizado-metric-card .metric-helper{display:block;margin-top:4px;color:var(--text-3);font-size:8px;line-height:1.2;}
 	  .realizado-metric-card input{width:100%;min-width:0;box-sizing:border-box;min-height:32px!important;border:0!important;background:transparent!important;padding:3px 0!important;color:var(--navy);font-size:15px!important;font-weight:850!important;box-shadow:none!important;}
+	  .realizado-inline-value{display:flex;align-items:center;gap:8px;margin-top:2px;min-width:0;}
+	  .realizado-inline-value input{flex:1;width:auto;}
+	  .realizado-inline-percent{flex:0 0 auto;border-left:1px solid var(--border);padding-left:8px;color:var(--green);font-size:12px;font-weight:850;white-space:nowrap;}
 	  .realizado-metric-card.is-editable{background:var(--surface2);border-color:var(--border2);}
 	  .realizado-indicators{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;width:100%;max-width:100%;min-width:0;}
 	  .realizado-indicator{min-width:0;border:1px solid var(--border);border-radius:10px;background:#fff;padding:9px;}
@@ -954,6 +969,9 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	  .realizado-clear-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px;}
 
 	  @media(max-width:768px){
+	    .ep-quick-grid,.ep-note-grid{grid-template-columns:1fr;gap:8px;}
+	    .ep-sim-summary{grid-template-columns:1fr;}
+	    .ep-sim-block+.ep-sim-block{border-left:0;border-top:1px solid var(--border);}
 	    .realizado-wrapper{margin-top:10px;}
 	    .realizado-heading{padding:11px 12px;margin-bottom:8px;gap:8px;}
 	    .realizado-heading h3{font-size:14px;}
@@ -974,6 +992,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	    .realizado-metric-card{padding:8px;}
 	    .realizado-metric-card .metric-label{min-height:19px;font-size:7px;letter-spacing:.45px;}
 	    .realizado-metric-card .metric-value,.realizado-metric-card input{font-size:13px!important;}
+	    .realizado-inline-percent{font-size:11px;}
 	    .realizado-metric-card .metric-helper{font-size:7px;}
 	    .realizado-indicators{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;}
 	    .realizado-indicator{padding:7px;}
@@ -2311,6 +2330,17 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   #panel-lotes .badge{font-size:8.5px;padding:3px 8px;}
   #panel-lotes .status-seq-pc{font-size:8.5px;padding:3px 7px;min-width:46px;}
   #panel-lotes #edit-panel .ep{max-width:none;border-radius:14px;padding:16px;}
+
+  @media(min-width:769px){
+    #panel-lotes #edit-panel .ep{padding:14px 16px;}
+    #panel-lotes #edit-panel .ep-section{margin:10px 0 6px;}
+    #panel-lotes #edit-panel .ep-partial-grid{margin-bottom:8px!important;}
+    #panel-lotes #edit-panel .ep-textarea{min-height:82px;}
+  }
+  @media(min-width:769px) and (max-width:980px){
+    #panel-lotes #edit-panel .ep-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+    #panel-lotes #edit-panel .ep-note-grid{grid-template-columns:1fr;}
+  }
 
   #panel-futuros .fut-hero{
     padding:13px 16px;margin-bottom:10px;border-radius:14px;align-items:center;
@@ -4369,17 +4399,23 @@ function resultadoStatusLote(lote,orc){
     try{vendaRealBase=orc?vendaRealizadaEsperada(lote,orc,real):null;}catch(e){vendaRealBase=null;}
     var receitaBase=vendaRealBase&&vendaRealBase.liquido?vendaRealBase.liquido:faturamento;
     var realCustoNum=normalizarValorRealizado(real.custoReal,capital);
+    // O capital da compra (aquisição, frete e comissão) não é editável no realizado.
+    // Registros antigos podem ter gravado zero quando o painel ainda aceitava esse campo.
+    var capitalRealInvalido=realCustoNum<=0&&capital>0;
+    if(capitalRealInvalido)realCustoNum=capital;
     var realReceitaNum=normalizarValorRealizado(real.receitaReal,receitaBase);
     var realLucroNum=normalizarValorRealizado(real.lucroReal,realReceitaNum-realCustoNum);
     if(real.custoReal!==undefined&&real.custoReal!==null)capital=realCustoNum;
     custoTotal=capital;
-    if(real.lucroReal!==undefined&&real.lucroReal!==null)lucro=realLucroNum;
+    if(!capitalRealInvalido&&real.lucroReal!==undefined&&real.lucroReal!==null)lucro=realLucroNum;
     if((real.lucroReal===undefined||real.lucroReal===null)&&real.receitaReal!==undefined&&real.receitaReal!==null){
       lucro=realReceitaNum-capital;
     }
+    if(capitalRealInvalido&&real.receitaReal!==undefined&&real.receitaReal!==null)lucro=realReceitaNum-capital;
     faturamento=capital+lucro;
-    rent=real.rentReal!==undefined&&real.rentReal!==null?finNum(real.rentReal):(capital>0?lucro/capital:0);
-    rentMes=real.rentMesReal!==undefined&&real.rentMesReal!==null?finNum(real.rentMesReal):rentMes;
+    rent=!capitalRealInvalido&&real.rentReal!==undefined&&real.rentReal!==null?finNum(real.rentReal):(capital>0?lucro/capital:0);
+    var prazoRealizado=prazoDiasResultadoLote(lote,orc);
+    rentMes=!capitalRealInvalido&&real.rentMesReal!==undefined&&real.rentMesReal!==null?finNum(real.rentMesReal):(prazoRealizado>0?rent/(prazoRealizado/30):rentMes);
     var realZoo=zootecRealCalc(lote,orc,real);
     eficienciaBio=realZoo&&(realZoo.eficOrigem||realZoo.efic)?(realZoo.eficOrigem||realZoo.efic):eficienciaBio;
     eficienciaBioChegada=realZoo&&realZoo.efic?realZoo.efic:eficienciaBioChegada;
@@ -4451,6 +4487,10 @@ function brNum(v,dec){
   v=parseFloat(v)||0;
   return v.toLocaleString('pt-BR',{minimumFractionDigits:dec,maximumFractionDigits:dec});
 }
+function fmtGmd(v){
+  var n=finNum(v);
+  return n?n.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:2})+' kg/dia':'—';
+}
 function _isoDate(d){
   if(!d)return '';
   if(typeof d==='string')d=new Date(d+'T00:00:00');
@@ -4465,7 +4505,7 @@ function zootecRealCalc(lote,orc,aj){
   var rendA=aj.rendCarcacaReal!==undefined&&aj.rendCarcacaReal!==null?finNum(aj.rendCarcacaReal):0;
   var entrada=aj.dataEntradaReal||(lote.confRecord&&lote.confRecord.dataEntrada)||(orc&&orc.dataEntradaPrev)||'';
   var abate=aj.dataAbateReal||(lote.confRecord&&lote.confRecord.dataSaida)||'';
-  var dias=aj.diasReal!==undefined&&aj.diasReal!==null?finNum(aj.diasReal):((entrada&&abate)?Math.max(0,Math.round((_addDias(abate,0)-_addDias(entrada,0))/86400000)):finNum(lote.confRecord&&lote.confRecord.diasEfetivos));
+  var dias=aj.diasReal!==undefined&&aj.diasReal!==null?finNum(aj.diasReal):((entrada&&abate)?Math.max(0,Math.round((_addDias(abate,0)-_addDias(entrada,0))/86400000)):(finNum(lote.confRecord&&lote.confRecord.diasEfetivos)||finNum(orc.dias)));
   var pesoCom=aj.pesoOrigemReal!==undefined&&aj.pesoOrigemReal!==null?finNum(aj.pesoOrigemReal):finNum(orc.pesoCom||lote.pesoMedio);
   var quebra=finNum(orc.quebra_pct)/100;
   var rendE=finNum(orc.rendE_pct)/100;
@@ -4478,12 +4518,16 @@ function zootecRealCalc(lote,orc,aj){
   var pesoCarcaca=rendA>0&&pesoSaida>0?pesoSaida*(rendA/100):0;
   var atProdOrigem=atAbate-atEntradaOrigem;
   var atProd=atAbate-atEntrada;
-  var consumoDiario=(aj.consumoMSDiarioReal!==undefined&&aj.consumoMSDiarioReal!==null&&String(aj.consumoMSDiarioReal)!=='')?finNum(aj.consumoMSDiarioReal):0;
+  var consumoPct=(aj.consumoMSPctReal!==undefined&&aj.consumoMSPctReal!==null&&String(aj.consumoMSPctReal)!=='')?finNum(aj.consumoMSPctReal):0;
+  var pesoMedio=(pesoEntrada+pesoSaida)/2;
+  var consumoDiario=(aj.consumoMSDiarioReal!==undefined&&aj.consumoMSDiarioReal!==null&&String(aj.consumoMSDiarioReal)!=='')?finNum(aj.consumoMSDiarioReal):(consumoPct>0&&pesoMedio>0?pesoMedio*(consumoPct/100):0);
   var consumoTotal=(aj.consumoMSTotalReal!==undefined&&aj.consumoMSTotalReal!==null&&String(aj.consumoMSTotalReal)!=='')?finNum(aj.consumoMSTotalReal):(consumoDiario>0&&dias>0?consumoDiario*dias:0);
   var eficOrigem=atProdOrigem>0&&consumoTotal>0?consumoTotal/atProdOrigem:0;
   var efic=atProd>0&&consumoTotal>0?consumoTotal/atProd:0;
-  var custoAtReal=(aj.custoArrobaProduzidaReal!==undefined&&aj.custoArrobaProduzidaReal!==null&&String(aj.custoArrobaProduzidaReal)!=='')?finNum(aj.custoArrobaProduzidaReal):0;
-  return {gmd:gmd,rendA:rendA,dias:dias,pesoOrigem:pesoCom,pesoEntrada:pesoEntrada,pesoSaida:pesoSaida,pesoCarcaca:pesoCarcaca,consumoDiario:consumoDiario,consumoTotal:consumoTotal,efic:efic,eficOrigem:eficOrigem,atEntradaOrigem:atEntradaOrigem,atEntrada:atEntrada,atProd:atProd>0?atProd:0,atProdOrigem:atProdOrigem>0?atProdOrigem:0,atAbate:atAbate,custoAtReal:custoAtReal};
+  var custoConfinamento=(consumoTotal*finNum(orc.msKG))+(finNum(orc.opDia)*dias);
+  var custoAtOrigem=atProdOrigem>0?custoConfinamento/atProdOrigem:0;
+  var custoAtChegada=atProd>0?custoConfinamento/atProd:0;
+  return {gmd:gmd,rendA:rendA,dias:dias,pesoOrigem:pesoCom,pesoEntrada:pesoEntrada,pesoSaida:pesoSaida,pesoCarcaca:pesoCarcaca,consumoPct:consumoPct,consumoDiario:consumoDiario,consumoTotal:consumoTotal,efic:efic,eficOrigem:eficOrigem,atEntradaOrigem:atEntradaOrigem,atEntrada:atEntrada,atProd:atProd>0?atProd:0,atProdOrigem:atProdOrigem>0?atProdOrigem:0,atAbate:atAbate,custoAtOrigem:custoAtOrigem,custoAtChegada:custoAtChegada,custoAtReal:custoAtChegada};
 }
 function valorAjustePorArroba(base,val,mode){
   base=finNum(base);
@@ -7165,29 +7209,53 @@ function openEditPanel(loteId, cardEl){
     var simFat=simCapital+simLucro;
     var simConfinamento=(o.precificacaoSnapshot&&o.precificacaoSnapshot.boitelNome)||(o.boitelSnapshot&&(o.boitelSnapshot.boitelNome||o.boitelSnapshot.nome))||o.boitelNome||'Manual / sem boitel';
     var simBio=biometriaSimuladaOrc(o);
+    var simBonusMode=o.bonusMode||'val';
+    var simDescontoMode=o.descontoMode||'val';
+    var simBonus=finNum(o.bonus);
+    var simDesconto=finNum(o.desconto);
+    function simItem(label,value,tone){
+      return '<div class="ep-sim-item"><span>'+escHtml(label)+'</span><strong'+(tone?' style="color:'+tone+'"':'')+'>'+escHtml(value)+'</strong></div>';
+    }
+    function simAjusteVenda(valor,modo,sinal){
+      var texto=modo==='pct'?brNum(valor,2)+'%':fmt(valor)+'/@';
+      return (sinal||'')+texto;
+    }
     resSummary='<div class="ep-section">Resultado da Simulação</div>'
-      +'<div class="ep-result-summary">'
-        +'<div class="ep-rs-item">Modalidade<strong>'+calcModeloLabel(o.modeloConta||'msop')+'</strong></div>'
-        +'<div class="ep-rs-item">Confinamento<strong>'+escHtml(simConfinamento)+'</strong></div>'
-        +'<div class="ep-rs-item">Lote<strong>Lote '+escHtml(numeroLote)+(nomeLote?' · '+escHtml(nomeLote):'')+'</strong></div>'
-        +'<div class="ep-rs-item">Qtd<strong>'+(o.qtd||lote.qtd||'—')+' cab.</strong></div>'
-        +'<div class="ep-rs-item">Entrada prevista<strong>'+(simEntrada?_fmtDataBR(_addDias(simEntrada,0)):'—')+'</strong></div>'
-        +'<div class="ep-rs-item">Abate previsto<strong>'+simAbate+'</strong></div>'
-        +'<div class="ep-rs-item">Recebimento previsto<strong>'+simReceb+'</strong></div>'
-        +'<div class="ep-rs-item">Dias<strong>'+(o.dias||'—')+'</strong></div>'
-        +'<div class="ep-rs-item">Faturamento lote (lucro + capital)<strong>'+fmt(simFat)+'</strong></div>'
-        +'<div class="ep-rs-item">Capital investido<strong>'+fmt(simCapital)+'</strong></div>'
-        +'<div class="ep-rs-item">Lucro total<strong style="color:'+(simLucro>=0?'var(--green)':'var(--red)')+'">'+fmt(simLucro)+'</strong></div>'
-        +'<div class="ep-rs-item">Lucro / animal<strong>'+fmt(o.lucroAnimal||0)+'</strong></div>'
-        +'<div class="ep-rs-item">Rentabilidade<strong>'+fmtPct(o.rent)+'</strong></div>'
-        +'<div class="ep-rs-item">Rent./mês<strong>'+fmtPct(o.rentMes)+'</strong></div>'
-        +'<div class="ep-rs-item">Peso entrada sem quebra<strong>'+(simBio.pesoCompra?brNum(simBio.pesoCompra,1)+' kg':'—')+'</strong></div>'
-        +'<div class="ep-rs-item">Peso entrada pós-quebra<strong>'+(simBio.pesoEntrada?brNum(simBio.pesoEntrada,1)+' kg':'—')+'</strong></div>'
-        +'<div class="ep-rs-item">GMD<strong>'+(o.gmd?o.gmd+' kg/dia':'—')+'</strong></div>'
-        +'<div class="ep-rs-item">Consumo MS<strong>'+(o.consPC_pct?o.consPC_pct+'% PV/dia':'—')+'</strong></div>'
-        +'<div class="ep-rs-item">Consumo total / animal<strong>'+(simBio.consumoTotal?simBio.consumoTotal.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg MS':'—')+'</strong></div>'
-        +'<div class="ep-rs-item">Eficiência bio. origem<strong>'+(simBio.eficOrigem?brNum(simBio.eficOrigem,2)+' kg MS/@':'—')+'</strong></div>'
-        +'<div class="ep-rs-item">Eficiência bio. chegada<strong>'+(simBio.efic?brNum(simBio.efic,2)+' kg MS/@':'—')+'</strong></div>'
+      +'<div class="ep-sim-summary">'
+        +'<section class="ep-sim-block"><h4 class="ep-sim-title">Compra</h4><div class="ep-sim-grid">'
+          +simItem('Lote','Lote '+numeroLote+(nomeLote?' · '+nomeLote:''))
+          +simItem('Modalidade',calcModeloLabel(o.modeloConta||'msop'))
+          +simItem('Quantidade',(o.qtd||lote.qtd||'—')+' cab.')
+          +simItem('Entrada prevista',simEntrada?_fmtDataBR(_addDias(simEntrada,0)):'—')
+          +simItem('Peso origem',simBio.pesoCompra?brNum(simBio.pesoCompra,1)+' kg':'—')
+          +simItem('Peso chegada',simBio.pesoEntrada?brNum(simBio.pesoEntrada,1)+' kg':'—')
+          +simItem('Capital investido',fmt(simCapital))
+        +'</div></section>'
+        +'<section class="ep-sim-block"><h4 class="ep-sim-title">Zootécnico</h4><div class="ep-sim-grid">'
+          +simItem('Confinamento',simConfinamento)
+          +simItem('Dias',(o.dias||'—')+' dias')
+          +simItem('GMD',fmtGmd(o.gmd))
+          +simItem('Rend. entrada',o.rendE_pct?brNum(o.rendE_pct,2)+'%':'—')
+          +simItem('Rend. abate',o.rendA_pct?brNum(o.rendA_pct,2)+'%':'—')
+          +simItem('Peso final',simBio.pesoAbate?brNum(simBio.pesoAbate,1)+' kg':'—')
+          +simItem('@ abate / animal',simBio.atAbate?brNum(simBio.atAbate,2)+' @':'—')
+          +simItem('Consumo MS',o.consPC_pct?brNum(o.consPC_pct,2)+'% PV/dia':'—')
+          +simItem('Consumo total',simBio.consumoTotal?brNum(simBio.consumoTotal,1)+' kg MS':'—')
+          +simItem('Eficiência origem',simBio.eficOrigem?brNum(simBio.eficOrigem,2)+' kg MS/@':'—')
+          +simItem('Eficiência chegada',simBio.efic?brNum(simBio.efic,2)+' kg MS/@':'—')
+        +'</div></section>'
+        +'<section class="ep-sim-block"><h4 class="ep-sim-title">Venda e Financeiro</h4><div class="ep-sim-grid">'
+          +simItem('Abate previsto',simAbate)
+          +simItem('Recebimento previsto',simReceb)
+          +simItem('Preço venda @',fmt(o.valorAt||0)+'/@')
+          +simItem('Bônus',simAjusteVenda(simBonus,simBonusMode,'+ '))
+          +simItem('Desconto',simAjusteVenda(simDesconto,simDescontoMode,'- '))
+          +simItem('Faturamento lote',fmt(simFat))
+          +simItem('Lucro total',fmt(simLucro),simLucro>=0?'var(--green)':'var(--red)')
+          +simItem('Lucro / animal',fmt(o.lucroAnimal||0))
+          +simItem('Rentabilidade',fmtPct(o.rent))
+          +simItem('Rent. / mês',fmtPct(o.rentMes))
+        +'</div></section>'
       +'</div>';
   }
   var arquivosHtml=renderEpArquivosHtml(lote);
@@ -7197,7 +7265,7 @@ function openEditPanel(loteId, cardEl){
   var realHtml='';
   var comparativoHtml='';
   var resultadoFinalHtml='';
-  if(['escalado','abatido','recebido'].indexOf(lote.status)>=0){
+  if(['abatido','recebido'].indexOf(lote.status)>=0){
     var metric=resultadoStatusLote(lote,o);
     var aj=lote.ajusteReal||lote.apuracao||{};
     var paramsReal=getParams();
@@ -7220,6 +7288,7 @@ function openEditPanel(loteId, cardEl){
     var realDiasVal=(aj.diasReal!==undefined&&aj.diasReal!==null)?finNum(aj.diasReal):((realEntradaVal&&realAbateVal)?Math.max(0,Math.round((_addDias(realAbateVal,0)-_addDias(realEntradaVal,0))/86400000)):realZoo.dias);
     var realConsumoVal=(aj.consumoMSTotalReal!==undefined&&aj.consumoMSTotalReal!==null)?finNum(aj.consumoMSTotalReal):realZoo.consumoTotal;
     var realConsumoDiarioVal=(aj.consumoMSDiarioReal!==undefined&&aj.consumoMSDiarioReal!==null)?finNum(aj.consumoMSDiarioReal):0;
+    var realConsumoPctVal=(aj.consumoMSPctReal!==undefined&&aj.consumoMSPctReal!==null)?finNum(aj.consumoMSPctReal):(realZoo.consumoDiario>0&&realZoo.pesoEntrada+realZoo.pesoSaida>0?(realZoo.consumoDiario/((realZoo.pesoEntrada+realZoo.pesoSaida)/2))*100:0);
     var realArrobasProdVal=(aj.arrobasProduzidasReal!==undefined&&aj.arrobasProduzidasReal!==null)?finNum(aj.arrobasProduzidasReal):realZoo.atProd;
     var realCustoArrobaVal=(aj.custoArrobaProduzidaReal!==undefined&&aj.custoArrobaProduzidaReal!==null)?finNum(aj.custoArrobaProduzidaReal):realZoo.custoAtReal;
     var vendaReal=vendaRealCalc(realQtdVal,realZoo,vendaValorAt,vendaBonusAt,vendaDescAt,vendaSenarPct);
@@ -7232,93 +7301,70 @@ function openEditPanel(loteId, cardEl){
     var realRentVal=realCapitalVal>0?realLucroVal/realCapitalVal:0;
     var realPrazo=prazoDiasResultadoLote(lote,o);
     var realRentMesVal=realPrazo>0?realRentVal/(realPrazo/30):metric.rentMes;
+    var resultadoB3Real=resultadoB3Lote(lote.id).resultado||0;
+    var lucroComB3Real=realLucroVal+resultadoB3Real;
+    var lucroMesComB3Real=realPrazo>0?lucroComB3Real/(realPrazo/30):0;
+    var rentComB3Real=realCapitalVal>0?lucroComB3Real/realCapitalVal:0;
+    var rentMesComB3Real=realPrazo>0?rentComB3Real/(realPrazo/30):0;
     var realizedPanelStatus=statusRealizadoLote(lote);
     realHtml='<section class="realizado-wrapper">'
-      +'<div class="realizado-heading"><div><span class="realizado-kicker">Dados finais</span><h3>Realizado do lote</h3><p>Informe os dados finais da operação sem alterar a simulação original.</p></div><span class="real-status-chip '+realizedPanelStatus.key+'">'+realizedPanelStatus.label+'</span></div>'
-      +'<section class="realizado-card"><div class="realizado-card-head"><span class="realizado-step">01</span><h4>Datas e quantidade</h4></div>'
+      +'<div class="realizado-heading"><div><span class="realizado-kicker">Dados finais</span><h3>Realizado do lote</h3><p>Preencha somente os dados reais. Os indicadores são atualizados automaticamente.</p></div><span class="real-status-chip '+realizedPanelStatus.key+'">'+realizedPanelStatus.label+'</span></div>'
+      +'<section class="realizado-card"><div class="realizado-card-head"><span class="realizado-step">01</span><h4>Zootécnico realizado</h4></div>'
         +'<div class="realizado-grid">'
-          +'<div class="field realizado-mobile-2"><label>Data entrada</label><input type="date" id="ep-real-entrada" value="'+(realEntradaVal||'')+'" oninput="atualizarRealizadoPainel()"></div>'
-          +'<div class="field realizado-mobile-2"><label>Data abate</label><input type="date" id="ep-real-abate" value="'+(realAbateVal||'')+'" oninput="atualizarRealizadoPainel()"></div>'
-          +'<div class="field realizado-mobile-2"><label>Data recebimento</label><input type="date" id="ep-real-receb" value="'+(realRecebVal||'')+'" oninput="atualizarRealizadoPainel()"></div>'
-          +'<div class="field realizado-mobile-2"><label>Quantidade real de animais</label><input type="text" inputmode="numeric" id="ep-real-qtd" value="'+brNum(realQtdVal,0)+'" oninput="atualizarRealizadoPainel()"></div>'
+          +'<div class="field realizado-manual realizado-mobile-2"><label>GMD</label><div class="unit-input"><span class="unit-input-prefix">kg/dia</span><input type="text" inputmode="decimal" id="ep-real-gmd" value="'+(realZoo.gmd?brNum(realZoo.gmd,2):'')+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div></div>'
+          +'<div class="field realizado-calculated realizado-mobile-2"><label>Peso final</label><input type="text" id="ep-real-peso-saida" value="'+(realZoo.pesoSaida?brNum(realZoo.pesoSaida,2)+' kg':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.pesoSaida+'"></div>'
+          +'<div class="field realizado-manual realizado-mobile-2"><label>Rendimento de carcaça</label><div class="unit-input"><span class="unit-input-prefix">%</span><input type="text" inputmode="decimal" id="ep-real-rend" value="'+(realZoo.rendA?brNum(realZoo.rendA,2):'')+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div></div>'
+          +'<div class="field realizado-calculated realizado-mobile-2"><label>Arrobas de abate / animal</label><input type="text" id="ep-real-at-abate" value="'+(realZoo.atAbate?brNum(realZoo.atAbate,2)+' @':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.atAbate+'"></div>'
+          +'<div class="field realizado-calculated realizado-mobile-2"><label>Arrobas produzidas - origem</label><input type="text" id="ep-real-at-prod-origem" value="'+(realZoo.atProdOrigem?brNum(realZoo.atProdOrigem,3)+' @':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.atProdOrigem+'"></div>'
+          +'<div class="field realizado-calculated realizado-mobile-2"><label>Arrobas produzidas - chegada</label><input type="text" id="ep-real-at-prod" value="'+(realZoo.atProd?brNum(realZoo.atProd,3)+' @':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.atProd+'"></div>'
+          +'<div class="field realizado-manual realizado-mobile-2"><label>Consumo de matéria seca (%)</label><div class="unit-input"><span class="unit-input-prefix">%</span><input type="text" inputmode="decimal" id="ep-real-consumo-pct" value="'+(realConsumoPctVal?brNum(realConsumoPctVal,2):'')+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div></div>'
+          +'<div class="field realizado-calculated realizado-mobile-2"><label>Consumo de matéria seca (kg)</label><input type="text" id="ep-real-consumo-ms" value="'+(realZoo.consumoTotal?brNum(realZoo.consumoTotal,2)+' kg':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.consumoTotal+'"></div>'
+          +'<div class="field realizado-calculated realizado-mobile-2"><label>Eficiência biológica - origem</label><input type="text" id="ep-real-efic-origem" value="'+(realZoo.eficOrigem?brNum(realZoo.eficOrigem,2)+' kg MS/@':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.eficOrigem+'"></div>'
+          +'<div class="field realizado-calculated realizado-mobile-2"><label>Eficiência biológica - chegada</label><input type="text" id="ep-real-efic" value="'+(realZoo.efic?brNum(realZoo.efic,2)+' kg MS/@':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.efic+'"></div>'
+          +'<div class="field realizado-calculated realizado-mobile-2"><label>Custo por @ produzida - chegada</label><input type="text" id="ep-real-custo-at" value="'+(realZoo.custoAtChegada?fmt(realZoo.custoAtChegada)+'/@':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.custoAtChegada+'"></div>'
+          +'<div class="field realizado-calculated realizado-mobile-2"><label>Custo por @ produzida - origem</label><input type="text" id="ep-real-custo-at-origem" value="'+(realZoo.custoAtOrigem?fmt(realZoo.custoAtOrigem)+'/@':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.custoAtOrigem+'"></div>'
         +'</div></section>'
-      +'<section class="realizado-card"><div class="realizado-card-head"><span class="realizado-step">02</span><h4>Venda realizada</h4></div>'
+      +'<section class="realizado-card"><div class="realizado-card-head"><span class="realizado-step">02</span><h4>Faturamento do lote</h4></div>'
         +'<div class="realizado-grid">'
-          +'<div class="field realizado-mobile-2"><label>Preço venda (R$/@)</label><input type="text" inputmode="decimal" id="ep-real-valor-at" value="'+brNum(vendaValorAt,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div>'
-          +'<div class="field realizado-mobile-1"><label>Bônus venda <span class="mode-toggle" style="margin-left:6px"><button type="button" class="mt-btn '+(vendaBonusMode==='pct'?'active':'')+'" data-real-field="bonus" data-mode="pct" onclick="setRealVendaMode(\'bonus\',\'pct\',this)">%</button><button type="button" class="mt-btn '+(vendaBonusMode==='val'?'active':'')+'" data-real-field="bonus" data-mode="val" onclick="setRealVendaMode(\'bonus\',\'val\',this)">R$/@</button></span></label><input type="text" inputmode="decimal" id="ep-real-bonus-at" value="'+brNum(vendaBonusVal,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"><div class="hint" id="ep-real-bonus-hint">'+(vendaBonusMode==='pct'?'% sobre o preço de venda':'R$/@ somado ao preço de venda')+'</div></div>'
-          +'<div class="field realizado-mobile-1"><label>Desconto venda <span class="mode-toggle" style="margin-left:6px"><button type="button" class="mt-btn '+(vendaDescMode==='pct'?'active':'')+'" data-real-field="desconto" data-mode="pct" onclick="setRealVendaMode(\'desconto\',\'pct\',this)">%</button><button type="button" class="mt-btn '+(vendaDescMode==='val'?'active':'')+'" data-real-field="desconto" data-mode="val" onclick="setRealVendaMode(\'desconto\',\'val\',this)">R$/@</button></span></label><input type="text" inputmode="decimal" id="ep-real-desc-at" value="'+brNum(vendaDescVal,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"><div class="hint" id="ep-real-desconto-hint">'+(vendaDescMode==='pct'?'% sobre o preço de venda':'R$/@ descontado do preço de venda')+'</div></div>'
-          +'<div class="field realizado-mobile-1"><label>Senar</label><input type="text" inputmode="decimal" id="ep-real-senar" value="'+brNum(vendaSenarPct,2)+'%" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainelPercent(this,2)"></div>'
-          +'<div class="field realizado-calculated realizado-mobile-1"><label>Arrobas vendidas</label><input type="text" id="ep-real-arrobas" value="'+brNum(vendaReal.arrobas,2)+' @" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+vendaReal.arrobas+'"></div>'
-          +'<div class="field realizado-calculated realizado-mobile-2"><label>Faturamento calculado</label><input type="text" id="ep-real-fat-calculado" value="'+fmt(vendaReal.liquido)+'" data-raw="'+vendaReal.liquido+'" readonly disabled tabindex="-1" aria-readonly="true"></div>'
-          +'<div class="field realizado-manual realizado-span-2 realizado-mobile-4"><label>Faturamento manual (opcional)</label><input type="text" inputmode="decimal" id="ep-real-fat" value="'+(realFatManual?brNum(realFatManualVal,2):'')+'" data-raw="'+(realFatManual?realFatManualVal:'')+'" data-manual="'+(realFatManual?'1':'0')+'" placeholder="Deixe vazio para usar o calculado" oninput="this.dataset.manual=this.value.trim()?\'1\':\'0\';atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"><div class="hint">900.000,00 será lido como R$ 900.000,00.</div></div>'
-          +'<div class="field realizado-mobile-2"><label>Outros custos realizados</label><input type="text" inputmode="decimal" id="ep-real-outros-custos" value="'+brNum(realOutrosCustosVal,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div>'
-          +'<div class="field realizado-action realizado-mobile-2"><button type="button" class="btn-ep-detail" onclick="restaurarFaturamentoRealizado()">Restaurar valor calculado</button></div>'
-        +'</div></section>'
-      +'<section class="realizado-card"><div class="realizado-card-head"><span class="realizado-step">03</span><h4>Resultado financeiro</h4></div>'
-        +'<div class="realizado-result-grid">'
-          +'<div class="realizado-metric-card is-editable"><span class="metric-label">Capital realizado (custos)</span><input type="text" inputmode="decimal" id="ep-real-capital" value="'+brNum(realCapitalVal,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div>'
-          +'<div class="realizado-metric-card"><span class="metric-label">Faturamento realizado</span><strong class="metric-value" id="ep-real-fat-utilizado-display">'+fmt(realFatVal)+'</strong><input type="hidden" id="ep-real-fat-utilizado" value="'+fmt(realFatVal)+'" data-raw="'+realFatVal+'"><span class="metric-helper" id="ep-real-fat-origem">'+(realFatManual?'Ajustado manualmente':'Valor calculado automaticamente')+'</span></div>'
-          +'<div class="realizado-metric-card"><span class="metric-label">Lucro realizado</span><input type="text" id="ep-real-lucro" value="'+fmt(realLucroVal)+'" readonly data-raw="'+realLucroVal+'" class="'+(realLucroVal>=0?'positive':'negative')+'"></div>'
-          +'<div class="realizado-metric-card"><span class="metric-label">% operação realizada</span><input type="text" id="ep-real-rent" value="'+fmtPct(realRentVal)+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realRentVal+'"></div>'
-          +'<div class="realizado-metric-card"><span class="metric-label">% ao mês realizada</span><input type="text" id="ep-real-rentmes" value="'+fmtPct(realRentMesVal)+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realRentMesVal+'"><span class="metric-helper">Prazo usado: <span id="ep-real-prazo">'+(realPrazo||0)+'</span> dias.</span></div>'
-          +'<div class="realizado-metric-card"><span class="metric-label">Prazo real</span><strong class="metric-value" id="ep-real-prazo-display">'+(realPrazo||0)+' dias</strong></div>'
-        +'</div></section>'
-      +'<section class="realizado-card"><div class="realizado-card-head"><span class="realizado-step">04</span><h4>Zootécnico realizado</h4></div>'
-        +'<div class="realizado-grid">'
-          +'<div class="field realizado-mobile-2"><label>Peso médio de origem (kg)</label><input type="text" inputmode="decimal" id="ep-real-peso-origem" value="'+brNum(realPesoOrigemVal,2)+'" oninput="atualizarRealizadoPainel()"></div>'
-          +'<div class="field realizado-mobile-2"><label>Peso médio de chegada (kg)</label><input type="text" inputmode="decimal" id="ep-real-peso-entrada" value="'+brNum(realPesoEntradaVal,2)+'" oninput="atualizarRealizadoPainel()"></div>'
-          +'<div class="field realizado-mobile-1"><label>GMD realizado (kg/dia)</label><input type="text" inputmode="decimal" id="ep-real-gmd" value="'+brNum(realZoo.gmd,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div>'
-          +'<div class="field realizado-mobile-1"><label>Dias reais de confinamento</label><input type="text" inputmode="numeric" id="ep-real-dias" value="'+brNum(realDiasVal,0)+'" oninput="atualizarRealizadoPainel()"><div class="hint">Datas reais atualizam este prazo.</div></div>'
-          +'<div class="field realizado-mobile-1"><label>Rendimento carcaça (%)</label><input type="text" inputmode="decimal" id="ep-real-rend" value="'+brNum(realZoo.rendA,2)+'" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div>'
-          +'<div class="field realizado-calculated realizado-mobile-1"><label>Peso final realizado (kg)</label><input type="text" id="ep-real-peso-saida" value="'+(realZoo.pesoSaida?brNum(realZoo.pesoSaida,2)+' kg':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.pesoSaida+'"></div>'
-          +'<div class="field realizado-calculated realizado-mobile-2"><label>Peso de carcaça realizado</label><input type="text" id="ep-real-peso-carcaca" value="'+(realZoo.pesoCarcaca?brNum(realZoo.pesoCarcaca,2)+' kg':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.pesoCarcaca+'"></div>'
-          +'<div class="field realizado-calculated realizado-mobile-2"><label>Arrobas realizadas / animal</label><input type="text" id="ep-real-at-abate" value="'+(realZoo.atAbate?brNum(realZoo.atAbate,2)+' @':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.atAbate+'"></div>'
-          +'<div class="field realizado-calculated realizado-mobile-4"><label>Arrobas realizadas totais</label><input type="text" id="ep-real-at-total" value="'+(realZoo.atAbate&&realQtdVal?brNum(realZoo.atAbate*realQtdVal,2)+' @':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+(realZoo.atAbate*realQtdVal)+'"></div>'
-        +'</div></section>'
-      +'<section class="realizado-card"><div class="realizado-card-head"><span class="realizado-step">05</span><h4>Eficiência biológica</h4></div>'
-        +'<div class="realizado-grid">'
-          +'<div class="field realizado-mobile-2"><label>Consumo real de MS diário (kg/animal/dia)</label><input type="text" inputmode="decimal" id="ep-real-consumo-ms-dia" value="'+(realConsumoDiarioVal?brNum(realConsumoDiarioVal,2):'')+'" oninput="document.getElementById(\'ep-real-consumo-ms\').value=\'\';atualizarRealizadoPainel()"><div class="hint">Se usado: diário × dias reais.</div></div>'
-          +'<div class="field realizado-mobile-2"><label>Consumo real de MS total (kg/animal)</label><input type="text" inputmode="decimal" id="ep-real-consumo-ms" value="'+(realConsumoVal?brNum(realConsumoVal,2):'')+'" oninput="atualizarRealizadoPainel()"><div class="hint">O total informado tem prioridade.</div></div>'
-          +'<div class="realizado-indicators realizado-span-full">'
-            +'<div class="realizado-indicator"><label>@ produzidas origem</label><input type="text" id="ep-real-at-prod-origem" value="'+(realZoo.atProdOrigem?brNum(realZoo.atProdOrigem,3)+' @':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.atProdOrigem+'"></div>'
-            +'<div class="realizado-indicator"><label>@ produzidas chegada</label><input type="text" id="ep-real-at-prod" value="'+(realArrobasProdVal?brNum(realArrobasProdVal,3)+' @':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realArrobasProdVal+'"></div>'
-            +'<div class="realizado-indicator"><label>Eficiência bio. origem</label><input type="text" id="ep-real-efic-origem" value="'+(realZoo.eficOrigem?brNum(realZoo.eficOrigem,2)+' kg MS/@':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.eficOrigem+'"></div>'
-            +'<div class="realizado-indicator"><label>Eficiência bio. chegada</label><input type="text" id="ep-real-efic" value="'+(realZoo.efic?brNum(realZoo.efic,2)+' kg MS/@':'—')+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realZoo.efic+'"></div>'
-          +'</div>'
-          +'<div class="field realizado-mobile-4"><label>Custo real por @ produzida</label><input type="text" inputmode="decimal" id="ep-real-custo-at" value="'+brNum(realCustoArrobaVal,2)+'" oninput="atualizarRealizadoPainel()"></div>'
-          +'<div class="field realizado-span-full realizado-mobile-4"><label>Obs. do confinamento</label><textarea id="ep-real-conf-obs" rows="3" class="ep-textarea" placeholder="Observações do confinamento, manejo, ocorrências, qualidade do lote...">'+escHtml((lote.confRecord&&lote.confRecord.obs)||'')+'</textarea></div>'
+          +'<div class="field realizado-manual realizado-span-2 realizado-mobile-4"><label>Faturamento lote (lucro + capital)</label><div class="unit-input"><span class="unit-input-prefix">R$</span><input type="text" inputmode="decimal" id="ep-real-fat" value="'+(realFatManual?brNum(realFatManualVal,2):'')+'" data-raw="'+(realFatManual?realFatManualVal:'')+'" data-manual="1" placeholder="0,00" oninput="atualizarRealizadoPainel()" onblur="formatarRealizadoPainel(this,2)"></div></div>'
+          +'<div class="field realizado-calculated realizado-mobile-2"><label>% lucro operação</label><input type="text" id="ep-real-rent" value="'+fmtPct(realRentVal)+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realRentVal+'"></div>'
+          +'<div class="field realizado-calculated realizado-mobile-2"><label>% lucro ao mês</label><input type="text" id="ep-real-rentmes" value="'+fmtPct(realRentMesVal)+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realRentMesVal+'"></div>'
+        +'</div>'
+        +'<div class="realizado-result-grid" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-top:10px;">'
+          +'<div class="realizado-metric-card"><span class="metric-label">Resultado contratos Bolsa B3</span><input type="text" id="ep-real-b3-resultado" value="'+fmt(resultadoB3Real)+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+resultadoB3Real+'"></div>'
+          +'<div class="realizado-metric-card"><span class="metric-label">Lucro da operação + B3</span><div class="realizado-inline-value"><input type="text" id="ep-real-lucro-com-b3" value="'+fmt(lucroComB3Real)+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+lucroComB3Real+'"><span class="realizado-inline-percent" id="ep-real-rent-com-b3" data-raw="'+rentComB3Real+'">'+fmtPct(rentComB3Real)+'</span></div></div>'
+          +'<div class="realizado-metric-card"><span class="metric-label">Lucro ao mês + B3</span><div class="realizado-inline-value"><input type="text" id="ep-real-lucro-mes-com-b3" value="'+fmt(lucroMesComB3Real)+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+lucroMesComB3Real+'"><span class="realizado-inline-percent" id="ep-real-rentmes-com-b3" data-raw="'+rentMesComB3Real+'">'+fmtPct(rentMesComB3Real)+'</span></div></div>'
         +'</div>'
         +'<div class="realizado-clear-actions">'+(lote.ajusteReal?'<button type="button" class="btn-ep-danger" data-action="clear-real">Limpar realizado</button>':'')+'</div>'
       +'</section>'
       +'</section>';
-    comparativoHtml='<section class="realizado-card realizado-comparativo-card" id="ep-comparativo"><div class="realizado-card-head"><span class="realizado-step">06</span><h4>Projetado x realizado</h4></div><div id="ep-comparativo-content">'+renderComparativoRealizadoHtml(lote,o,aj)+'</div></section>';
-    resultadoFinalHtml='<div id="ep-resultado-final">'+renderResultadoFinalHtml(lote,o)+'</div>';
   }
   ep.innerHTML='<div class="ep">'
     +'<div class="ep-header">'
       +'<div class="ep-title">Editar Orçamento</div>'
       +'<button class="ep-close" onclick="closeEditPanel()">×</button>'
     +'</div>'
-    // Status
-    +'<div class="ep-section">Status</div>'
-    +'<select id="ep-status" style="width:100%;margin-bottom:4px;" class="field" onchange="updateEditPanelStatus(this.value)">'
-      +'<option value="embarque"'+(lote.status==='embarque'?' selected':'')+'>Embarque</option>'
-      +'<option value="confinando"'+(lote.status==='confinando'?' selected':'')+'>Confinando</option>'
-      +'<option value="escalado"'+(lote.status==='escalado'?' selected':'')+'>Escalado</option>'
-      +'<option value="abatido"'+(lote.status==='abatido'?' selected':'')+'>Abatido</option>'
-      +'<option value="recebido"'+(lote.status==='recebido'?' selected':'')+'>Recebido</option>'
-    +'</select>'
+    +'<div class="ep-quick-grid">'
+      +'<div class="ep-quick-field"><label>Status</label><select id="ep-status" class="field" onchange="updateEditPanelStatus(this.value)">'
+        +'<option value="embarque"'+(lote.status==='embarque'?' selected':'')+'>Embarque</option>'
+        +'<option value="confinando"'+(lote.status==='confinando'?' selected':'')+'>Confinando</option>'
+        +'<option value="escalado"'+(lote.status==='escalado'?' selected':'')+'>Escalado</option>'
+        +'<option value="abatido"'+(lote.status==='abatido'?' selected':'')+'>Abatido</option>'
+        +'<option value="recebido"'+(lote.status==='recebido'?' selected':'')+'>Recebido</option>'
+      +'</select></div>'
+      +'<div class="ep-quick-field"><label>Vendedor</label><select id="ep-vend" class="field" onchange="handleEpVendSelect(this)">'
+        +vendOpts
+      +'</select></div>'
+      +'<div class="ep-quick-field"><label>Frigorífico</label><select id="ep-frig" class="field" onchange="handleEpFrigSelect(this)">'
+        +frigOpts
+      +'</select></div>'
+    +'</div>'
     +'<div class="ep-section">Identificação do lote</div>'
     +'<div class="ep-partial-grid" style="margin-bottom:10px;">'
       +'<div class="field" style="margin:0"><label>Número do lote</label><input type="text" inputmode="numeric" pattern="[0-9]*" id="ep-lot-number" value="'+escHtml(numeroLote)+'" placeholder="Ex: 1"></div>'
       +'<div class="field" style="margin:0"><label>Nome / Referência <span style="font-size:9px;color:var(--text-3);font-weight:400;">(opcional)</span></label><input type="text" id="ep-lot-name" value="'+escHtml(nomeLote)+'" placeholder="Ex: Murilo Duque"></div>'
     +'</div>'
     +contratosPrecoHtml
-    // Vendedor
-    +'<div class="ep-section">Vendedor</div>'
-    +'<select id="ep-vend" style="width:100%;" class="field" onchange="handleEpVendSelect(this)">'
-      +vendOpts
-    +'</select>'
     +'<div id="ep-vend-qa" class="quick-add-form" style="display:none;">'
       +'<div class="qa-hint">Novo Vendedor</div>'
       +'<input type="text" id="ep-qv-nome" placeholder="Nome *">'
@@ -7329,11 +7375,6 @@ function openEditPanel(loteId, cardEl){
         +'<button class="btn-qa-cancel" data-action="cancel-ep-vend">Cancelar</button>'
       +'</div>'
     +'</div>'
-    // Frigorífico
-    +'<div class="ep-section">Frigorífico</div>'
-    +'<select id="ep-frig" style="width:100%;" class="field" onchange="handleEpFrigSelect(this)">'
-      +frigOpts
-    +'</select>'
     +'<div id="ep-frig-qa" class="quick-add-form" style="display:none;">'
       +'<div class="qa-hint">Novo Frigorífico</div>'
       +'<input type="text" id="ep-fq-nome" placeholder="Nome *">'
@@ -7344,10 +7385,10 @@ function openEditPanel(loteId, cardEl){
       +'</div>'
     +'</div>'
     // Observações
-    +'<div class="ep-section">Observações da Negociação</div>'
-    +'<textarea id="ep-obs" rows="3" style="width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:7px;padding:9px 12px;font-size:12px;color:var(--text);outline:none;resize:vertical;" placeholder="Notas, condições acordadas, próximos passos...">'+escHtml(lote.obs||'')+'</textarea>'
-    +'<div class="ep-section">Observação / Relatório</div>'
-    +'<textarea id="ep-relatorio" rows="6" class="ep-textarea" placeholder="Escreva um relatório livre sobre o orçamento, negociação, pontos de atenção...">'+escHtml(lote.relatorio||'')+'</textarea>'
+    +'<div class="ep-note-grid">'
+      +'<div><div class="ep-section">Observações da Negociação</div><textarea id="ep-obs" rows="3" class="ep-textarea" placeholder="Notas, condições acordadas, próximos passos...">'+escHtml(lote.obs||'')+'</textarea></div>'
+      +'<div><div class="ep-section">Observação / Relatório</div><textarea id="ep-relatorio" rows="3" class="ep-textarea" placeholder="Escreva um relatório livre sobre o orçamento, negociação, pontos de atenção...">'+escHtml(lote.relatorio||'')+'</textarea></div>'
+    +'</div>'
     +'<div class="ep-section">Arquivos</div>'
     +'<div class="ep-file-drop" id="ep-file-drop">Arraste arquivos aqui ou clique para selecionar<div class="ep-file-hint">PDF, fotos, Excel e Word. Até 4 MB por arquivo.</div></div>'
     +'<input type="file" id="ep-file-input" multiple accept=".pdf,image/*,.xls,.xlsx,.xlsm,.csv,.doc,.docx" style="display:none">'
@@ -7662,107 +7703,126 @@ function setRealVendaMode(field,mode,btn){
   if(hint)hint.textContent=mode==='pct'?'% sobre o preço de venda':(field==='bonus'?'R$/@ somado ao preço de venda':'R$/@ descontado do preço de venda');
   atualizarRealizadoPainel();
 }
+function getRealizadoZootecDraft(lote){
+  var draft=Object.assign({},(lote&&lote.ajusteReal)||(lote&&lote.apuracao)||{});
+  var gmd=_parseOptionalNumber('ep-real-gmd');
+  var rendimento=_parseOptionalNumber('ep-real-rend');
+  var consumoPct=_parseOptionalNumber('ep-real-consumo-pct');
+  if(gmd!==null)draft.gmdReal=gmd;
+  if(rendimento!==null)draft.rendCarcacaReal=rendimento;
+  if(consumoPct!==null){
+    draft.consumoMSPctReal=consumoPct;
+    draft.consumoMSDiarioReal=null;
+    draft.consumoMSTotalReal=null;
+  }
+  return draft;
+}
 function aplicarRealizadoPainel(lote){
   if(!lote||!document.getElementById('ep-real-fat'))return;
-  var capital=_parseOptionalNumber('ep-real-capital');
-  var base=resultadoStatusLote({orcamentos:lote.orcamentos||[]},lote.orcamentos&&lote.orcamentos[0]);
-  if(capital===null)capital=base.capital;
-  else capital=normalizarValorRealizado(capital,base.capital);
-  var dataEntradaReal=(document.getElementById('ep-real-entrada')||{value:''}).value||null;
-  var dataAbateReal=(document.getElementById('ep-real-abate')||{value:''}).value||null;
-  var dataRecebimentoReal=(document.getElementById('ep-real-receb')||{value:''}).value||null;
-  var valorAtVenda=_parseOptionalNumber('ep-real-valor-at');
-  var bonusVenda=_parseOptionalNumber('ep-real-bonus-at');
-  var descontoVenda=_parseOptionalNumber('ep-real-desc-at');
-  var bonusVendaMode=getRealVendaMode('bonus');
-  var descontoVendaMode=getRealVendaMode('desconto');
-  var senarPct=_parseOptionalNumber('ep-real-senar');
-  var realDraft={
-    gmdReal:_parseOptionalNumber('ep-real-gmd'),
-    rendCarcacaReal:_parseOptionalNumber('ep-real-rend'),
-    qtdReal:_parseOptionalNumber('ep-real-qtd'),
-    pesoOrigemReal:_parseOptionalNumber('ep-real-peso-origem'),
-    pesoEntradaReal:_parseOptionalNumber('ep-real-peso-entrada'),
-    diasReal:_parseOptionalNumber('ep-real-dias'),
-    consumoMSDiarioReal:_parseOptionalNumber('ep-real-consumo-ms-dia'),
-    consumoMSTotalReal:_parseOptionalNumber('ep-real-consumo-ms'),
-    custoArrobaProduzidaReal:_parseOptionalNumber('ep-real-custo-at'),
-    dataEntradaReal:dataEntradaReal,
-    dataAbateReal:dataAbateReal
-  };
-  var zoo=zootecRealCalc(lote,lote.orcamentos&&lote.orcamentos[0],realDraft);
-  if(valorAtVenda===null)valorAtVenda=0;
-  if(bonusVenda===null)bonusVenda=0;
-  if(descontoVenda===null)descontoVenda=0;
-  if(senarPct===null)senarPct=0;
-  var bonusVendaAt=valorAjustePorArroba(valorAtVenda,bonusVenda,bonusVendaMode);
-  var descontoVendaAt=valorAjustePorArroba(valorAtVenda,descontoVenda,descontoVendaMode);
-  var qtdReal=realDraft.qtdReal!==null?realDraft.qtdReal:(lote.orcamentos&&lote.orcamentos[0]&&lote.orcamentos[0].qtd?lote.orcamentos[0].qtd:lote.qtd);
-  var venda=vendaRealCalc(qtdReal,zoo,valorAtVenda,bonusVendaAt,descontoVendaAt,senarPct);
-  var fatEl=document.getElementById('ep-real-fat');
-  var fatManual=fatEl&&fatEl.dataset.manual==='1';
-  var fatInput=_parseOptionalNumber('ep-real-fat');
-  var fat=(fatManual&&fatInput!==null)?fatInput:venda.liquido;
-  var outrosCustos=_parseOptionalNumber('ep-real-outros-custos')||0;
-  var lucro=fat-capital-outrosCustos;
-  var rentReal=capital>0?lucro/capital:0;
-  var prazo=(dataEntradaReal&&dataRecebimentoReal)?Math.max(0,Math.round((_addDias(dataRecebimentoReal,0)-_addDias(dataEntradaReal,0))/86400000)):prazoDiasResultadoLote(lote,lote.orcamentos&&lote.orcamentos[0]);
-  var rentMesReal=prazo>0?rentReal/(prazo/30):base.rentMes;
-  lote.ajusteReal={
+  var orc=lote.orcamentos&&lote.orcamentos[0];
+  var anterior=Object.assign({},lote.ajusteReal||lote.apuracao||{});
+  var base=resultadoStatusLote({orcamentos:lote.orcamentos||[]},orc);
+  var capital=base.capital;
+  var realDraft=getRealizadoZootecDraft(lote);
+  var zoo=zootecRealCalc(lote,orc,realDraft);
+  var qtdReal=anterior.qtdReal!==undefined&&anterior.qtdReal!==null?finNum(anterior.qtdReal):finNum((orc&&orc.qtd)||lote.qtd);
+  var faturamento=_parseOptionalNumber('ep-real-fat');
+  var lucro=faturamento===null?null:faturamento-capital;
+  var prazo=prazoDiasResultadoLote(lote,orc);
+  var rentReal=lucro!==null&&capital>0?lucro/capital:null;
+  var rentMesReal=rentReal!==null&&prazo>0?rentReal/(prazo/30):null;
+  lote.ajusteReal=Object.assign({},anterior,{
     manual:true,
-    receitaReal:fat,
-    receitaCalculadaReal:venda.liquido,
-    receitaManualReal:fatManual&&fatInput!==null?fatInput:null,
-    receitaModo:fatManual&&fatInput!==null?'manual':'calculado',
-    receitaFinalReal:fat,
+    receitaReal:faturamento,
+    receitaManualReal:faturamento,
+    receitaModo:faturamento===null?'pendente':'manual',
+    receitaFinalReal:faturamento,
+    receitaCalculadaReal:null,
     custoReal:capital,
-    outrosCustosReal:outrosCustos,
+    outrosCustosReal:0,
     lucroReal:lucro,
-    lucroAnimalReal:qtdReal>0?lucro/qtdReal:0,
+    lucroAnimalReal:lucro!==null&&qtdReal>0?lucro/qtdReal:null,
     rentReal:rentReal,
     rentMesReal:rentMesReal,
-    gmdReal:zoo.gmd,
-    rendCarcacaReal:zoo.rendA,
-    qtdReal:qtdReal,
-    pesoOrigemReal:zoo.pesoOrigem,
-    pesoEntradaReal:zoo.pesoEntrada,
-    pesoSaidaReal:zoo.pesoSaida,
-    pesoCarcacaReal:zoo.pesoCarcaca,
-    diasReal:zoo.dias,
-    consumoMSDiarioReal:realDraft.consumoMSDiarioReal,
-    consumoMSTotalReal:zoo.consumoTotal,
-    eficienciaBioReal:zoo.efic,
-    eficienciaBioOrigemReal:zoo.eficOrigem,
-    arrobasAbateReal:zoo.atAbate,
-    arrobasAbateTotalReal:zoo.atAbate*qtdReal,
-    arrobasProduzidasOrigemReal:zoo.atProdOrigem,
-    arrobasProduzidasReal:zoo.atProd,
-    custoArrobaProduzidaReal:realDraft.custoArrobaProduzidaReal,
-    valorAtVendaReal:valorAtVenda,
-    bonusVendaReal:bonusVenda,
-    bonusVendaModeReal:bonusVendaMode,
-    bonusVendaAtReal:bonusVendaAt,
-    descontoVendaReal:descontoVenda,
-    descontoVendaModeReal:descontoVendaMode,
-    descontoVendaAtReal:descontoVendaAt,
-    senarPctReal:senarPct,
-    arrobasVendaReal:venda.arrobas,
-    precoLiquidoAtReal:venda.precoLiquidoAt,
-    valorBrutoReal:venda.bruto,
-    senarValorReal:venda.senar,
-    dataEntradaReal:dataEntradaReal,
-    dataAbateReal:dataAbateReal,
-    dataRecebimentoReal:dataRecebimentoReal,
+    gmdReal:zoo.gmd||null,
+    rendCarcacaReal:zoo.rendA||null,
+    qtdReal:qtdReal||null,
+    pesoOrigemReal:zoo.pesoOrigem||null,
+    pesoEntradaReal:zoo.pesoEntrada||null,
+    pesoSaidaReal:zoo.pesoSaida||null,
+    pesoCarcacaReal:zoo.pesoCarcaca||null,
+    diasReal:zoo.dias||null,
+    consumoMSPctReal:realDraft.consumoMSPctReal||null,
+    consumoMSDiarioReal:zoo.consumoDiario||null,
+    consumoMSTotalReal:zoo.consumoTotal||null,
+    eficienciaBioReal:zoo.efic||null,
+    eficienciaBioOrigemReal:zoo.eficOrigem||null,
+    arrobasAbateReal:zoo.atAbate||null,
+    arrobasAbateTotalReal:zoo.atAbate*qtdReal||null,
+    arrobasProduzidasOrigemReal:zoo.atProdOrigem||null,
+    arrobasProduzidasReal:zoo.atProd||null,
+    custoArrobaProduzidaOrigemReal:zoo.custoAtOrigem||null,
+    custoArrobaProduzidaReal:zoo.custoAtChegada||null,
     dataApuracao:new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}),
     updatedAt:new Date().toISOString()
-  };
-  if(!lote.projectedData)lote.projectedData=resultadoProjetadoLote(lote,lote.orcamentos&&lote.orcamentos[0]);
+  });
+  if(lote.finalResultMode!=='manual')lote.finalResultMode='realized';
+  if(!lote.projectedData)lote.projectedData=resultadoProjetadoLote(lote,orc);
   lote.realizedData=Object.assign({},lote.ajusteReal);
   lote.realizedUpdatedAt=lote.ajusteReal.updatedAt;
   lote.realizedStatus=statusRealizadoLote(lote).key;
-  aplicarResultadoFinalPainel(lote);
 }
 function atualizarRealizadoPainel(){
+  if(document.getElementById('ep-real-consumo-pct')){
+    var loteCompacto=_editLoteId?getLotes().find(function(l){return l.id===_editLoteId;}):null;
+    if(!loteCompacto)return;
+    var orcCompacto=loteCompacto.orcamentos&&loteCompacto.orcamentos[0];
+    var anteriorCompacto=loteCompacto.ajusteReal||loteCompacto.apuracao||{};
+    var baseCompacto=resultadoStatusLote({orcamentos:loteCompacto.orcamentos||[]},orcCompacto);
+    var capitalCompacto=baseCompacto.capital;
+    var zooCompacto=zootecRealCalc(loteCompacto,orcCompacto,getRealizadoZootecDraft(loteCompacto));
+    var faturamentoCompacto=_parseOptionalNumber('ep-real-fat');
+    var lucroCompacto=faturamentoCompacto===null?null:faturamentoCompacto-capitalCompacto;
+    var rentCompacto=lucroCompacto!==null&&capitalCompacto>0?lucroCompacto/capitalCompacto:null;
+    var prazoCompacto=prazoDiasResultadoLote(loteCompacto,orcCompacto);
+    var rentMesCompacto=rentCompacto!==null&&prazoCompacto>0?rentCompacto/(prazoCompacto/30):null;
+    var resultadoB3Compacto=resultadoB3Lote(loteCompacto.id).resultado||0;
+    var lucroComB3Compacto=lucroCompacto===null?null:lucroCompacto+resultadoB3Compacto;
+    var lucroMesComB3Compacto=lucroComB3Compacto!==null&&prazoCompacto>0?lucroComB3Compacto/(prazoCompacto/30):null;
+    var rentComB3Compacto=lucroComB3Compacto!==null&&capitalCompacto>0?lucroComB3Compacto/capitalCompacto:null;
+    var rentMesComB3Compacto=rentComB3Compacto!==null&&prazoCompacto>0?rentComB3Compacto/(prazoCompacto/30):null;
+    function setCompacto(id,valor,formatar,mostrarZero){
+      var el=document.getElementById(id);
+      if(!el)return;
+      el.value=valor===null||valor===undefined||!isFinite(valor)||(!mostrarZero&&valor===0)?'—':formatar(valor);
+      el.dataset.raw=valor===null||valor===undefined||!isFinite(valor)?'':valor;
+    }
+    function setCompactoText(id,valor,formatar){
+      var el=document.getElementById(id);
+      if(!el)return;
+      el.textContent=valor===null||valor===undefined||!isFinite(valor)?'—':formatar(valor);
+      el.dataset.raw=valor===null||valor===undefined||!isFinite(valor)?'':valor;
+    }
+    setCompacto('ep-real-peso-saida',zooCompacto.pesoSaida,function(v){return brNum(v,2)+' kg';});
+    setCompacto('ep-real-at-abate',zooCompacto.atAbate,function(v){return brNum(v,2)+' @';});
+    setCompacto('ep-real-at-prod-origem',zooCompacto.atProdOrigem,function(v){return brNum(v,3)+' @';});
+    setCompacto('ep-real-at-prod',zooCompacto.atProd,function(v){return brNum(v,3)+' @';});
+    setCompacto('ep-real-consumo-ms',zooCompacto.consumoTotal,function(v){return brNum(v,2)+' kg';});
+    setCompacto('ep-real-efic-origem',zooCompacto.eficOrigem,function(v){return brNum(v,2)+' kg MS/@';});
+    setCompacto('ep-real-efic',zooCompacto.efic,function(v){return brNum(v,2)+' kg MS/@';});
+    setCompacto('ep-real-custo-at',zooCompacto.custoAtChegada,function(v){return fmt(v)+'/@';});
+    setCompacto('ep-real-custo-at-origem',zooCompacto.custoAtOrigem,function(v){return fmt(v)+'/@';});
+    setCompacto('ep-real-rent',rentCompacto,function(v){return fmtPct(v);});
+    setCompacto('ep-real-rentmes',rentMesCompacto,function(v){return fmtPct(v);});
+    setCompacto('ep-real-b3-resultado',resultadoB3Compacto,function(v){return fmt(v);},true);
+    setCompacto('ep-real-lucro-com-b3',lucroComB3Compacto,function(v){return fmt(v);},true);
+    setCompacto('ep-real-lucro-mes-com-b3',lucroMesComB3Compacto,function(v){return fmt(v);},true);
+    setCompactoText('ep-real-rent-com-b3',rentComB3Compacto,function(v){return fmtPct(v);});
+    setCompactoText('ep-real-rentmes-com-b3',rentMesComB3Compacto,function(v){return fmtPct(v);});
+    var fatCompacto=document.getElementById('ep-real-fat');
+    if(fatCompacto)fatCompacto.dataset.raw=faturamentoCompacto===null?'':faturamentoCompacto;
+    return;
+  }
   var capital=_parseOptionalNumber('ep-real-capital');
   var valorAtVenda=_parseOptionalNumber('ep-real-valor-at');
   var bonusVenda=_parseOptionalNumber('ep-real-bonus-at');
@@ -9256,7 +9316,7 @@ function renderDTabResumo(){
       +'<div class="resumo-block-title">Última Simulação</div>'
       +'<div class="resumo-row"><span>Modalidade</span><span>'+calcModeloLabel(ult.modeloConta||'msop')+'</span></div>'
       +'<div class="resumo-row"><span>Dias</span><span>'+(ult.dias||'—')+'</span></div>'
-      +'<div class="resumo-row"><span>GMD estimado</span><span>'+(ult.gmd?ult.gmd+' kg/dia':'—')+'</span></div>'
+      +'<div class="resumo-row"><span>GMD estimado</span><span>'+fmtGmd(ult.gmd)+'</span></div>'
       +'<div class="resumo-row"><span>Investimento</span><span>'+(ult.investLote?fmt(ult.investLote):'—')+'</span></div>'
       +'<div class="resumo-row"><span>Faturamento total</span><span>'+(ult.fatLiqLote?fmt(ult.fatLiqLote):'—')+'</span></div>'
       +'<div class="resumo-row"><span>Lucro simulado</span><span style="color:'+(ult.lucroLote>=0?'var(--green)':'var(--red)')+';font-weight:700;">'+(ult.lucroLote!==undefined?fmt(ult.lucroLote):'—')+'</span></div>'
@@ -9308,7 +9368,7 @@ function renderDTabOrcamentos(){
       </div>
       <div class="orc-card-vals">
         <div class="orc-val">Dias: <strong>${o.dias}</strong></div>
-        <div class="orc-val">GMD: <strong>${o.gmd} kg/dia</strong></div>
+        <div class="orc-val">GMD: <strong>${fmtGmd(o.gmd)}</strong></div>
         <div class="orc-val">R$/@: <strong>${o.valorAt}</strong></div>
         <div class="orc-val">Invest.: <strong>${fmt(o.investLote)}</strong></div>
         <div class="orc-val">Fat. Total: <strong>${fmt(o.fatLiqLote)}</strong></div>
@@ -9589,7 +9649,7 @@ function renderDTabConfinamento(){
     </div>
     <div style="font-size:11px;color:var(--text-3);margin-bottom:16px;padding:10px 12px;background:rgba(13,27,42,.06);border-radius:7px;">
       Preencha com os dados reais do confinamento. Estes dados são usados na Apuração Final — não misture com a simulação.
-      ${ult?'<br>Referência da simulação: GMD estimado '+ult.gmd+' kg/dia · '+ult.dias+' dias · Custo MS estimado '+fmt(estCustoMS):''}
+      ${ult?'<br>Referência da simulação: GMD estimado '+fmtGmd(ult.gmd)+' · '+ult.dias+' dias · Custo MS estimado '+fmt(estCustoMS):''}
     </div>
     <div class="card" style="padding:18px;">
       <div class="g2">
