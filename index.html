@@ -2620,7 +2620,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   [data-status-mobile-field="capital"],
   [data-status-mobile-field="faturamento"],
   [data-status-mobile-field="lucro"] {
-    grid-column: span 2;
+    grid-column: auto;
   }
 }
 
@@ -2643,6 +2643,561 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   }
 }
     </style>
+<style id="status-mobile-compact-cards-20260713" data-verified="true">
+  /* Status: cartões compactos somente no mobile. */
+  @media (max-width: 760px) {
+    #panel-status .status-mobile-list,
+    #panel-status .status-cards {
+      display: grid;
+      gap: 8px !important;
+    }
+
+    #panel-status .status-mobile-card,
+    #panel-status .status-card {
+      display: grid !important;
+      gap: 5px !important;
+      min-height: 0 !important;
+      height: auto !important;
+      padding: 9px 10px !important;
+      border-radius: 12px !important;
+      overflow: hidden;
+    }
+
+    #panel-status .status-mobile-head {
+      display: grid !important;
+      grid-template-columns: auto minmax(0, 1fr) auto auto;
+      align-items: center;
+      gap: 6px !important;
+      min-height: 26px;
+      margin: 0 !important;
+    }
+
+    #panel-status .status-mobile-title {
+      min-width: 0;
+      margin: 0 !important;
+      overflow: hidden;
+      font-size: 13px !important;
+      font-weight: 800;
+      line-height: 1.15 !important;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    #panel-status .status-chip,
+    #panel-status .status-badge-cell {
+      flex: 0 0 auto;
+      padding: 4px 7px !important;
+      font-size: 9px !important;
+      line-height: 1 !important;
+      white-space: nowrap;
+    }
+
+    #panel-status .status-row-edit-btn {
+      display: inline-grid !important;
+      place-items: center;
+      width: 26px !important;
+      min-width: 26px !important;
+      height: 26px !important;
+      min-height: 26px !important;
+      padding: 0 !important;
+      border-radius: 7px !important;
+    }
+
+    #panel-status .status-mobile-sub,
+    #panel-status .status-mobile-info,
+    #panel-status .status-cell-sub {
+      min-width: 0;
+      margin: 0 !important;
+      overflow: hidden;
+      font-size: 10px !important;
+      line-height: 1.15 !important;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    #panel-status .status-mobile-metrics,
+    #panel-status .status-card-metrics,
+    #panel-status .status-mobile-card-metrics,
+    #panel-status .status-mobile-info-grid {
+      display: grid !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      gap: 4px !important;
+      min-width: 0;
+      margin: 0 !important;
+      overflow: visible !important;
+    }
+
+    #panel-status .status-mobile-metric,
+    #panel-status .status-card-metric,
+    #panel-status .status-card-info-item,
+    #panel-status .status-mobile-field,
+    #panel-status [data-status-mobile-field] {
+      min-width: 0;
+      min-height: 34px !important;
+      padding: 4px 5px !important;
+      overflow: hidden;
+      border-radius: 6px !important;
+      box-sizing: border-box;
+    }
+
+    #panel-status .status-mobile-card :is(
+      .status-label,
+      .status-mobile-label,
+      .status-card-metric > span:first-child,
+      .status-card-info-item > span:first-child,
+      [data-status-mobile-field] > span:first-child
+    ) {
+      display: block;
+      margin: 0 0 2px !important;
+      overflow: hidden;
+      font-size: 7.5px !important;
+      font-weight: 700;
+      line-height: 1 !important;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    #panel-status .status-mobile-card :is(
+      .status-num,
+      .status-mobile-value,
+      .status-card-metric > strong,
+      .status-card-info-item > strong,
+      [data-status-mobile-field] > strong
+    ) {
+      display: block;
+      min-width: 0;
+      margin: 0 !important;
+      overflow: hidden;
+      font-size: clamp(9px, 2.7vw, 11px) !important;
+      font-weight: 800;
+      line-height: 1.1 !important;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    #panel-status [data-status-mobile-field][hidden],
+    #panel-status [data-status-mobile-field].status-mobile-field-hidden,
+    #panel-status .status-col-hidden {
+      display: none !important;
+      width: 0 !important;
+      min-width: 0 !important;
+      height: 0 !important;
+      min-height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    #panel-status .status-mobile-card :is(.is-positive, .positive, .value-positive) {
+      color: #6b7056 !important;
+    }
+
+    #panel-status .status-mobile-card :is(.is-negative, .negative, .value-negative) {
+      color: #9a3b30 !important;
+    }
+  }
+</style>
+<style id="status-mobile-compact-cards-final-20260713">
+/* Compactacao final da lista de lotes no Status. Somente mobile. */
+@media (max-width: 768px) {
+  #panel-status,
+  #panel-status .status-content,
+  #panel-status .status-list-wrap,
+  #panel-status .status-mobile-list,
+  #panel-status .status-cards {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
+
+  #panel-status .status-mobile-list,
+  #panel-status .status-cards {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    padding: 0;
+  }
+
+  #panel-status .status-mobile-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    gap: 6px;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 9px 11px;
+    overflow: hidden;
+    border: 1px solid rgba(201, 162, 78, .38);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, .94);
+    box-shadow: 0 3px 10px rgba(13, 27, 42, .06);
+    box-sizing: border-box;
+  }
+
+  #panel-status .status-mobile-card__header,
+  #panel-status .status-mobile-card-header,
+  #panel-status .smc-header,
+  #panel-status .status-card-head,
+  #panel-status [data-mobile-card-row="header"] {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 7px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  #panel-status .status-mobile-card .lot-number,
+  #panel-status .status-mobile-card .lot-chip,
+  #panel-status .status-mobile-card .status-lot-number,
+  #panel-status .status-mobile-card [data-lot-number] {
+    flex: 0 0 auto;
+    min-width: max-content;
+    padding: 4px 7px;
+    border-radius: 7px;
+    background: #0d1b2a;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  #panel-status .status-mobile-card .lot-name,
+  #panel-status .status-mobile-card .status-lot-name,
+  #panel-status .status-mobile-card__title,
+  #panel-status .status-mobile-card h3,
+  #panel-status .status-mobile-card h4 {
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    color: #0d1b2a;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.15;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #panel-status .status-mobile-card .status-badge,
+  #panel-status .status-mobile-card .lot-status,
+  #panel-status .status-mobile-card [data-lot-status] {
+    min-width: max-content;
+    padding: 4px 7px;
+    border-radius: 999px;
+    font-size: 8px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: .03em;
+    white-space: nowrap;
+  }
+
+  #panel-status .status-mobile-card .edit-button,
+  #panel-status .status-mobile-card .status-edit-btn,
+  #panel-status .status-mobile-card [data-action="edit"] {
+    display: inline-grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    padding: 0;
+    border-radius: 7px;
+  }
+
+  #panel-status .status-mobile-card__identity,
+  #panel-status .status-mobile-card-identity,
+  #panel-status .status-mobile-card-meta,
+  #panel-status .smc-identity,
+  #panel-status [data-mobile-card-row="identity"] {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3px 8px;
+    min-width: 0;
+    color: #8a7967;
+    font-size: 9px;
+    line-height: 1.2;
+  }
+
+  #panel-status .status-mobile-card__identity > *,
+  #panel-status .status-mobile-card-identity > *,
+  #panel-status .status-mobile-card-meta > *,
+  #panel-status .smc-identity > *,
+  #panel-status [data-mobile-card-row="identity"] > * {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #panel-status .status-mobile-card__operational,
+  #panel-status .status-mobile-card__financial,
+  #panel-status .status-mobile-card-operational,
+  #panel-status .status-mobile-card-financial,
+  #panel-status .status-mobile-card-grid,
+  #panel-status .smc-grid,
+  #panel-status [data-mobile-card-row="operation"],
+  #panel-status [data-mobile-card-row="financial"] {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 5px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  #panel-status .status-mobile-card__operational > *,
+  #panel-status .status-mobile-card__financial > *,
+  #panel-status .status-mobile-card-operational > *,
+  #panel-status .status-mobile-card-financial > *,
+  #panel-status .status-mobile-card-grid > *,
+  #panel-status .smc-grid > *,
+  #panel-status [data-mobile-card-row="operation"] > *,
+  #panel-status [data-mobile-card-row="financial"] > * {
+    min-width: 0;
+    padding: 5px 6px;
+    overflow: hidden;
+    border-radius: 7px;
+    background: rgba(242, 237, 227, .62);
+    box-sizing: border-box;
+  }
+
+  #panel-status .status-mobile-card .label,
+  #panel-status .status-mobile-card .metric-label,
+  #panel-status .status-mobile-card dt,
+  #panel-status .status-mobile-card small {
+    display: block;
+    margin: 0 0 2px;
+    overflow: hidden;
+    color: #8a7967;
+    font-size: 7px;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: .04em;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  #panel-status .status-mobile-card .value,
+  #panel-status .status-mobile-card .metric-value,
+  #panel-status .status-mobile-card dd {
+    display: block;
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    color: #0d1b2a;
+    font-size: 10.5px;
+    font-weight: 800;
+    line-height: 1.12;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #panel-status .status-mobile-card .positive,
+  #panel-status .status-mobile-card [data-sign="positive"] {
+    color: #6b7056;
+  }
+
+  #panel-status .status-mobile-card .negative,
+  #panel-status .status-mobile-card [data-sign="negative"] {
+    color: #9a3b30;
+  }
+
+  #panel-status .status-mobile-card .optional-detail,
+  #panel-status .status-mobile-card [data-optional-detail="true"] {
+    font-size: 8px;
+    line-height: 1.15;
+  }
+}
+
+@media (max-width: 390px) {
+  #panel-status .status-mobile-card {
+    gap: 5px;
+    padding: 8px 9px;
+  }
+
+  #panel-status .status-mobile-card__header,
+  #panel-status .status-mobile-card-header,
+  #panel-status .smc-header,
+  #panel-status .status-card-head,
+  #panel-status [data-mobile-card-row="header"] {
+    gap: 5px;
+  }
+
+  #panel-status .status-mobile-card .lot-name,
+  #panel-status .status-mobile-card .status-lot-name,
+  #panel-status .status-mobile-card__title,
+  #panel-status .status-mobile-card h3,
+  #panel-status .status-mobile-card h4 {
+    font-size: 12px;
+  }
+
+  #panel-status .status-mobile-card__operational,
+  #panel-status .status-mobile-card__financial,
+  #panel-status .status-mobile-card-operational,
+  #panel-status .status-mobile-card-financial,
+  #panel-status .status-mobile-card-grid,
+  #panel-status .smc-grid,
+  #panel-status [data-mobile-card-row="operation"],
+  #panel-status [data-mobile-card-row="financial"] {
+    gap: 4px;
+  }
+
+  #panel-status .status-mobile-card__operational > *,
+  #panel-status .status-mobile-card__financial > *,
+  #panel-status .status-mobile-card-operational > *,
+  #panel-status .status-mobile-card-financial > *,
+  #panel-status .status-mobile-card-grid > *,
+  #panel-status .smc-grid > *,
+  #panel-status [data-mobile-card-row="operation"] > *,
+  #panel-status [data-mobile-card-row="financial"] > * {
+    padding: 4px;
+  }
+
+  #panel-status .status-mobile-card .value,
+  #panel-status .status-mobile-card .metric-value,
+  #panel-status .status-mobile-card dd {
+    font-size: 9.5px;
+  }
+}
+</style>
+<style id="status-mobile-compact-cards-polish-20260713">
+  /* Acabamento dos lotes do Status somente no mobile. */
+  @media (max-width: 760px) {
+    #panel-status {
+      max-width: 100% !important;
+      overflow-x: hidden !important;
+    }
+
+    #panel-status .status-table-scroll,
+    #panel-status .status-table-body,
+    #panel-status .status-mobile-list,
+    #panel-status .status-cards {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      overflow: visible !important;
+    }
+
+    #panel-status .status-table-body,
+    #panel-status .status-mobile-list,
+    #panel-status .status-cards {
+      display: grid !important;
+      gap: 8px !important;
+    }
+
+    #panel-status .status-mobile-card,
+    #panel-status .status-card {
+      display: grid !important;
+      gap: 6px !important;
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      min-height: 120px !important;
+      height: auto !important;
+      padding: 9px 10px !important;
+      border-radius: 12px !important;
+      overflow: hidden !important;
+      box-sizing: border-box !important;
+    }
+
+    #panel-status .status-mobile-head {
+      display: grid !important;
+      grid-template-columns: auto minmax(0, 1fr) auto 30px !important;
+      align-items: center !important;
+      gap: 6px !important;
+      min-width: 0 !important;
+      min-height: 30px !important;
+      margin: 0 !important;
+    }
+
+    #panel-status .status-mobile-lot-chip {
+      white-space: nowrap !important;
+    }
+
+    #panel-status .status-mobile-title {
+      min-width: 0 !important;
+      margin: 0 !important;
+      overflow: hidden !important;
+      font-size: 13px !important;
+      font-weight: 800 !important;
+      line-height: 1.15 !important;
+      text-overflow: ellipsis !important;
+      white-space: nowrap !important;
+    }
+
+    #panel-status .status-mobile-status {
+      max-width: 94px !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      white-space: nowrap !important;
+    }
+
+    #panel-status .status-mobile-edit {
+      display: grid !important;
+      place-items: center !important;
+      width: 30px !important;
+      min-width: 30px !important;
+      height: 30px !important;
+      min-height: 30px !important;
+      padding: 0 !important;
+    }
+
+    #panel-status .status-mobile-subtitle {
+      display: -webkit-box !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+      overflow: hidden !important;
+      font-size: 10px !important;
+      line-height: 1.2 !important;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+
+    #panel-status .status-mobile-op-grid,
+    #panel-status .status-mobile-fin-grid {
+      display: grid !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      gap: 5px !important;
+      width: 100% !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+    }
+
+    #panel-status .status-mobile-op-grid > *,
+    #panel-status .status-mobile-fin-grid > * {
+      min-width: 0 !important;
+      overflow: hidden !important;
+    }
+
+    #panel-status .status-mobile-op-grid small,
+    #panel-status .status-mobile-fin-grid small {
+      display: block !important;
+      overflow: hidden !important;
+      font-size: 7px !important;
+      line-height: 1 !important;
+      letter-spacing: 0 !important;
+      text-overflow: ellipsis !important;
+      white-space: nowrap !important;
+    }
+
+    #panel-status .status-mobile-op-grid strong,
+    #panel-status .status-mobile-fin-grid strong {
+      display: block !important;
+      min-width: 0 !important;
+      margin-top: 2px !important;
+      overflow: hidden !important;
+      font-size: 11px !important;
+      line-height: 1.1 !important;
+      text-overflow: ellipsis !important;
+      white-space: nowrap !important;
+    }
+  }
+</style>
 </head>
 <body>
 
