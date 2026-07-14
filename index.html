@@ -1505,6 +1505,8 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	    #panel-lotes .status-mobile-line{display:grid!important;grid-template-columns:repeat(var(--status-mobile-grid-columns,5),minmax(0,1fr));gap:5px 6px;grid-column:1/-1;grid-row:2;overflow:visible!important;white-space:normal!important;padding-top:2px;font-size:9.5px;line-height:1.12;}
 	    #panel-lotes .status-mobile-line i,#panel-lotes .status-mobile-line b{display:none!important;}
 	    #panel-lotes .status-mobile-line span{display:block!important;min-width:0!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+	    #panel-lotes .status-mobile-line span[hidden],
+	    #panel-lotes .status-mobile-line span.status-mobile-field-hidden{display:none!important;}
 	    #panel-lotes .status-mobile-line em{display:block;font-style:normal;font-size:7.2px;font-weight:850;letter-spacing:.45px;text-transform:uppercase;color:var(--taupe);margin-bottom:2px;}
 	    #panel-lotes .status-mobile-line .money,
 	    #panel-lotes .status-mobile-line .profit,
@@ -8725,6 +8727,7 @@ function renderLotes(){
     var origemVal=(l.origemCompra||l.origem||(o&&(o.origemCompra_orc||o.origemCompra))||'—');
     var dataEntradaCurta=dataEntrada&&dataEntrada!=='—'?dataEntrada.slice(0,5):'—';
     var dataAbateCurta=dataAbate&&dataAbate!=='—'?dataAbate.slice(0,5):'—';
+    var dataRecebimentoCurta=dataRecebimento&&dataRecebimento!=='—'?dataRecebimento.slice(0,5):'—';
     var eficienciaVal=o&&metric.eficienciaBio?(fmtNum(metric.eficienciaBio,2)+' kg MS/@'):'—';
     var eficienciaChegadaVal=o&&metric.eficienciaBioChegada?(fmtNum(metric.eficienciaBioChegada,2)+' kg MS/@'):'—';
     var abateSortDate=saidaIso||(entradaIso&&dias&&_addDias(entradaIso,dias)?_addDias(entradaIso,dias).toISOString().slice(0,10):'');
@@ -8789,13 +8792,19 @@ function renderLotes(){
       +'<span data-status-mobile-field="qtd"><em>Qtd</em>'+escHtml(qtdVal)+'</span>'
       +'<span data-status-mobile-field="entrada"><em>Entrada</em>'+escHtml(dataEntradaCurta)+'</span>'
       +'<span data-status-mobile-field="abate"><em>Abate</em>'+escHtml(dataAbateCurta)+'</span>'
+      +'<span data-status-mobile-field="recebimento"><em>Receb.</em>'+escHtml(dataRecebimentoCurta)+'</span>'
       +'<span data-status-mobile-field="b3"><em>B3</em>'+escHtml(b3Cobertura)+'</span>'
       +'<span class="vendor" data-status-mobile-field="vendedor" title="'+escHtml(vendedorVal)+'"><em>Vendedor</em>'+escHtml(vendedorVal)+'</span>'
       +'<span class="muted" data-status-mobile-field="trava"><em>Trava</em>'+escHtml(b3Estado)+'</span>'
+      +'<span data-status-mobile-field="origem" title="'+escHtml(origemVal)+'"><em>Origem</em>'+escHtml(origemVal)+'</span>'
       +'<span class="money" data-status-mobile-field="capital"><em>Capital</em>'+escHtml(fmtCompactMoney(capital))+'</span>'
+      +'<span class="money" data-status-mobile-field="faturamento"><em>Faturam.</em>'+escHtml(fmtCompactMoney(faturamento))+'</span>'
       +'<span class="profit" data-status-mobile-field="lucro"><em>Lucro</em>'+escHtml(fmtCompactMoney(lucro))+'</span>'
+      +'<span class="rate" data-status-mobile-field="rent"><em>% oper.</em>'+escHtml(rentVal)+'</span>'
       +'<span class="rate" data-status-mobile-field="rentmes"><em>% mês</em>'+escHtml(rentMesVal)+'</span>'
       +'<span class="confinement" data-status-mobile-field="boitel" title="'+escHtml(confinamento)+'"><em>Boitel</em>'+escHtml(confinamento)+'</span>'
+      +'<span data-status-mobile-field="eficiencia" title="'+escHtml(eficienciaVal)+'"><em>Efic. origem</em>'+escHtml(eficienciaVal)+'</span>'
+      +'<span data-status-mobile-field="eficienciaChegada" title="'+escHtml(eficienciaChegadaVal)+'"><em>Efic. chegada</em>'+escHtml(eficienciaChegadaVal)+'</span>'
     +'</div>';
     return '<div class="status-row" style="grid-template-columns:'+statusGridTemplate()+'" data-lid="'+l.id+'" data-lote-seq="'+escHtml(numeroLote)+'" data-status="'+(l.status||'embarque')+'" draggable="true"'+attrs+'>'
       +statusLabel
