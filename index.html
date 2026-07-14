@@ -1590,6 +1590,10 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 .cash-kpi.free .cash-value{color:#fff;}
 .cash-manual-input{width:100%;box-sizing:border-box;min-height:38px;border:1px solid var(--border);border-radius:9px;background:var(--input-bg);color:var(--navy);font:inherit;font-size:17px;font-weight:950;padding:8px 10px;outline:none;}
 .cash-manual-input:focus{border-color:var(--accent);background:#fff;}
+.cash-manual-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:center;}
+.cash-update-info{min-width:78px;padding-left:9px;border-left:1px solid var(--border);}
+.cash-update-label{display:block;font-size:7px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;color:var(--taupe);line-height:1.15;}
+.cash-update-value{display:block;margin-top:3px;font-size:9px;font-weight:800;line-height:1.25;color:var(--text-2);white-space:nowrap;}
 .cash-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;}
 .cash-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:15px;box-shadow:0 5px 18px rgba(13,27,42,.05);min-width:0;}
 .cash-card-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:4px;}
@@ -1669,6 +1673,10 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .cash-kpis{grid-template-columns:1fr 1fr;gap:8px;}
   .cash-kpi{padding:11px;}
   .cash-value{font-size:16px;}
+  .cash-manual-row{grid-template-columns:1fr;gap:6px;}
+  .cash-update-info{min-width:0;padding:0;border-left:0;}
+  .cash-update-label,.cash-update-value{display:inline;}
+  .cash-update-value{margin-left:5px;}
   .cash-grid{grid-template-columns:1fr;gap:10px;}
   .cash-card{padding:12px;}
   .fin-hero{display:grid;gap:10px;padding:14px;}
@@ -5086,11 +5094,25 @@ function finLoteRecebIso(lote,orc){
   return '';
 }
 var CAIXA_MANUAL_KEY='vmagro_caixa_manual_v1';
+var CAIXA_MANUAL_UPDATED_KEY='vmagro_caixa_manual_updated_v1';
 function getCaixaManual(){
   try{return finNum(localStorage.getItem(CAIXA_MANUAL_KEY)||0);}catch(e){return 0;}
 }
+function getCaixaManualAtualizadoEm(){
+  try{return localStorage.getItem(CAIXA_MANUAL_UPDATED_KEY)||'';}catch(e){return '';}
+}
+function caixaManualAtualizacaoLabel(){
+  var raw=getCaixaManualAtualizadoEm();
+  if(!raw)return 'Ainda não atualizado';
+  var data=new Date(raw);
+  if(isNaN(data.getTime()))return 'Ainda não atualizado';
+  return data.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
 function salvarCaixaManual(valor){
-  try{localStorage.setItem(CAIXA_MANUAL_KEY,String(finNum(valor)));}catch(e){}
+  try{
+    localStorage.setItem(CAIXA_MANUAL_KEY,String(finNum(valor)));
+    localStorage.setItem(CAIXA_MANUAL_UPDATED_KEY,new Date().toISOString());
+  }catch(e){}
   renderCaixa();
 }
 function renderCaixa(){
@@ -5115,6 +5137,7 @@ function renderCaixa(){
   pagar.sort(function(a,b){return String(a.dataEntrada||'').localeCompare(String(b.dataEntrada||''));});
   receber.sort(function(a,b){return String(a.dataRecebimento||'').localeCompare(String(b.dataRecebimento||''));});
   var caixa=getCaixaManual();
+  var atualizadoEm=caixaManualAtualizacaoLabel();
   var totalPagar=pagar.reduce(function(total,item){return total+item.capital;},0);
   var totalReceber=receber.reduce(function(total,item){return total+item.faturamento;},0);
   var livre=caixa+totalReceber-totalPagar;
@@ -5128,7 +5151,7 @@ function renderCaixa(){
   }
   content.innerHTML='<div class="cash-hero"><div><div class="cash-title">Caixa</div><div class="cash-sub">Visão do saldo disponível, pagamentos dos lotes em embarque e recebimentos dos lotes abatidos.</div></div></div>'
     +'<div class="cash-kpis">'
-      +'<div class="cash-kpi"><label class="cash-label" for="cash-manual-input">Caixa</label><input id="cash-manual-input" class="cash-manual-input" type="text" inputmode="decimal" value="'+escHtml(fmtNum(caixa,2))+'" onchange="salvarCaixaManual(this.value)"></div>'
+      +'<div class="cash-kpi"><label class="cash-label" for="cash-manual-input">Caixa</label><div class="cash-manual-row"><input id="cash-manual-input" class="cash-manual-input" type="text" inputmode="decimal" value="'+escHtml(fmtNum(caixa,2))+'" onchange="salvarCaixaManual(this.value)"><div class="cash-update-info"><span class="cash-update-label">Última atualização</span><span class="cash-update-value">'+escHtml(atualizadoEm)+'</span></div></div></div>'
       +'<div class="cash-kpi"><span class="cash-label">A pagar</span><div class="cash-value">'+fmt(totalPagar)+'</div></div>'
       +'<div class="cash-kpi"><span class="cash-label">A receber</span><div class="cash-value">'+fmt(totalReceber)+'</div></div>'
       +'<div class="cash-kpi free"><span class="cash-label">Caixa livre</span><div class="cash-value">'+fmt(livre)+'</div></div>'
