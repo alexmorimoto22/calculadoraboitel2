@@ -2396,11 +2396,24 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .users-empty{padding:30px;text-align:center;color:var(--text-3)}
   @media(max-width:768px){.auth-view input,.auth-view select,.auth-view button{font-size:16px!important}.users-stats{grid-template-columns:repeat(2,1fr)}.users-toolbar{grid-template-columns:1fr}.users-table-wrap{border:0;background:transparent;overflow:visible}.users-table{min-width:0;display:block}.users-table thead{display:none}.users-table tbody{display:grid;gap:10px}.users-table tr{display:block;background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px}.users-table td{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px}.users-table td::before{content:attr(data-label);font-size:9px;font-weight:800;text-transform:uppercase;color:var(--text-3)}.users-table td:last-child{display:block;border:0}.user-actions{margin-top:8px}}
 /* ─ STATUS MOBILE · COLUNAS VISÍVEIS ─ */
-+/* Seletor independente de informacoes dos cards do Status mobile. */
+/* Seletor independente de informacoes dos cards do Status mobile. */
 .status-mobile-columns-trigger,
 .status-mobile-columns-backdrop,
 .status-mobile-columns-sheet {
   display: none;
+}
+
+@media (min-width: 769px) {
+  .status-mobile-columns-trigger,
+  .status-mobile-columns-trigger-wrap,
+  .status-mobile-columns-backdrop,
+  .status-mobile-columns-sheet {
+    display: none !important;
+  }
+
+  body.status-mobile-columns-open {
+    overflow: auto !important;
+  }
 }
 
 @media (max-width: 768px) {
@@ -12718,6 +12731,7 @@ restoreBasicSession();
   }
 
   function openStatusMobileColumns() {
+    if (!isMobile()) return;
     buildSheet();
     syncCheckboxes();
     document.body.classList.add('status-mobile-columns-open');
