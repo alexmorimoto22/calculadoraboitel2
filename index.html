@@ -1502,7 +1502,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	    #panel-lotes .status-cell-title{font-size:12px!important;line-height:1.15!important;max-width:100%!important;}
 	    #panel-lotes .status-cell-sub{display:none!important;}
 	    #panel-lotes .badge{font-size:8px!important;padding:4px 7px!important;letter-spacing:.35px!important;}
-	    #panel-lotes .status-mobile-line{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px 6px;grid-column:1/-1;grid-row:2;overflow:visible!important;white-space:normal!important;padding-top:2px;font-size:9.5px;line-height:1.12;}
+	    #panel-lotes .status-mobile-line{display:grid!important;grid-template-columns:repeat(var(--status-mobile-grid-columns,5),minmax(0,1fr));gap:5px 6px;grid-column:1/-1;grid-row:2;overflow:visible!important;white-space:normal!important;padding-top:2px;font-size:9.5px;line-height:1.12;}
 	    #panel-lotes .status-mobile-line i,#panel-lotes .status-mobile-line b{display:none!important;}
 	    #panel-lotes .status-mobile-line span{display:block!important;min-width:0!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 	    #panel-lotes .status-mobile-line em{display:block;font-style:normal;font-size:7.2px;font-weight:850;letter-spacing:.45px;text-transform:uppercase;color:var(--taupe);margin-bottom:2px;}
@@ -8773,16 +8773,16 @@ function renderLotes(){
       +'<strong class="b3-coverage-inline">'+escHtml(b3Cobertura)+'</strong>'
     +'</div>';
     var mobileLine='<div class="status-mobile-line">'
-      +'<span><em>Qtd</em>'+escHtml(qtdVal)+'</span>'
-      +'<span><em>Entrada</em>'+escHtml(dataEntradaCurta)+'</span>'
-      +'<span><em>Abate</em>'+escHtml(dataAbateCurta)+'</span>'
-      +'<span><em>B3</em>'+escHtml(b3Cobertura)+'</span>'
-      +'<span class="vendor" title="'+escHtml(vendedorVal)+'"><em>Vendedor</em>'+escHtml(vendedorVal)+'</span>'
-      +'<span class="muted"><em>Trava</em>'+escHtml(b3Estado)+'</span>'
-      +'<span class="money"><em>Capital</em>'+escHtml(fmtCompactMoney(capital))+'</span>'
-      +'<span class="profit"><em>Lucro</em>'+escHtml(fmtCompactMoney(lucro))+'</span>'
-      +'<span class="rate"><em>% mês</em>'+escHtml(rentMesVal)+'</span>'
-      +'<span class="confinement" title="'+escHtml(confinamento)+'"><em>Boitel</em>'+escHtml(confinamento)+'</span>'
+      +'<span data-status-mobile-field="qtd"><em>Qtd</em>'+escHtml(qtdVal)+'</span>'
+      +'<span data-status-mobile-field="entrada"><em>Entrada</em>'+escHtml(dataEntradaCurta)+'</span>'
+      +'<span data-status-mobile-field="abate"><em>Abate</em>'+escHtml(dataAbateCurta)+'</span>'
+      +'<span data-status-mobile-field="b3"><em>B3</em>'+escHtml(b3Cobertura)+'</span>'
+      +'<span class="vendor" data-status-mobile-field="vendedor" title="'+escHtml(vendedorVal)+'"><em>Vendedor</em>'+escHtml(vendedorVal)+'</span>'
+      +'<span class="muted" data-status-mobile-field="trava"><em>Trava</em>'+escHtml(b3Estado)+'</span>'
+      +'<span class="money" data-status-mobile-field="capital"><em>Capital</em>'+escHtml(fmtCompactMoney(capital))+'</span>'
+      +'<span class="profit" data-status-mobile-field="lucro"><em>Lucro</em>'+escHtml(fmtCompactMoney(lucro))+'</span>'
+      +'<span class="rate" data-status-mobile-field="rentmes"><em>% mês</em>'+escHtml(rentMesVal)+'</span>'
+      +'<span class="confinement" data-status-mobile-field="boitel" title="'+escHtml(confinamento)+'"><em>Boitel</em>'+escHtml(confinamento)+'</span>'
     +'</div>';
     return '<div class="status-row" style="grid-template-columns:'+statusGridTemplate()+'" data-lid="'+l.id+'" data-lote-seq="'+escHtml(numeroLote)+'" data-status="'+(l.status||'embarque')+'" draggable="true"'+attrs+'>'
       +statusLabel
@@ -12566,10 +12566,10 @@ restoreBasicSession();
 +(function () {
   'use strict';
 
-  var STATUS_MOBILE_VISIBLE_FIELDS_KEY = 'vm_agro_status_mobile_visible_fields';
+  var STATUS_MOBILE_VISIBLE_FIELDS_KEY = 'vm_agro_status_mobile_visible_fields_v3';
   var FIELD_DEFS = [
     { key: 'qtd', label: 'Quantidade', group: 'Operacao' },
-    { key: 'confinamento', label: 'Confinamento', group: 'Operacao' },
+    { key: 'boitel', label: 'Boitel', group: 'Operacao' },
     { key: 'origem', label: 'Origem', group: 'Operacao' },
     { key: 'vendedor', label: 'Vendedor', group: 'Operacao' },
     { key: 'entrada', label: 'Entrada', group: 'Datas' },
@@ -12585,7 +12585,7 @@ restoreBasicSession();
     { key: 'eficiencia', label: 'Eficiencia origem', group: 'Tecnico' },
     { key: 'eficienciaChegada', label: 'Eficiencia chegada', group: 'Tecnico' }
   ];
-  var DEFAULT_FIELDS = ['qtd', 'entrada', 'abate', 'b3', 'trava', 'capital', 'lucro', 'rentmes'];
+  var DEFAULT_FIELDS = ['qtd', 'entrada', 'abate', 'b3', 'vendedor', 'trava', 'capital', 'lucro', 'rentmes', 'boitel'];
   var ALLOWED = FIELD_DEFS.reduce(function (map, item) {
     map[item.key] = true;
     return map;
@@ -12641,7 +12641,7 @@ restoreBasicSession();
   }
 
   function getStatusPanel() {
-    return document.querySelector('#panel-status, #status-panel, [data-panel="status"], .panel-status, .status-panel');
+    return document.querySelector('#panel-lotes');
   }
 
   function panelIsVisible(panel) {
@@ -12737,6 +12737,10 @@ restoreBasicSession();
     var fields = Array.prototype.map.call(sheet.querySelectorAll('input[type="checkbox"]:checked'), function (input) {
       return input.value;
     });
+    if (!fields.length) {
+      showToast('Selecione ao menos um dado.');
+      return;
+    }
     setStatusMobileVisibleFields(fields);
     closeStatusMobileColumns();
     refreshStatusMobileColumns(true);
@@ -12756,15 +12760,15 @@ restoreBasicSession();
       current.type = 'button';
       current.id = 'status-mobile-columns-trigger-v2';
       current.className = 'status-mobile-columns-trigger';
-      current.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Colunas</span>';
+      current.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Dados visíveis</span>';
       current.addEventListener('click', openStatusMobileColumns);
       wrap.appendChild(current);
 
-      var anchor = panel.querySelector('.status-mobile-filter-header, .status-filter-header, .status-list-toolbar, .status-toolbar, .status-mobile-toolbar, .status-count');
+      var anchor = panel.querySelector('.lotes-toolbar');
       if (anchor && anchor.parentNode) {
         anchor.parentNode.insertBefore(wrap, anchor.nextSibling);
       } else {
-        var list = panel.querySelector('.status-mobile-list, .status-cards, .status-list, table');
+        var list = panel.querySelector('#lote-list');
         if (list && list.parentNode) list.parentNode.insertBefore(wrap, list);
         else panel.insertBefore(wrap, panel.firstChild);
       }
@@ -12797,7 +12801,7 @@ restoreBasicSession();
     if (/receb/.test(text)) return 'recebimento';
     if (/abate/.test(text)) return 'abate';
     if (/entrada/.test(text)) return 'entrada';
-    if (/confinamento|boitel/.test(text)) return 'confinamento';
+    if (/confinamento|boitel/.test(text)) return 'boitel';
     if (/origem/.test(text)) return 'origem';
     if (/vendedor/.test(text)) return 'vendedor';
     if (/quantidade|qtd|cabecas|cab\./.test(text)) return 'qtd';
@@ -12829,6 +12833,11 @@ restoreBasicSession();
       var hidden = visible.indexOf(field) === -1;
       node.hidden = hidden;
       node.classList.toggle('status-mobile-field-hidden', hidden);
+    });
+    var count = visible.length;
+    var columns = count >= 9 ? 5 : count >= 7 ? 4 : count >= 3 ? 3 : count;
+    panel.querySelectorAll('.status-mobile-line').forEach(function (line) {
+      line.style.setProperty('--status-mobile-grid-columns', String(Math.max(1, columns)));
     });
   }
 
