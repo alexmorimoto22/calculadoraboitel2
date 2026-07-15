@@ -6430,7 +6430,8 @@ function renderHomeDashboardNovo(lotes){
     var receb=aj.dataRecebimentoReal||'';
     if(!receb&&abate)receb=isoFromDate(_addDias(abate,parseInt(o.prazoPag)||0));
     if(!receb&&entrada)receb=isoFromDate(_addDias(entrada,(parseInt(o.dias)||0)+(parseInt(o.prazoPag)||0)));
-    var zoo=metric.real?zootecRealCalc(l,o,aj):biometriaSimuladaOrc(o);
+    var useRealizedTechnical=statusRealizadoLote(l).key==='complete';
+    var zoo=useRealizedTechnical?zootecRealCalc(l,o,aj):biometriaSimuladaOrc(o);
     var tech=indicadoresTecnicosLote(zoo);
     var qtd=parseFloat(o.qtd||l.qtd)||0;
     var origemCompra=l.origemCompra||l.origem||o.origemCompra_orc||o.origemCompra||'A definir';
@@ -6463,7 +6464,7 @@ function renderHomeDashboardNovo(lotes){
       gmcOrigem:tech.gmcOrigem||0,
       gmcChegada:tech.gmcChegada||0,
       eficiencia:metric.eficienciaBio||zoo.efic||0,
-      resultado:metric.real?'Realizado':'Projetado'
+      resultado:useRealizedTechnical?'Realizado':'Projetado'
     };
   }
   function sumRows(rows){
@@ -9329,7 +9330,8 @@ function renderLotes(){
     var dataRecebimento=recebDate?_fmtDataBR(recebDate):'—';
     var prazoDias=(entradaDate&&recebDate)?Math.max(0,Math.round((recebDate-entradaDate)/86400000)):0;
     var metric=resultadoStatusLote(l,o);
-    var zooStatus=metric.real?zootecRealCalc(l,o,l.ajusteReal||l.apuracao||{}):biometriaSimuladaOrc(o);
+    var useRealizedTechnical=statusRealizadoLote(l).key==='complete';
+    var zooStatus=useRealizedTechnical?zootecRealCalc(l,o,l.ajusteReal||l.apuracao||{}):biometriaSimuladaOrc(o);
     var techStatus=indicadoresTecnicosStatus(zooStatus);
     var capital=metric.capital;
     var lucro=metric.lucro;
@@ -9360,7 +9362,7 @@ function renderLotes(){
     var b3Cobertura=b3Status.cobertura;
     var b3Estado=b3Status.estado||'Aberto';
     var b3Val=b3Estado+' · '+b3Cobertura;
-    var filtroLote='Lote '+numeroLote+(cardTitle?' '+cardTitle:'')+(vend?' '+vend.nome:'')+(metric.real?' realizado':' simulado');
+    var filtroLote='Lote '+numeroLote+(cardTitle?' '+cardTitle:'')+(vend?' '+vend.nome:'')+(useRealizedTechnical?' realizado':' simulado');
     var attrs=' data-qtd-raw="'+qtdRaw+'" data-faturamento-raw="'+(o?faturamento:0)+'" data-capital-raw="'+(o?capital:0)+'" data-lucro-raw="'+(o?lucro:0)+'" data-prazo-dias-raw="'+prazoDias+'"'
       +' data-filter-status="'+escHtml(sc.label)+'"'
       +' data-filter-ano="'+escHtml(anoVal)+'"'
@@ -9506,7 +9508,8 @@ function renderLotes(){
     var recebDate=realDates.dataRecebimentoReal?_addDias(realDates.dataRecebimentoReal,0):(saidaIso?_addDias(saidaIso,prazo):(entradaIso&&(dias||prazo)?_addDias(entradaIso,dias+prazo):null));
     var dataRecebimento=recebDate?_fmtDataBR(recebDate):'—';
     var metric=resultadoStatusLote(l,o);
-    var zooStatus=metric.real?zootecRealCalc(l,o,l.ajusteReal||l.apuracao||{}):biometriaSimuladaOrc(o);
+    var useRealizedTechnical=statusRealizadoLote(l).key==='complete';
+    var zooStatus=useRealizedTechnical?zootecRealCalc(l,o,l.ajusteReal||l.apuracao||{}):biometriaSimuladaOrc(o);
     var techStatus=indicadoresTecnicosStatus(zooStatus);
     addStatusFilterOption('status',sc.label);
     addStatusFilterOption('ano',statusYear(entradaIso,o));
