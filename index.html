@@ -4612,7 +4612,7 @@ function biometriaSimuladaOrc(orc){
   var consumoTotal=pesoMed*consPC*dias;
   var eficOrigem=atProdOrigem>0&&consumoTotal>0?consumoTotal/atProdOrigem:0;
   var efic=atProd>0&&consumoTotal>0?consumoTotal/atProd:0;
-  return {consumoTotal:consumoTotal,efic:efic,eficOrigem:eficOrigem,atProd:atProd,atProdOrigem:atProdOrigem,atAbate:atAbate,pesoAbate:pesoAbate,pesoCompra:pesoCom,pesoEntrada:pesoEntrada};
+  return {consumoTotal:consumoTotal,efic:efic,eficOrigem:eficOrigem,atProd:atProd,atProdOrigem:atProdOrigem,atAbate:atAbate,pesoAbate:pesoAbate,pesoCompra:pesoCom,pesoEntrada:pesoEntrada,dias:dias};
 }
 function brNum(v,dec){
   v=parseFloat(v)||0;
@@ -6597,8 +6597,8 @@ function renderHomeDashboardNovo(lotes){
       +metricCard('% lucro ao mês',fmtPct(total.rentMes),'Prazo médio: '+(total.prazoMedio?Math.round(total.prazoMedio):0)+' dias')
       +metricCard('GMD origem',total.gmdOrigem?brNum(total.gmdOrigem,2)+' kg/dia':'—','Média ponderada por qtd')
       +metricCard('GMD chegada',total.gmdChegada?brNum(total.gmdChegada,2)+' kg/dia':'—','Média ponderada por qtd')
-      +metricCard('GMC origem',total.gmcOrigem?brNum(total.gmcOrigem,3)+' kg carcaça/dia':'—','Média ponderada por qtd')
-      +metricCard('GMC chegada',total.gmcChegada?brNum(total.gmcChegada,3)+' kg carcaça/dia':'—','Média ponderada por qtd')
+      +metricCard('GMC origem',total.gmcOrigem?brNum(total.gmcOrigem,3)+' kg/dia':'—','Média ponderada por qtd')
+      +metricCard('GMC chegada',total.gmcChegada?brNum(total.gmcChegada,3)+' kg/dia':'—','Média ponderada por qtd')
       +metricCard('Efic. biológica',total.eficiencia?fmtNum(total.eficiencia,2)+' kg MS/@':'—','Projetado ou realizado')
     +'</div>'
     +'<div class="home-panel home-list-only">'
@@ -9278,7 +9278,7 @@ function renderLotes(){
     var placeholders={
       status:'Todos',ano:'Ano',confinamento:'Confinamento',origem:'Origem',vendedor:'Vendedor',lote:'Lote',b3:'B3',qtd:'Qtd',
       entrada:'Entrada',abate:'Abate',recebimento:'Receb.',faturamento:'R$',capital:'R$',
-      lucro:'R$',rent:'%',rentmes:'%',gmdOrigem:'kg/dia',gmdChegada:'kg/dia',gmcOrigem:'kg carcaça/dia',gmcChegada:'kg carcaça/dia',eficiencia:'kg MS/@ origem',eficienciaChegada:'kg MS/@ cheg.'
+      lucro:'R$',rent:'%',rentmes:'%',gmdOrigem:'kg/dia',gmdChegada:'kg/dia',gmcOrigem:'kg/dia',gmcChegada:'kg/dia',eficiencia:'kg MS/@ origem',eficienciaChegada:'kg MS/@ cheg.'
     };
     return STATUS_COLS.map(function(c){
       return c.key==='status'?filterStatus(c):filterInput(c,placeholders[c.key]||c.label);
@@ -9347,8 +9347,8 @@ function renderLotes(){
     var rentMesVal=o?fmtPct(metric.rentMes):'—';
     var gmdOrigemVal=o&&techStatus.gmdOrigem?fmtNum(techStatus.gmdOrigem,2)+' kg/dia':'—';
     var gmdChegadaVal=o&&techStatus.gmdChegada?fmtNum(techStatus.gmdChegada,2)+' kg/dia':'—';
-    var gmcOrigemVal=o&&techStatus.gmcOrigem?fmtNum(techStatus.gmcOrigem,3)+' kg carcaça/dia':'—';
-    var gmcChegadaVal=o&&techStatus.gmcChegada?fmtNum(techStatus.gmcChegada,3)+' kg carcaça/dia':'—';
+    var gmcOrigemVal=o&&techStatus.gmcOrigem?fmtNum(techStatus.gmcOrigem,3)+' kg/dia':'—';
+    var gmcChegadaVal=o&&techStatus.gmcChegada?fmtNum(techStatus.gmcChegada,3)+' kg/dia':'—';
     var origemVal=(l.origemCompra||l.origem||(o&&(o.origemCompra_orc||o.origemCompra))||'—');
     var dataEntradaCurta=dataEntrada&&dataEntrada!=='—'?dataEntrada.slice(0,5):'—';
     var dataAbateCurta=dataAbate&&dataAbate!=='—'?dataAbate.slice(0,5):'—';
@@ -9531,8 +9531,8 @@ function renderLotes(){
       addStatusFilterOption('rentmes',fmtPct(metric.rentMes));
       if(techStatus.gmdOrigem)addStatusFilterOption('gmdOrigem',fmtNum(techStatus.gmdOrigem,2)+' kg/dia');
       if(techStatus.gmdChegada)addStatusFilterOption('gmdChegada',fmtNum(techStatus.gmdChegada,2)+' kg/dia');
-      if(techStatus.gmcOrigem)addStatusFilterOption('gmcOrigem',fmtNum(techStatus.gmcOrigem,3)+' kg carcaça/dia');
-      if(techStatus.gmcChegada)addStatusFilterOption('gmcChegada',fmtNum(techStatus.gmcChegada,3)+' kg carcaça/dia');
+      if(techStatus.gmcOrigem)addStatusFilterOption('gmcOrigem',fmtNum(techStatus.gmcOrigem,3)+' kg/dia');
+      if(techStatus.gmcChegada)addStatusFilterOption('gmcChegada',fmtNum(techStatus.gmcChegada,3)+' kg/dia');
       if(metric.eficienciaBio)addStatusFilterOption('eficiencia',fmtNum(metric.eficienciaBio,2)+' kg MS/@');
       if(metric.eficienciaBioChegada)addStatusFilterOption('eficienciaChegada',fmtNum(metric.eficienciaBioChegada,2)+' kg MS/@');
     }
@@ -11557,9 +11557,9 @@ function calcular(opts){
   const gmdOrigemResumo=document.getElementById('d-gmd-origem');
   if(gmdOrigemResumo){gmdOrigemResumo.textContent=fmtNum(gmdOrigemV,3)+' kg/dia';gmdOrigemResumo.dataset.raw=gmdOrigemV;}
   const gmcChegadaResumo=document.getElementById('d-gmc-chegada');
-  if(gmcChegadaResumo){gmcChegadaResumo.textContent=fmtNum(gmcV,4)+' kg carcaça/dia';gmcChegadaResumo.dataset.raw=gmcV;}
+  if(gmcChegadaResumo){gmcChegadaResumo.textContent=fmtNum(gmcV,4)+' kg/dia';gmcChegadaResumo.dataset.raw=gmcV;}
   const gmcOrigemResumo=document.getElementById('d-gmc-origem');
-  if(gmcOrigemResumo){gmcOrigemResumo.textContent=fmtNum(gmcOrigemV,4)+' kg carcaça/dia';gmcOrigemResumo.dataset.raw=gmcOrigemV;}
+  if(gmcOrigemResumo){gmcOrigemResumo.textContent=fmtNum(gmcOrigemV,4)+' kg/dia';gmcOrigemResumo.dataset.raw=gmcOrigemV;}
   s('d-efic',fmtNum(efic,2)+' kg MS / @');  // kg MS consumed per @ produced
   s('d-efic-origem',fmtNum(eficOrigem,2)+' kg MS / @');
   s('d-consumoTotal',fmtNum(consumoTotal,1)+' kg MS');
@@ -12817,7 +12817,7 @@ function calculatorReportSectionItems(data){
       calculatorReportItem('Modalidade',c.modality),calculatorReportItem('Boitel',c.boitel),calculatorReportItem('Dias',c.days,'number','dias'),calculatorReportItem('Data de entrada',c.entryDate),calculatorReportItem('Data de abate',c.slaughterDate),calculatorReportItem('Data de recebimento',c.receiptDate),calculatorReportItem('GMD',c.gmd,'number','kg/dia'),calculatorReportItem('MS diária',c.dryMatterDaily,'number','kg MS'),calculatorReportItem('MS total / animal',c.dryMatterAnimal,'number','kg MS'),calculatorReportItem('MS total do lote',c.dryMatterLot,'number','kg MS'),calculatorReportItem('Matéria seca',c.dryMatterPrice,'money','R$/kg'),calculatorReportItem('Operacional',c.operationalAnimalDay,'money','R$/animal/dia'),calculatorReportItem('Sanidade',c.healthAnimal,'money','R$/animal'),calculatorReportItem('Confinamento / animal',c.confinementAnimal,'money','R$'),calculatorReportItem('Confinamento total',c.confinementTotal,'money','R$')
     ],
     'Biometria e Indicadores':[
-      calculatorReportItem('Peso compra',b.purchaseWeight,'number','kg'),calculatorReportItem('Peso origem',b.originWeight,'number','kg'),calculatorReportItem('Peso chegada',b.arrivalWeight,'number','kg'),calculatorReportItem('Peso final',b.finalWeight,'number','kg'),calculatorReportItem('Ganho de peso / animal',b.gainAnimal,'number','kg'),calculatorReportItem('GMD chegada',x.gmdArrival,'number','kg/dia'),calculatorReportItem('GMD origem',x.gmdOrigin,'number','kg/dia'),calculatorReportItem('GMC chegada',x.gmcArrival,'number','kg carcaça/dia'),calculatorReportItem('GMC origem',x.gmcOrigin,'number','kg carcaça/dia'),calculatorReportItem('Rendimento entrada',b.yieldEntry,'percent','%'),calculatorReportItem('Rendimento abate',b.yieldSlaughter,'percent','%'),calculatorReportItem('Peso carcaça',b.carcassWeight,'number','kg'),calculatorReportItem('@ abate / animal',b.arrobasSlaughterAnimal,'number','@'),calculatorReportItem('@ abate totais',b.arrobasSlaughterTotal,'number','@'),calculatorReportItem('@ produzida / animal origem',b.producedOrigin,'number','@'),calculatorReportItem('@ produzida / animal chegada',b.producedArrival,'number','@'),calculatorReportItem('Eficiência origem',x.efficiencyOrigin,'number','kg MS/@'),calculatorReportItem('Eficiência chegada',x.efficiencyArrival,'number','kg MS/@'),calculatorReportItem('Custo @ produzida origem',x.costProducedOrigin,'money','R$/@'),calculatorReportItem('Custo @ produzida chegada',x.costProducedArrival,'money','R$/@')
+      calculatorReportItem('Peso compra',b.purchaseWeight,'number','kg'),calculatorReportItem('Peso origem',b.originWeight,'number','kg'),calculatorReportItem('Peso chegada',b.arrivalWeight,'number','kg'),calculatorReportItem('Peso final',b.finalWeight,'number','kg'),calculatorReportItem('Ganho de peso / animal',b.gainAnimal,'number','kg'),calculatorReportItem('GMD chegada',x.gmdArrival,'number','kg/dia'),calculatorReportItem('GMD origem',x.gmdOrigin,'number','kg/dia'),calculatorReportItem('GMC chegada',x.gmcArrival,'number','kg/dia'),calculatorReportItem('GMC origem',x.gmcOrigin,'number','kg/dia'),calculatorReportItem('Rendimento entrada',b.yieldEntry,'percent','%'),calculatorReportItem('Rendimento abate',b.yieldSlaughter,'percent','%'),calculatorReportItem('Peso carcaça',b.carcassWeight,'number','kg'),calculatorReportItem('@ abate / animal',b.arrobasSlaughterAnimal,'number','@'),calculatorReportItem('@ abate totais',b.arrobasSlaughterTotal,'number','@'),calculatorReportItem('@ produzida / animal origem',b.producedOrigin,'number','@'),calculatorReportItem('@ produzida / animal chegada',b.producedArrival,'number','@'),calculatorReportItem('Eficiência origem',x.efficiencyOrigin,'number','kg MS/@'),calculatorReportItem('Eficiência chegada',x.efficiencyArrival,'number','kg MS/@'),calculatorReportItem('Custo @ produzida origem',x.costProducedOrigin,'money','R$/@'),calculatorReportItem('Custo @ produzida chegada',x.costProducedArrival,'money','R$/@')
     ],
     'Venda':[
       calculatorReportItem('Frigorífico',s.slaughterhouse),calculatorReportItem('Data projetada',s.date),calculatorReportItem('Preço-base',s.basePrice,'money','R$/@'),calculatorReportItem('Bônus de venda / @',s.bonusArroba,'money','R$/@'),calculatorReportItem('Bônus de venda total',s.bonusTotal,'money','R$'),calculatorReportItem('Desconto / @',s.discountArroba,'money','R$/@'),calculatorReportItem('Desconto total',s.discountTotal,'money','R$'),calculatorReportItem('Senar',s.senarPct,'percent','%'),calculatorReportItem('Senar / @',s.senarArroba,'money','R$/@'),calculatorReportItem('Senar total',s.senarTotal,'money','R$'),calculatorReportItem('Corretagem B3 / @',s.brokerageArroba,'money','R$/@'),calculatorReportItem('Corretagem B3 total',s.brokerageTotal,'money','R$'),calculatorReportItem('Preço bruto / @',s.grossPrice,'money','R$/@'),calculatorReportItem('Preço líquido / @',s.netPrice,'money','R$/@'),calculatorReportItem('Total de arrobas',s.totalArrobas,'number','@'),calculatorReportItem('Faturamento bruto',s.grossRevenue,'money','R$'),calculatorReportItem('Faturamento líquido',s.netRevenue,'money','R$')
