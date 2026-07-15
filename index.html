@@ -11954,6 +11954,15 @@ function populateTipoSelects(){
   }
 }
 /* ── RAÇAS EDITÁVEIS ───────────────────────────── */
+function racaParamNumber(value,fallback){
+  if(value===null||value===undefined||String(value).trim()==='')return fallback;
+  var parsed=parseBRMoney(value);
+  return Math.round(parsed*100)/100;
+}
+function formatRacaParamInput(input){
+  if(!input||String(input.value||'').trim()==='')return;
+  input.value=brNum(racaParamNumber(input.value,0),2);
+}
 function renderRacasList(){
   var el=document.getElementById('racas-list');
   if(!el)return;
@@ -11963,22 +11972,22 @@ function renderRacasList(){
     var a=r[k];
     out+='<div class="raca-row" data-key="'+k+'" style="display:grid;grid-template-columns:100px repeat(5,1fr) 28px;gap:6px;align-items:center;margin-bottom:6px;">'
       +'<div style="font-size:12px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+a.nome+'">'+a.nome+'</div>'
-      +'<input type="number" step="0.5" id="rc-'+k+'-rendE" value="'+a.rendE+'" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;">'
-      +'<input type="number" step="0.5" id="rc-'+k+'-rendA" value="'+a.rendA+'" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;">'
-      +'<input type="number" step="0.05" id="rc-'+k+'-gmd" value="'+a.gmd+'" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;">'
-      +'<input type="number" step="0.1" id="rc-'+k+'-ms" value="'+a.ms+'" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;">'
-      +'<input type="number" step="0.1" id="rc-'+k+'-qExtra" value="'+(a.qExtra||0)+'" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;">'
+      +'<input type="text" inputmode="decimal" id="rc-'+k+'-rendE" value="'+brNum(a.rendE,2)+'" onblur="formatRacaParamInput(this)" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;">'
+      +'<input type="text" inputmode="decimal" id="rc-'+k+'-rendA" value="'+brNum(a.rendA,2)+'" onblur="formatRacaParamInput(this)" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;">'
+      +'<input type="text" inputmode="decimal" id="rc-'+k+'-gmd" value="'+brNum(a.gmd,2)+'" onblur="formatRacaParamInput(this)" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;">'
+      +'<input type="text" inputmode="decimal" id="rc-'+k+'-ms" value="'+brNum(a.ms,2)+'" onblur="formatRacaParamInput(this)" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;">'
+      +'<input type="text" inputmode="decimal" id="rc-'+k+'-qExtra" value="'+brNum(a.qExtra||0,2)+'" onblur="formatRacaParamInput(this)" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;">'
       +'<button onclick="removerRaca(\''+k+'\')" title="Remover raça" style="background:none;border:none;color:var(--red);font-size:15px;cursor:pointer;padding:2px;">×</button>'
     +'</div>';
   });
   out+='<div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);">'
     +'<div style="display:grid;grid-template-columns:100px repeat(5,1fr) 28px;gap:6px;align-items:center;">'
       +'<input type="text" id="nr-nome" placeholder="Nova raça..." style="width:100%;background:#fff;border:1.5px solid var(--accent);border-radius:6px;padding:6px 8px;font-size:12px;">'
-      +'<input type="number" step="0.5" id="nr-rendE" placeholder="50" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;">'
-      +'<input type="number" step="0.5" id="nr-rendA" placeholder="55" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;">'
-      +'<input type="number" step="0.05" id="nr-gmd" placeholder="1.4" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;">'
-      +'<input type="number" step="0.1" id="nr-ms" placeholder="2.0" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;">'
-      +'<input type="number" step="0.1" id="nr-qExtra" placeholder="0.5" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;">'
+      +'<input type="text" inputmode="decimal" id="nr-rendE" placeholder="50,00" onblur="formatRacaParamInput(this)" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;">'
+      +'<input type="text" inputmode="decimal" id="nr-rendA" placeholder="55,00" onblur="formatRacaParamInput(this)" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;">'
+      +'<input type="text" inputmode="decimal" id="nr-gmd" placeholder="1,40" onblur="formatRacaParamInput(this)" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;">'
+      +'<input type="text" inputmode="decimal" id="nr-ms" placeholder="2,00" onblur="formatRacaParamInput(this)" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;">'
+      +'<input type="text" inputmode="decimal" id="nr-qExtra" placeholder="0,50" onblur="formatRacaParamInput(this)" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12px;">'
       +'<button onclick="adicionarRaca()" title="Adicionar" style="background:var(--green);border:none;color:#fff;font-size:14px;font-weight:700;cursor:pointer;border-radius:6px;padding:4px;">+</button>'
     +'</div>'
   +'</div>';
@@ -11995,16 +12004,17 @@ function salvarRacas(){
     var base=atual[k]||{};
     out[k]={
       nome:base.nome||k,desc:base.desc||'',
-      rendE:parseFloat(document.getElementById('rc-'+k+'-rendE').value)||base.rendE||50,
-      rendA:parseFloat(document.getElementById('rc-'+k+'-rendA').value)||base.rendA||55,
-      gmd:parseFloat(document.getElementById('rc-'+k+'-gmd').value)||base.gmd||1.4,
-      ms:parseFloat(document.getElementById('rc-'+k+'-ms').value)||base.ms||2.0,
-      qExtra:parseFloat(document.getElementById('rc-'+k+'-qExtra').value)||0
+      rendE:racaParamNumber(document.getElementById('rc-'+k+'-rendE').value,base.rendE||50),
+      rendA:racaParamNumber(document.getElementById('rc-'+k+'-rendA').value,base.rendA||55),
+      gmd:racaParamNumber(document.getElementById('rc-'+k+'-gmd').value,base.gmd||1.4),
+      ms:racaParamNumber(document.getElementById('rc-'+k+'-ms').value,base.ms||2.0),
+      qExtra:racaParamNumber(document.getElementById('rc-'+k+'-qExtra').value,0)
     };
   });
   // marca padrões removidos como null
   Object.keys(DEFAULT_RACAS).forEach(function(k){if(!out[k])out[k]=null;});
   cfg.racas=out;saveConfig(cfg);
+  renderRacasList();
   populateTipoSelects();
   toast('✓ Raças salvas');
 }
@@ -12017,11 +12027,11 @@ function adicionarRaca(){
   if(getRacas()[key]){toast('⚠ Raça já existe');return;}
   cfg.racas[key]={
     nome:nome,desc:'',
-    rendE:parseFloat(document.getElementById('nr-rendE').value)||50,
-    rendA:parseFloat(document.getElementById('nr-rendA').value)||55,
-    gmd:parseFloat(document.getElementById('nr-gmd').value)||1.4,
-    ms:parseFloat(document.getElementById('nr-ms').value)||2.0,
-    qExtra:parseFloat(document.getElementById('nr-qExtra').value)||0
+    rendE:racaParamNumber(document.getElementById('nr-rendE').value,50),
+    rendA:racaParamNumber(document.getElementById('nr-rendA').value,55),
+    gmd:racaParamNumber(document.getElementById('nr-gmd').value,1.4),
+    ms:racaParamNumber(document.getElementById('nr-ms').value,2.0),
+    qExtra:racaParamNumber(document.getElementById('nr-qExtra').value,0)
   };
   saveConfig(cfg);
   renderRacasList();populateTipoSelects();
