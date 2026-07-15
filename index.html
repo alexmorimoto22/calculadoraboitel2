@@ -462,8 +462,23 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-filter-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:12px;}
   .home-filter-title{font-size:15px;font-weight:800;color:var(--accent);}
   .home-filter-sub{font-size:11px;color:var(--text-3);margin-top:2px;}
-  .home-filter-grid{display:grid;grid-template-columns:repeat(3,minmax(160px,1fr));gap:10px;}
+  .home-filter-grid{display:grid;grid-template-columns:repeat(5,minmax(145px,1fr));gap:10px;}
   .home-filter-grid .field{margin:0;}
+  .home-multi{position:relative;min-width:0;}
+  .home-multi-label{display:block;margin-bottom:5px;font-size:9px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--text-3);}
+  .home-multi-button{width:100%;height:38px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 11px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Inter',sans-serif;font-size:11px;font-weight:750;cursor:pointer;text-align:left;}
+  .home-multi-button:hover,.home-multi.open .home-multi-button{border-color:var(--accent);background:#fff;}
+  .home-multi-button-text{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .home-multi-chevron{width:7px;height:7px;flex:0 0 7px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .16s;}
+  .home-multi.open .home-multi-chevron{transform:rotate(225deg) translate(-1px,-1px);}
+  .home-multi-menu{display:none;position:absolute;z-index:90;top:calc(100% + 5px);left:0;width:max(100%,210px);max-height:250px;overflow-y:auto;padding:6px;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 14px 34px rgba(13,27,42,.18);}
+  .home-multi.open .home-multi-menu{display:grid;gap:2px;}
+  .home-multi-option{width:100%;min-height:34px;display:grid;grid-template-columns:20px minmax(0,1fr);align-items:center;gap:7px;padding:6px 8px;background:transparent;border:0;border-radius:6px;color:var(--text);font-family:'Inter',sans-serif;font-size:11px;font-weight:650;text-align:left;cursor:pointer;}
+  .home-multi-option:hover{background:var(--surface2);}
+  .home-multi-check{width:18px;height:18px;display:grid;place-items:center;border:1.5px solid var(--border2);border-radius:5px;background:#fff;color:#fff;font-size:12px;font-weight:900;}
+  .home-multi-option.selected .home-multi-check{background:var(--accent);border-color:var(--accent);}
+  .home-multi-option.selected .home-multi-check::after{content:'✓';}
+  @media (min-width:769px) and (max-width:1180px){.home-filter-grid{grid-template-columns:repeat(3,minmax(145px,1fr));}}
   .home-reset-btn{background:#fff;border:1px solid var(--border);border-radius:8px;color:var(--text-2);font-family:'Inter',sans-serif;font-size:11px;font-weight:750;padding:8px 12px;cursor:pointer;white-space:nowrap;}
   .home-reset-btn:hover{border-color:var(--accent);color:var(--accent);}
   .home-dashboard-grid{display:grid;grid-template-columns:repeat(4,minmax(170px,1fr));gap:10px;margin-bottom:12px;}
@@ -5969,6 +5984,57 @@ setupMobileHeaderAutoHide();
 
 /* ── DASHBOARD ─────────────────────────────────── */
 /* ── HOME PANEL ────────────────────────────────── */
+var homeFilterState={ano:[],status:[],confinamento:[],origem:[],vendedor:[]};
+var homeOpenFilter='';
+function homeFilterSelected(type){return Array.isArray(homeFilterState[type])?homeFilterState[type]:[];}
+function homeFilterMatches(type,value){var selected=homeFilterSelected(type);return !selected.length||selected.indexOf(String(value))>=0;}
+function homeFilterDisplayValue(type,value){
+  if(type==='status'&&STATUS_CFG[value])return STATUS_CFG[value].label;
+  return String(value||'A definir');
+}
+function homeFilterButtonText(type,allLabel){
+  var selected=homeFilterSelected(type);
+  if(!selected.length)return allLabel;
+  if(selected.length===1)return homeFilterDisplayValue(type,selected[0]);
+  return selected.length+' selecionados';
+}
+function homeMultiFilterHtml(type,label,options,allLabel){
+  var selected=homeFilterSelected(type),open=homeOpenFilter===type;
+  return '<div class="home-multi'+(open?' open':'')+'" data-home-filter="'+type+'">'
+    +'<label class="home-multi-label">'+escHtml(label)+'</label>'
+    +'<button type="button" class="home-multi-button" id="home-filter-'+type+'" aria-expanded="'+(open?'true':'false')+'" onclick="homeToggleFilterMenu(\''+type+'\',event)"><span class="home-multi-button-text">'+escHtml(homeFilterButtonText(type,allLabel))+'</span><span class="home-multi-chevron" aria-hidden="true"></span></button>'
+    +'<div class="home-multi-menu" role="listbox" aria-multiselectable="true">'
+      +'<button type="button" class="home-multi-option'+(!selected.length?' selected':'')+'" onclick="homeToggleFilterValue(\''+type+'\',\'__all__\',event)"><span class="home-multi-check"></span><span>'+escHtml(allLabel)+'</span></button>'
+      +options.map(function(option){var value=String(option.value),encoded=encodeURIComponent(value).replace(/'/g,'%27'),active=selected.indexOf(value)>=0;return '<button type="button" class="home-multi-option'+(active?' selected':'')+'" aria-selected="'+(active?'true':'false')+'" onclick="homeToggleFilterValue(\''+type+'\',\''+encoded+'\',event)"><span class="home-multi-check"></span><span>'+escHtml(option.label)+'</span></button>';}).join('')
+    +'</div></div>';
+}
+function homeToggleFilterMenu(type,event){
+  if(event)event.stopPropagation();
+  homeOpenFilter=homeOpenFilter===type?'':type;
+  document.querySelectorAll('.home-multi').forEach(function(el){var active=el.getAttribute('data-home-filter')===homeOpenFilter;el.classList.toggle('open',active);var btn=el.querySelector('.home-multi-button');if(btn)btn.setAttribute('aria-expanded',active?'true':'false');});
+}
+function homeToggleFilterValue(type,encoded,event){
+  if(event)event.stopPropagation();
+  var selected=homeFilterSelected(type).slice();
+  if(encoded==='__all__')selected=[];
+  else{
+    var value=decodeURIComponent(encoded),index=selected.indexOf(value);
+    if(index>=0)selected.splice(index,1);else selected.push(value);
+  }
+  homeFilterState[type]=selected;homeOpenFilter=type;renderHome();
+}
+function homeFilterClean(type,available){
+  var allowed=available.map(String);
+  homeFilterState[type]=homeFilterSelected(type).filter(function(value){return allowed.indexOf(String(value))>=0;});
+}
+function homeFilterExportLabel(type,allLabel){
+  var selected=homeFilterSelected(type);
+  return selected.length?selected.map(function(value){return homeFilterDisplayValue(type,value);}).join(', '):allLabel;
+}
+document.addEventListener('click',function(event){
+  if(event.target&&event.target.closest&&event.target.closest('.home-multi'))return;
+  homeOpenFilter='';document.querySelectorAll('.home-multi.open').forEach(function(el){el.classList.remove('open');var btn=el.querySelector('.home-multi-button');if(btn)btn.setAttribute('aria-expanded','false');});
+});
 function renderHome(){
   var now=new Date();
   var hour=now.getHours();
@@ -6248,22 +6314,21 @@ function renderHome(){
 
 
 function homeQuickFilter(tipo,valor){
-  var map={ano:'home-filter-ano',status:'home-filter-status',confinamento:'home-filter-conf'};
-  var el=document.getElementById(map[tipo]);
-  if(el)el.value=valor||'todos';
+  if(!Object.prototype.hasOwnProperty.call(homeFilterState,tipo))return;
+  homeFilterState[tipo]=valor&&valor!=='todos'?[String(valor)]:[];
+  homeOpenFilter='';
   renderHome();
 }
 function homeResetFilters(){
-  ['home-filter-ano','home-filter-status','home-filter-conf'].forEach(function(id){
-    var el=document.getElementById(id);
-    if(el)el.value='todos';
-  });
+  Object.keys(homeFilterState).forEach(function(type){homeFilterState[type]=[];});
+  homeOpenFilter='';
   renderHome();
 }
 function renderHomeDashboardNovo(lotes){
   var live=document.getElementById('home-dashboard-live');
   if(!live)return;
   var frigs=getFrigs();
+  var vends=getVends();
   function moneyShort(v){
     v=parseFloat(v)||0;
     var s=v<0?'-':'';
@@ -6317,6 +6382,9 @@ function renderHomeDashboardNovo(lotes){
     if(!receb&&entrada)receb=isoFromDate(_addDias(entrada,(parseInt(o.dias)||0)+(parseInt(o.prazoPag)||0)));
     var zoo=metric.real?zootecRealCalc(l,o,aj):biometriaSimuladaOrc(o);
     var qtd=parseFloat(o.qtd||l.qtd)||0;
+    var origemCompra=l.origemCompra||l.origem||o.origemCompra_orc||o.origemCompra||'A definir';
+    var vendedorId=o.vendedorId_orc||l.vendedorId||'';
+    var vendedor=vends.find(function(item){return item.id===vendedorId;});
     var ano=(entrada&&parseISODate(entrada))?String(parseISODate(entrada).getFullYear()):((receb&&parseISODate(receb))?String(parseISODate(receb).getFullYear()):'Sem ano');
     var status=l.status||'embarque';
     return {
@@ -6325,6 +6393,8 @@ function renderHomeDashboardNovo(lotes){
       status:STATUS_CFG[status]?status:'embarque',
       statusLabel:(STATUS_CFG[status]||STATUS_CFG.embarque).label,
       confinamento:nomeConfinamento(l,o),
+      origem:origemCompra,
+      vendedor:vendedor?vendedor.nome:'A definir',
       lote:tituloLote(l,o),
       qtd:qtd,
       entrada:entrada,
@@ -6338,7 +6408,7 @@ function renderHomeDashboardNovo(lotes){
       prazo:prazoDiasResultadoLote(l,o)||0,
       gmd:metric.real?(zoo.gmd||0):(parseFloat(o.gmd)||0),
       eficiencia:metric.eficienciaBio||zoo.efic||0,
-      origem:metric.real?'Realizado':'Projetado'
+      resultado:metric.real?'Realizado':'Projetado'
     };
   }
   function sumRows(rows){
@@ -6394,22 +6464,25 @@ function renderHomeDashboardNovo(lotes){
   }
 
   var rows=lotes.map(rowFromLote);
-  var oldAno=(document.getElementById('home-filter-ano')||{}).value||'todos';
-  var oldStatus=(document.getElementById('home-filter-status')||{}).value||'todos';
-  var oldConf=(document.getElementById('home-filter-conf')||{}).value||'todos';
   var anos=Array.from(new Set(rows.map(function(r){return r.ano;}))).sort(function(a,b){
     if(a==='Sem ano')return 1;
     if(b==='Sem ano')return -1;
     return parseInt(b)-parseInt(a);
   });
   var confs=Array.from(new Set(rows.map(function(r){return r.confinamento;}))).sort(function(a,b){return a.localeCompare(b,'pt-BR');});
-  if(oldAno!=='todos'&&anos.indexOf(oldAno)<0)oldAno='todos';
-  if(oldStatus!=='todos'&&!STATUS_CFG[oldStatus])oldStatus='todos';
-  if(oldConf!=='todos'&&confs.indexOf(oldConf)<0)oldConf='todos';
+  var origens=Array.from(new Set(rows.map(function(r){return r.origem;}))).sort(function(a,b){return a.localeCompare(b,'pt-BR');});
+  var vendedores=Array.from(new Set(rows.map(function(r){return r.vendedor;}))).sort(function(a,b){return a.localeCompare(b,'pt-BR');});
+  homeFilterClean('ano',anos);
+  homeFilterClean('status',STATUS_ORDER);
+  homeFilterClean('confinamento',confs);
+  homeFilterClean('origem',origens);
+  homeFilterClean('vendedor',vendedores);
   var filtrados=rows.filter(function(r){
-    return (oldAno==='todos'||r.ano===oldAno)
-      &&(oldStatus==='todos'||r.status===oldStatus)
-      &&(oldConf==='todos'||r.confinamento===oldConf);
+    return homeFilterMatches('ano',r.ano)
+      &&homeFilterMatches('status',r.status)
+      &&homeFilterMatches('confinamento',r.confinamento)
+      &&homeFilterMatches('origem',r.origem)
+      &&homeFilterMatches('vendedor',r.vendedor);
   });
   var total=sumRows(filtrados);
   var statusGroups=STATUS_ORDER.map(function(s){
@@ -6428,7 +6501,14 @@ function renderHomeDashboardNovo(lotes){
   var loteRows=filtrados.slice().sort(function(a,b){
     return String(b.entrada||b.recebimento||'').localeCompare(String(a.entrada||a.recebimento||''));
   });
-  var filtroResumo=(oldAno==='todos'?'Todos os anos':oldAno)+' · '+(oldStatus==='todos'?'Todos os status':(STATUS_CFG[oldStatus]||{}).label)+' · '+(oldConf==='todos'?'Todos os confinamentos':oldConf);
+  var filtroResumo=[
+    homeFilterButtonText('ano','Todos os anos'),
+    homeFilterButtonText('status','Todos os status'),
+    homeFilterButtonText('confinamento','Todos os confinamentos'),
+    homeFilterButtonText('origem','Todas as origens'),
+    homeFilterButtonText('vendedor','Todos os vendedores')
+  ].join(' · ');
+  var optionObjects=function(values){return values.map(function(value){return {value:value,label:value};});};
 
   live.innerHTML=''
     +'<div class="home-filter-card">'
@@ -6437,9 +6517,11 @@ function renderHomeDashboardNovo(lotes){
         +'<button type="button" class="home-reset-btn" onclick="homeResetFilters()">Limpar filtros</button>'
       +'</div>'
       +'<div class="home-filter-grid">'
-        +'<div class="field"><label>Ano</label><select id="home-filter-ano" onchange="renderHome()">'+optionsHtml(anos,oldAno,'Todos os anos')+'</select></div>'
-        +'<div class="field"><label>Status</label><select id="home-filter-status" onchange="renderHome()"><option value="todos">Todos os status</option>'+STATUS_ORDER.map(function(s){return '<option value="'+s+'"'+(oldStatus===s?' selected':'')+'>'+STATUS_CFG[s].label+'</option>';}).join('')+'</select></div>'
-        +'<div class="field"><label>Confinamento</label><select id="home-filter-conf" onchange="renderHome()">'+optionsHtml(confs,oldConf,'Todos os confinamentos')+'</select></div>'
+        +homeMultiFilterHtml('ano','Ano',optionObjects(anos),'Todos os anos')
+        +homeMultiFilterHtml('status','Status',STATUS_ORDER.map(function(status){return {value:status,label:STATUS_CFG[status].label};}),'Todos os status')
+        +homeMultiFilterHtml('confinamento','Confinamento',optionObjects(confs),'Todos os confinamentos')
+        +homeMultiFilterHtml('origem','Origem',optionObjects(origens),'Todas as origens')
+        +homeMultiFilterHtml('vendedor','Vendedor',optionObjects(vendedores),'Todos os vendedores')
       +'</div>'
     +'</div>'
     +'<div class="home-dashboard-grid">'
@@ -6457,10 +6539,10 @@ function renderHomeDashboardNovo(lotes){
         +'<div><div class="home-panel-title">Lotes filtrados</div><div class="home-panel-note">'+escHtml(filtroResumo)+'</div></div>'
         +'<div class="home-panel-note">'+filtrados.length+' lote(s) · '+numCab(total.qtd)+' · lucro '+moneyShort(total.lucro)+'</div>'
       +'</div>'
-      +'<div class="home-table-wrap"><table class="home-table"><thead><tr><th>Status</th><th>Ano</th><th>Confinamento</th><th>Lote</th><th>Qtd</th><th>Entrada</th><th>Abate</th><th>Receb.</th><th>Faturamento</th><th>Capital</th><th>Lucro</th><th>% Oper.</th><th>% Mês</th><th>Efic.</th></tr></thead><tbody>'
+      +'<div class="home-table-wrap"><table class="home-table"><thead><tr><th>Status</th><th>Ano</th><th>Confinamento</th><th>Origem</th><th>Vendedor</th><th>Lote</th><th>Qtd</th><th>Entrada</th><th>Abate</th><th>Receb.</th><th>Faturamento</th><th>Capital</th><th>Lucro</th><th>% Oper.</th><th>% Mês</th><th>Efic.</th></tr></thead><tbody>'
         +(loteRows.length?loteRows.map(function(r){
-          return '<tr data-home-lid="'+r.id+'" style="cursor:pointer"><td><span class="badge '+(STATUS_CFG[r.status]||{}).cls+'">'+escHtml(r.statusLabel)+'</span></td><td>'+escHtml(r.ano)+'</td><td>'+escHtml(r.confinamento)+'</td><td><span class="strong">'+escHtml(r.lote)+'</span><div class="muted">'+r.origem+'</div></td><td>'+numCab(r.qtd)+'</td><td>'+dateBR(r.entrada)+'</td><td>'+dateBR(r.abate)+'</td><td>'+dateBR(r.recebimento)+'</td><td class="money">'+fmt(r.faturamento)+'</td><td class="money">'+fmt(r.capital)+'</td><td class="money '+(r.lucro>=0?'pos':'neg')+'">'+fmt(r.lucro)+'</td><td>'+fmtPct(r.rent)+'</td><td>'+fmtPct(r.rentMes)+'</td><td>'+(r.eficiencia?fmtNum(r.eficiencia,2):'—')+'</td></tr>';
-        }).join(''):tableEmpty(14,'Nenhum lote encontrado nos filtros atuais.'))
+          return '<tr data-home-lid="'+r.id+'" style="cursor:pointer"><td><span class="badge '+(STATUS_CFG[r.status]||{}).cls+'">'+escHtml(r.statusLabel)+'</span></td><td>'+escHtml(r.ano)+'</td><td>'+escHtml(r.confinamento)+'</td><td>'+escHtml(r.origem)+'</td><td>'+escHtml(r.vendedor)+'</td><td><span class="strong">'+escHtml(r.lote)+'</span><div class="muted">'+escHtml(r.resultado)+'</div></td><td>'+numCab(r.qtd)+'</td><td>'+dateBR(r.entrada)+'</td><td>'+dateBR(r.abate)+'</td><td>'+dateBR(r.recebimento)+'</td><td class="money">'+fmt(r.faturamento)+'</td><td class="money">'+fmt(r.capital)+'</td><td class="money '+(r.lucro>=0?'pos':'neg')+'">'+fmt(r.lucro)+'</td><td>'+fmtPct(r.rent)+'</td><td>'+fmtPct(r.rentMes)+'</td><td>'+(r.eficiencia?fmtNum(r.eficiencia,2):'—')+'</td></tr>';
+        }).join(''):tableEmpty(16,'Nenhum lote encontrado nos filtros atuais.'))
       +'</tbody></table></div>'
     +'</div>';
 
@@ -12231,7 +12313,13 @@ function buildExportData(tab){
   return null;
 }
 function buildHomeExportData(){
-  var filters=[['Ano',exportSelectText('home-filter-ano')],['Status',exportSelectText('home-filter-status')],['Confinamento',exportSelectText('home-filter-conf')]];
+  var filters=[
+    ['Ano',homeFilterExportLabel('ano','Todos os anos')],
+    ['Status',homeFilterExportLabel('status','Todos os status')],
+    ['Confinamento',homeFilterExportLabel('confinamento','Todos os confinamentos')],
+    ['Origem',homeFilterExportLabel('origem','Todas as origens')],
+    ['Vendedor',homeFilterExportLabel('vendedor','Todos os vendedores')]
+  ];
   var resumo=exportSummaryCards('#panel-home','.home-kpi','.home-kpi-label','.home-kpi-value','.home-kpi-sub');
   if(resumo.length===1)resumo=exportSummaryCards('#panel-home','.home-metric','.home-metric-label','.home-metric-value','.home-metric-sub');
   var lotes=exportRowsFromTable('#panel-home','.home-table');
