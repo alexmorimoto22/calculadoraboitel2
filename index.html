@@ -1537,7 +1537,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	    #panel-lotes .status-table-note{font-size:9.5px;margin:9px 2px 0;}
 	  }
 
-	  .status-mobile-toolbar,.status-mobile-head,.status-mobile-hint,.status-mobile-line{display:none;}
+	  .status-mobile-toolbar,.status-mobile-filter-panel,.status-mobile-head,.status-mobile-hint,.status-mobile-line{display:none;}
 
 	  @media(max-width:640px){
 	    #panel-lotes .lotes-toolbar{display:block;margin:0 0 12px;padding:10px;border:1px solid rgba(201,162,78,.35);border-radius:16px;background:#fff;box-shadow:0 8px 24px rgba(13,27,42,.06);}
@@ -1550,6 +1550,12 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	    .status-mobile-filter-icon{width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;color:var(--navy);}
 	    .status-mobile-filter-icon svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;}
 	    .status-mobile-count{font-weight:650;color:var(--taupe);font-size:13px;white-space:nowrap;}
+	    .status-mobile-filter-panel{display:none;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end;margin:-9px 0 14px;padding:12px;border:1px solid rgba(201,162,78,.28);border-top:0;border-radius:0 0 14px 14px;background:#fff;box-shadow:0 10px 24px rgba(13,27,42,.06);}
+	    body.status-mobile-filter-open .status-mobile-filter-panel{display:grid;}
+	    .status-mobile-filter-field{min-width:0;}
+	    .status-mobile-filter-field label{display:block;margin:0 0 5px;font-size:8px;font-weight:850;letter-spacing:.9px;text-transform:uppercase;color:var(--taupe);}
+	    .status-mobile-filter-field select{width:100%;height:42px;padding:0 34px 0 11px;border:1px solid var(--border);border-radius:9px;background:var(--surface2);color:var(--text);font-family:Inter,sans-serif;font-size:12px;font-weight:750;}
+	    .status-mobile-filter-clear{height:42px;padding:0 12px;border:1px solid var(--border);border-radius:9px;background:#fff;color:var(--text-2);font-family:Inter,sans-serif;font-size:11px;font-weight:800;cursor:pointer;}
 	    .status-mobile-head{display:flex;align-items:center;gap:12px;margin:8px 0 14px;}
 	    .status-mobile-icon{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(201,162,78,.12);border:1px solid rgba(201,162,78,.12);color:var(--gold);}
 	    .status-mobile-icon svg{width:24px;height:24px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;}
@@ -9630,6 +9636,10 @@ function renderLotes(){
   Object.keys(statusFilterOptions).forEach(function(key){
     statusFilterOptions[key].sort(function(a,b){return String(a).localeCompare(String(b),'pt-BR',{numeric:true});});
   });
+  var mobileConfinamentoAtual=statusColumnFilters.confinamento||'';
+  var mobileConfinamentoOptions='<option value="">Todos os confinamentos</option>'+(statusFilterOptions.confinamento||[]).map(function(value){
+    return '<option value="'+escHtml(value)+'"'+(value===mobileConfinamentoAtual?' selected':'')+'>'+escHtml(value)+'</option>';
+  }).join('');
   var html='<div class="status-mobile-toolbar">'
       +'<button type="button" class="status-mobile-filter" onclick="toggleStatusMobileFilters()">'
         +'<span class="status-mobile-filter-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h16"></path><path d="M7 12h10"></path><path d="M10 18h4"></path></svg></span>'
@@ -9638,6 +9648,10 @@ function renderLotes(){
       +'<button type="button" class="status-mobile-count" onclick="toggleStatusMobileFilters()">'
         +'<span id="status-mobile-count">'+lotes.length+' lotes exibidos</span><span aria-hidden="true">⌄</span>'
       +'</button>'
+    +'</div>'
+    +'<div class="status-mobile-filter-panel">'
+      +'<div class="status-mobile-filter-field"><label for="status-mobile-confinamento">Confinamento</label><select id="status-mobile-confinamento" onchange="updateStatusColumnFilter(\'confinamento\',this.value)">'+mobileConfinamentoOptions+'</select></div>'
+      +'<button type="button" class="status-mobile-filter-clear" onclick="document.getElementById(\'status-mobile-confinamento\').value=\'\';updateStatusColumnFilter(\'confinamento\',\'\')">Limpar</button>'
     +'</div>'
     +'<div class="status-mobile-head">'
       +'<div class="status-mobile-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4c2.8 0 5.2 1.5 6.5 3.8"></path><path d="M5.5 7.8C6.8 5.5 9.2 4 12 4"></path><path d="M8 9h8"></path><path d="M9 9v4a3 3 0 0 0 6 0V9"></path><path d="M7 14h10"></path></svg></div>'
