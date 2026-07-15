@@ -2486,25 +2486,40 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .desktop-sidebar{
     position:fixed;left:0;top:62px;bottom:0;z-index:80;width:224px;display:flex;flex-direction:column;
     gap:8px;padding:18px 14px;background:linear-gradient(180deg,rgba(255,253,247,.96),rgba(242,237,227,.94));
-    border-right:1px solid rgba(201,162,78,.36);box-shadow:10px 0 28px rgba(13,27,42,.06);
+    border-right:1px solid rgba(201,162,78,.36);box-shadow:10px 0 28px rgba(13,27,42,.06);transition:width .2s ease,padding .2s ease;
   }
+  .desktop-sidebar-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
   .desktop-sidebar-title{
     padding:2px 10px 10px;font-size:9px;font-weight:900;letter-spacing:1.3px;text-transform:uppercase;
-    color:var(--taupe);border-bottom:1px solid rgba(216,203,181,.75);margin-bottom:4px;
+    color:var(--taupe);border-bottom:1px solid rgba(216,203,181,.75);margin-bottom:4px;flex:1;white-space:nowrap;overflow:hidden;
   }
+  .desktop-sidebar-toggle{width:28px;height:28px;display:grid;place-items:center;flex:0 0 28px;margin-top:-3px;border:1px solid rgba(216,203,181,.9);border-radius:8px;background:#fff;color:var(--taupe);cursor:pointer;transition:all .16s;}
+  .desktop-sidebar-toggle:hover{border-color:var(--gold);color:var(--navy);}
+  .desktop-sidebar-toggle svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s ease;}
   .desktop-nav{
+    display:grid;grid-template-columns:22px minmax(0,1fr);align-items:center;gap:10px;
     border:1px solid transparent;background:transparent;border-radius:12px;padding:11px 12px;text-align:left;
     font-family:'Inter',sans-serif;color:var(--taupe);cursor:pointer;transition:all .16s;
   }
-  .desktop-nav span{display:block;font-size:13px;font-weight:900;color:inherit;line-height:1.1;}
-  .desktop-nav small{display:block;margin-top:4px;font-size:9px;font-weight:650;color:rgba(138,121,103,.78);line-height:1.25;}
+  .desktop-nav-icon{width:22px;height:22px;display:flex;align-items:center;justify-content:center;color:currentColor;}
+  .desktop-nav-icon svg{width:19px;height:19px;display:block;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+  .desktop-nav-content{min-width:0;}
+  .desktop-nav-content b{display:block;font-size:13px;font-weight:900;color:inherit;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .desktop-nav-content small{display:block;margin-top:4px;font-size:9px;font-weight:650;color:rgba(138,121,103,.78);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .desktop-nav:hover{background:rgba(201,162,78,.10);border-color:rgba(201,162,78,.20);color:var(--navy);}
   .desktop-nav.active{
     background:linear-gradient(135deg,var(--navy),#17314B);border-color:rgba(201,162,78,.35);color:#fff;
     box-shadow:0 10px 22px rgba(13,27,42,.14);
   }
-  .desktop-nav.active small{color:rgba(242,237,227,.68);}
+  .desktop-nav.active .desktop-nav-content small{color:rgba(242,237,227,.68);}
   .main{max-width:none;width:calc(100% - 224px);margin:0 0 0 224px;padding:20px 24px 42px;}
+  body.desktop-sidebar-collapsed .desktop-sidebar{width:72px;padding-left:10px;padding-right:10px;}
+  body.desktop-sidebar-collapsed .main{width:calc(100% - 72px);margin-left:72px;}
+  body.desktop-sidebar-collapsed .desktop-sidebar-title{display:none;}
+  body.desktop-sidebar-collapsed .desktop-sidebar-header{justify-content:center;}
+  body.desktop-sidebar-collapsed .desktop-sidebar-toggle svg{transform:rotate(180deg);}
+  body.desktop-sidebar-collapsed .desktop-nav{grid-template-columns:22px;justify-content:center;padding:12px;}
+  body.desktop-sidebar-collapsed .desktop-nav-content{display:none;}
   body.calc-tab-active{
     overflow:hidden;
   }
@@ -3549,24 +3564,27 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   </div>
 
   <aside class="desktop-sidebar" aria-label="Navegação desktop">
-    <div class="desktop-sidebar-title">Controle dos lotes</div>
-    <button class="desktop-nav active" data-tab-target="home" onclick="switchTab('home')">
-      <span>Home</span><small>Dashboard geral</small>
+    <div class="desktop-sidebar-header">
+      <div class="desktop-sidebar-title">Controle dos lotes</div>
+      <button type="button" id="desktop-sidebar-toggle" class="desktop-sidebar-toggle" onclick="toggleDesktopSidebar()" title="Minimizar menu" aria-label="Minimizar menu"><svg viewBox="0 0 24 24"><path d="m14 6-6 6 6 6"></path></svg></button>
+    </div>
+    <button class="desktop-nav active" data-tab-target="home" onclick="switchTab('home')" title="Home">
+      <span class="desktop-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path><path d="M9 21v-7h6v7"></path></svg></span><span class="desktop-nav-content"><b>Home</b><small>Dashboard geral</small></span>
     </button>
-    <button class="desktop-nav" data-tab-target="lotes" onclick="switchTab('lotes')">
-      <span>Status</span><small>Operações e etapas</small>
+    <button class="desktop-nav" data-tab-target="lotes" onclick="switchTab('lotes')" title="Status">
+      <span class="desktop-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 6h12"></path><path d="M8 12h12"></path><path d="M8 18h12"></path><path d="M4 6h.01"></path><path d="M4 12h.01"></path><path d="M4 18h.01"></path></svg></span><span class="desktop-nav-content"><b>Status</b><small>Operações e etapas</small></span>
     </button>
-    <button class="desktop-nav" data-tab-target="futuros" onclick="switchTab('futuros')">
-      <span>B3</span><small>Contratos e travas</small>
+    <button class="desktop-nav" data-tab-target="futuros" onclick="switchTab('futuros')" title="B3">
+      <span class="desktop-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19V5"></path><path d="M4 19h16"></path><path d="m7 15 4-4 3 3 5-7"></path><path d="M17 7h2v2"></path></svg></span><span class="desktop-nav-content"><b>B3</b><small>Contratos e travas</small></span>
     </button>
-    <button class="desktop-nav" data-tab-target="caixa" onclick="switchTab('caixa')">
-      <span>Caixa</span><small>Pagamentos e recebimentos</small>
+    <button class="desktop-nav" data-tab-target="caixa" onclick="switchTab('caixa')" title="Caixa">
+      <span class="desktop-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 10h18"></path><path d="M7 15h2"></path><path d="M13 15h4"></path></svg></span><span class="desktop-nav-content"><b>Caixa</b><small>Pagamentos e recebimentos</small></span>
     </button>
-    <button class="desktop-nav" data-tab-target="calc" onclick="switchTab('calc')">
-      <span>Calculadora</span><small>Nova simulação</small>
+    <button class="desktop-nav" data-tab-target="calc" onclick="switchTab('calc')" title="Calculadora">
+      <span class="desktop-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="3"></rect><path d="M8 7h8"></path><path d="M8.5 11.5h.01"></path><path d="M12 11.5h.01"></path><path d="M15.5 11.5h.01"></path><path d="M8.5 15h.01"></path><path d="M12 15h.01"></path><path d="M15.5 15h.01"></path></svg></span><span class="desktop-nav-content"><b>Calculadora</b><small>Nova simulação</small></span>
     </button>
-    <button class="desktop-nav" id="side-config" data-tab-target="config" onclick="switchTab('config')" style="display:none">
-      <span>Configurações</span><small>Cadastros e padrões</small>
+    <button class="desktop-nav" id="side-config" data-tab-target="config" onclick="switchTab('config')" style="display:none" title="Configurações">
+      <span class="desktop-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4"></path><path d="M4.6 15a1.7 1.7 0 0 1-.34 1.87l-.06.06a2 2 0 1 0 2.83 2.83l.06-.06A1.7 1.7 0 0 1 9 19.4"></path><path d="M9 4.6a1.7 1.7 0 0 1 .4-1.1V3a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 1 .4 1.1"></path><path d="M4.6 9A1.7 1.7 0 0 1 3.5 8.6H3a2 2 0 0 1 0-4h.09"></path></svg></span><span class="desktop-nav-content"><b>Configurações</b><small>Cadastros e padrões</small></span>
     </button>
   </aside>
 
@@ -6212,7 +6230,26 @@ function restoreBasicSession(){
 }
 
 /* ── TABS ──────────────────────────────────────── */
+function desktopSidebarCollapsed(){
+  try{return localStorage.getItem('vm_desktop_sidebar_collapsed_v1')==='1';}catch(e){return false;}
+}
+function applyDesktopSidebarState(){
+  var collapsed=desktopSidebarCollapsed();
+  document.body.classList.toggle('desktop-sidebar-collapsed',collapsed);
+  var button=document.getElementById('desktop-sidebar-toggle');
+  if(button){
+    var label=collapsed?'Expandir menu':'Minimizar menu';
+    button.title=label;
+    button.setAttribute('aria-label',label);
+  }
+}
+function toggleDesktopSidebar(){
+  var next=!desktopSidebarCollapsed();
+  try{localStorage.setItem('vm_desktop_sidebar_collapsed_v1',next?'1':'0');}catch(e){}
+  applyDesktopSidebarState();
+}
 function syncDesktopSidebar(tab){
+  applyDesktopSidebarState();
   document.querySelectorAll('.desktop-nav').forEach(function(b){
     b.classList.toggle('active',b.getAttribute('data-tab-target')===tab);
   });
