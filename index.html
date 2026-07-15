@@ -4508,10 +4508,10 @@ let activeLoteDetailId=null;
 let activeOrcEditIndex=null;
 let activeLoteReturnStatus=null;
 let pillFilter='';
-var statusColumnFilters={status:'',ano:'',confinamento:'',origem:'',vendedor:'',lote:'',b3:'',qtd:'',entrada:'',abate:'',recebimento:'',faturamento:'',capital:'',lucro:'',rent:'',rentmes:'',gmdOrigem:'',gmdChegada:'',gmcOrigem:'',gmcChegada:'',eficiencia:'',eficienciaChegada:''};
+var statusColumnFilters={status:'',ano:'',confinamento:'',modalidade:'',origem:'',vendedor:'',lote:'',b3:'',qtd:'',entrada:'',abate:'',recebimento:'',faturamento:'',capital:'',lucro:'',rent:'',rentmes:'',gmdOrigem:'',gmdChegada:'',gmcOrigem:'',gmcChegada:'',eficiencia:'',eficienciaChegada:''};
 var STATUS_COLS=[
   {key:'status',label:'Status',w:88},{key:'ano',label:'Ano',w:52},{key:'confinamento',label:'Confinamento',w:112},
-  {key:'origem',label:'Origem',w:118},{key:'vendedor',label:'Vendedor',w:112},{key:'lote',label:'Lote',w:230},{key:'b3',label:'B3',w:136},{key:'qtd',label:'Qtd',w:62},
+  {key:'modalidade',label:'Modalidade',w:128},{key:'origem',label:'Origem',w:118},{key:'vendedor',label:'Vendedor',w:112},{key:'lote',label:'Lote',w:230},{key:'b3',label:'B3',w:136},{key:'qtd',label:'Qtd',w:62},
   {key:'entrada',label:'Entrada',w:92},{key:'abate',label:'Abate',w:92},{key:'recebimento',label:'Recebimento',w:104},
   {key:'faturamento',label:'Fat. lote',w:126},{key:'capital',label:'Capital',w:126},{key:'lucro',label:'Lucro',w:116},
   {key:'rent',label:'% Oper.',w:76},{key:'rentmes',label:'% Mês',w:76},{key:'gmdOrigem',label:'GMD Origem',w:108},{key:'gmdChegada',label:'GMD Chegada',w:108},{key:'gmcOrigem',label:'GMC Origem',w:116},{key:'gmcChegada',label:'GMC Chegada',w:116},{key:'eficiencia',label:'Efic. Origem',w:116},{key:'eficienciaChegada',label:'Efic. Cheg.',w:116}
@@ -6534,6 +6534,7 @@ function renderHomeDashboardNovo(lotes){
       status:STATUS_CFG[status]?status:'embarque',
       statusLabel:(STATUS_CFG[status]||STATUS_CFG.embarque).label,
       confinamento:nomeConfinamento(l,o),
+      modalidade:calcModeloLabel(o.modeloConta||'msop'),
       origem:origemCompra,
       vendedor:vendedor?vendedor.nome:'A definir',
       lote:tituloLote(l,o),
@@ -6783,10 +6784,10 @@ function renderHomeDashboardNovo(lotes){
         +'<div><div class="home-panel-title">Lotes filtrados</div><div class="home-panel-note">'+escHtml(filtroResumo)+'</div></div>'
         +'<div class="home-panel-note">'+filtrados.length+' lote(s) · '+numCab(total.qtd)+' · lucro '+moneyShort(total.lucro)+'</div>'
       +'</div>'
-      +'<div class="home-table-wrap"><table class="home-table"><thead><tr><th>Status</th><th>Ano</th><th>Confinamento</th><th>Origem</th><th>Vendedor</th><th>Lote</th><th>B3</th><th>Qtd</th><th>Entrada</th><th>Abate</th><th>Recebimento</th><th>Fat. lote</th><th>Capital</th><th>Lucro</th><th>% Oper.</th><th>% Mês</th><th>GMD origem</th><th>GMD chegada</th><th>GMC origem</th><th>GMC chegada</th><th>Efic. origem</th><th>Efic. chegada</th></tr></thead><tbody>'
+      +'<div class="home-table-wrap"><table class="home-table"><thead><tr><th>Status</th><th>Ano</th><th>Confinamento</th><th>Modalidade</th><th>Origem</th><th>Vendedor</th><th>Lote</th><th>B3</th><th>Qtd</th><th>Entrada</th><th>Abate</th><th>Recebimento</th><th>Fat. lote</th><th>Capital</th><th>Lucro</th><th>% Oper.</th><th>% Mês</th><th>GMD origem</th><th>GMD chegada</th><th>GMC origem</th><th>GMC chegada</th><th>Efic. origem</th><th>Efic. chegada</th></tr></thead><tbody>'
         +(loteRows.length?loteRows.map(function(r){
-          return '<tr data-home-lid="'+r.id+'" style="cursor:pointer"><td><span class="badge '+(STATUS_CFG[r.status]||{}).cls+'">'+escHtml(r.statusLabel)+'</span></td><td>'+escHtml(r.ano)+'</td><td>'+escHtml(r.confinamento)+'</td><td>'+escHtml(r.origem)+'</td><td>'+escHtml(r.vendedor)+'</td><td><span class="strong">'+escHtml(r.lote)+'</span><div class="muted">'+escHtml(r.resultado)+'</div></td><td>'+escHtml(r.b3)+'</td><td>'+numCab(r.qtd)+'</td><td>'+dateBR(r.entrada)+'</td><td>'+dateBR(r.abate)+'</td><td>'+dateBR(r.recebimento)+'</td><td class="money">'+fmt(r.faturamento)+'</td><td class="money">'+fmt(r.capital)+'</td><td class="money '+(r.lucro>=0?'pos':'neg')+'">'+fmt(r.lucro)+'</td><td>'+fmtPct(r.rent)+'</td><td>'+fmtPct(r.rentMes)+'</td><td>'+(r.gmdOrigem?fmtNum(r.gmdOrigem,2)+' kg/dia':'—')+'</td><td>'+(r.gmdChegada?fmtNum(r.gmdChegada,2)+' kg/dia':'—')+'</td><td>'+(r.gmcOrigem?fmtNum(r.gmcOrigem,3)+' kg/dia':'—')+'</td><td>'+(r.gmcChegada?fmtNum(r.gmcChegada,3)+' kg/dia':'—')+'</td><td>'+(r.eficiencia?fmtNum(r.eficiencia,2)+' kg MS/@':'—')+'</td><td>'+(r.eficienciaChegada?fmtNum(r.eficienciaChegada,2)+' kg MS/@':'—')+'</td></tr>';
-        }).join(''):tableEmpty(22,'Nenhum lote encontrado nos filtros atuais.'))
+          return '<tr data-home-lid="'+r.id+'" style="cursor:pointer"><td><span class="badge '+(STATUS_CFG[r.status]||{}).cls+'">'+escHtml(r.statusLabel)+'</span></td><td>'+escHtml(r.ano)+'</td><td>'+escHtml(r.confinamento)+'</td><td>'+escHtml(r.modalidade)+'</td><td>'+escHtml(r.origem)+'</td><td>'+escHtml(r.vendedor)+'</td><td><span class="strong">'+escHtml(r.lote)+'</span><div class="muted">'+escHtml(r.resultado)+'</div></td><td>'+escHtml(r.b3)+'</td><td>'+numCab(r.qtd)+'</td><td>'+dateBR(r.entrada)+'</td><td>'+dateBR(r.abate)+'</td><td>'+dateBR(r.recebimento)+'</td><td class="money">'+fmt(r.faturamento)+'</td><td class="money">'+fmt(r.capital)+'</td><td class="money '+(r.lucro>=0?'pos':'neg')+'">'+fmt(r.lucro)+'</td><td>'+fmtPct(r.rent)+'</td><td>'+fmtPct(r.rentMes)+'</td><td>'+(r.gmdOrigem?fmtNum(r.gmdOrigem,2)+' kg/dia':'—')+'</td><td>'+(r.gmdChegada?fmtNum(r.gmdChegada,2)+' kg/dia':'—')+'</td><td>'+(r.gmcOrigem?fmtNum(r.gmcOrigem,3)+' kg/dia':'—')+'</td><td>'+(r.gmcChegada?fmtNum(r.gmcChegada,3)+' kg/dia':'—')+'</td><td>'+(r.eficiencia?fmtNum(r.eficiencia,2)+' kg MS/@':'—')+'</td><td>'+(r.eficienciaChegada?fmtNum(r.eficienciaChegada,2)+' kg MS/@':'—')+'</td></tr>';
+        }).join(''):tableEmpty(23,'Nenhum lote encontrado nos filtros atuais.'))
       +'</tbody></table></div>'
     +'</div>'
     +chartControls
@@ -9455,7 +9456,7 @@ function renderLotes(){
   }
   function statusFiltersHtml(){
     var placeholders={
-      status:'Todos',ano:'Ano',confinamento:'Confinamento',origem:'Origem',vendedor:'Vendedor',lote:'Lote',b3:'B3',qtd:'Qtd',
+      status:'Todos',ano:'Ano',confinamento:'Confinamento',modalidade:'Modalidade',origem:'Origem',vendedor:'Vendedor',lote:'Lote',b3:'B3',qtd:'Qtd',
       entrada:'Entrada',abate:'Abate',recebimento:'Receb.',faturamento:'R$',capital:'R$',
       lucro:'R$',rent:'%',rentmes:'%',gmdOrigem:'kg/dia',gmdChegada:'kg/dia',gmcOrigem:'kg/dia',gmcChegada:'kg/dia',eficiencia:'kg MS/@ origem',eficienciaChegada:'kg MS/@ cheg.'
     };
@@ -9524,6 +9525,7 @@ function renderLotes(){
     var lucroVal=o?fmt(lucro):'—';
     var rentVal=o?fmtPct(metric.rent):'—';
     var rentMesVal=o?fmtPct(metric.rentMes):'—';
+    var modalidadeVal=o?calcModeloLabel(o.modeloConta||'msop'):'—';
     var gmdOrigemVal=o&&techStatus.gmdOrigem?fmtNum(techStatus.gmdOrigem,2)+' kg/dia':'—';
     var gmdChegadaVal=o&&techStatus.gmdChegada?fmtNum(techStatus.gmdChegada,2)+' kg/dia':'—';
     var gmcOrigemVal=o&&techStatus.gmcOrigem?fmtNum(techStatus.gmcOrigem,3)+' kg/dia':'—';
@@ -9546,6 +9548,7 @@ function renderLotes(){
       +' data-filter-status="'+escHtml(sc.label)+'"'
       +' data-filter-ano="'+escHtml(anoVal)+'"'
       +' data-filter-confinamento="'+escHtml(confinamento)+'"'
+      +' data-filter-modalidade="'+escHtml(modalidadeVal)+'"'
       +' data-filter-origem="'+escHtml(origemVal)+'"'
       +' data-filter-vendedor="'+escHtml(vendedorVal)+'"'
       +' data-filter-lote="'+escHtml(filtroLote)+'"'
@@ -9568,6 +9571,7 @@ function renderLotes(){
       +' data-sort-status="'+STATUS_ORDER.indexOf(l.status||'embarque')+'"'
       +' data-sort-ano="'+escHtml(anoVal)+'"'
       +' data-sort-confinamento="'+escHtml(confinamento)+'"'
+      +' data-sort-modalidade="'+escHtml(modalidadeVal)+'"'
       +' data-sort-origem="'+escHtml(origemVal)+'"'
       +' data-sort-vendedor="'+escHtml(vendedorVal)+'"'
       +' data-sort-lote="'+escHtml(numeroLote+' '+cardTitle)+'"'
@@ -9619,6 +9623,7 @@ function renderLotes(){
       +'<span data-status-mobile-field="gmcOrigem"><em>GMC origem</em>'+escHtml(gmcOrigemVal)+'</span>'
       +'<span data-status-mobile-field="gmcChegada"><em>GMC chegada</em>'+escHtml(gmcChegadaVal)+'</span>'
       +'<span class="confinement" data-status-mobile-field="boitel" title="'+escHtml(confinamento)+'"><em>Boitel</em>'+escHtml(confinamento)+'</span>'
+      +'<span data-status-mobile-field="modalidade"><em>Modalidade</em>'+escHtml(modalidadeVal)+'</span>'
       +'<span data-status-mobile-field="eficiencia" title="'+escHtml(eficienciaVal)+'"><em>Efic. origem</em>'+escHtml(eficienciaVal)+'</span>'
       +'<span data-status-mobile-field="eficienciaChegada" title="'+escHtml(eficienciaChegadaVal)+'"><em>Efic. chegada</em>'+escHtml(eficienciaChegadaVal)+'</span>'
     +'</div>';
@@ -9626,6 +9631,7 @@ function renderLotes(){
       +statusLabel
       +statusCell('ano',anoVal,'muted')
       +statusCell('confinamento',confinamento,'muted')
+      +statusCell('modalidade',modalidadeVal,'muted')
       +statusCell('origem',origemVal,'muted')
       +statusCell('vendedor',vendedorVal,'muted')
       +loteCell
@@ -9693,6 +9699,7 @@ function renderLotes(){
     addStatusFilterOption('status',sc.label);
     addStatusFilterOption('ano',statusYear(entradaIso,o));
     addStatusFilterOption('confinamento',confinamento);
+    if(o)addStatusFilterOption('modalidade',calcModeloLabel(o.modeloConta||'msop'));
     addStatusFilterOption('origem',origemVal);
     addStatusFilterOption('vendedor',(vend&&vend.nome)?vend.nome:'A definir');
     addStatusFilterOption('lote','Lote '+numeroLote+(cardTitle?' '+cardTitle:''));
@@ -12675,11 +12682,11 @@ function buildConfigExportData(){
   return {tab:'Configurações',title:'Relatório de Configurações',file:'VM_Agro_Configuracoes_'+exportDateFile(),filters:[],sheets:sheets};
 }
 function buildStatusLotRows(){
-  var rows=[['Status','Ano','Confinamento','Origem','Vendedor','Lote','B3','Qtd','Entrada','Abate','Recebimento','Faturamento','Capital','Lucro','% operação','% ao mês','Efic. origem','Efic. chegada']];
+  var rows=[['Status','Ano','Confinamento','Modalidade','Origem','Vendedor','Lote','B3','Qtd','Entrada','Abate','Recebimento','Faturamento','Capital','Lucro','% operação','% ao mês','Efic. origem','Efic. chegada']];
   [].forEach.call(document.querySelectorAll('#lote-list .status-row[data-lid]'),function(row){
     if(!exportVisible(row)||row.style.display==='none')return;
     rows.push([
-      row.dataset.filterStatus||'',row.dataset.filterAno||'',row.dataset.filterConfinamento||'',row.dataset.filterOrigem||'',row.dataset.filterVendedor||'',row.dataset.filterLote||'',row.dataset.filterB3||'',
+      row.dataset.filterStatus||'',row.dataset.filterAno||'',row.dataset.filterConfinamento||'',row.dataset.filterModalidade||'',row.dataset.filterOrigem||'',row.dataset.filterVendedor||'',row.dataset.filterLote||'',row.dataset.filterB3||'',
       row.dataset.filterQtd||'',row.dataset.filterEntrada||'',row.dataset.filterAbate||'',row.dataset.filterRecebimento||'',
       row.dataset.filterFaturamento||'',row.dataset.filterCapital||'',row.dataset.filterLucro||'',row.dataset.filterRent||'',row.dataset.filterRentmes||'',
       row.dataset.filterEficiencia||'',row.dataset.filterEficienciachegada||row.dataset.filterEficienciaChegada||''
@@ -13593,6 +13600,7 @@ restoreBasicSession();
   var FIELD_DEFS = [
     { key: 'qtd', label: 'Quantidade', group: 'Operacao' },
     { key: 'boitel', label: 'Boitel', group: 'Operacao' },
+    { key: 'modalidade', label: 'Modalidade', group: 'Operacao' },
     { key: 'origem', label: 'Origem', group: 'Operacao' },
     { key: 'vendedor', label: 'Vendedor', group: 'Operacao' },
     { key: 'entrada', label: 'Entrada', group: 'Datas' },
@@ -13612,7 +13620,7 @@ restoreBasicSession();
     { key: 'eficiencia', label: 'Eficiencia origem', group: 'Tecnico' },
     { key: 'eficienciaChegada', label: 'Eficiencia chegada', group: 'Tecnico' }
   ];
-  var DEFAULT_FIELDS = ['qtd', 'entrada', 'abate', 'b3', 'vendedor', 'trava', 'capital', 'lucro', 'rentmes', 'boitel'];
+  var DEFAULT_FIELDS = ['qtd', 'entrada', 'abate', 'b3', 'vendedor', 'trava', 'capital', 'lucro', 'rentmes', 'boitel', 'modalidade'];
   var ALLOWED = FIELD_DEFS.reduce(function (map, item) {
     map[item.key] = true;
     return map;
