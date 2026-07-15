@@ -9534,12 +9534,36 @@ function statusGridTemplate(){
     return Math.max(42,w)+'px';
   }).join(' ');
 }
+function statusGridWidth(){
+  var visible=getStatusColVisible();
+  var widths=getStatusColWidths();
+  return STATUS_COLS.reduce(function(total,c){
+    if(visible[c.key]===false)return total;
+    var w=parseFloat(widths[c.key]||c.w)||c.w;
+    return total+Math.max(42,w);
+  },0);
+}
 function applyStatusGridTemplate(){
   var tpl=statusGridTemplate();
   document.querySelectorAll('#panel-lotes .status-head,#panel-lotes .status-filter-row,#panel-lotes .status-row').forEach(function(el){
     el.style.gridTemplateColumns=tpl;
   });
+  var table=document.querySelector('#panel-lotes .status-table');
+  if(!table)return;
+  if(window.matchMedia&&window.matchMedia('(max-width: 640px)').matches){
+    table.style.width='';
+    table.style.minWidth='';
+    return;
+  }
+  var width=statusGridWidth();
+  table.style.width=width+'px';
+  table.style.minWidth=width+'px';
 }
+var statusGridResizeTimer=null;
+window.addEventListener('resize',function(){
+  clearTimeout(statusGridResizeTimer);
+  statusGridResizeTimer=setTimeout(applyStatusGridTemplate,100);
+});
 function setStatusSort(key,dir){
   statusSortState={key:key||'status',dir:dir||((statusSortState.key===key&&statusSortState.dir==='asc')?'desc':'asc')};
   try{localStorage.setItem(STATUS_SORT_KEY,JSON.stringify(statusSortState));}catch(e){}
