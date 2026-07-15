@@ -466,6 +466,9 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   #panel-home{width:min(1560px,calc(100vw - 48px));margin-left:50%;transform:translateX(-50%);}
   .home-filter-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 4px 18px rgba(13,27,42,.06);}
   .home-filter-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:12px;}
+  .home-filter-head-actions{display:flex;align-items:center;gap:7px;}
+  .home-filter-card.collapsed{padding:11px 16px;}
+  .home-filter-card.collapsed .home-filter-head{align-items:center;margin-bottom:0;}
   .home-filter-title{font-size:15px;font-weight:800;color:var(--accent);}
   .home-filter-sub{font-size:11px;color:var(--text-3);margin-top:2px;}
   .home-filter-grid{display:grid;grid-template-columns:repeat(5,minmax(145px,1fr));gap:10px;}
@@ -487,6 +490,8 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   @media (min-width:769px) and (max-width:1180px){.home-filter-grid{grid-template-columns:repeat(3,minmax(145px,1fr));}}
   .home-reset-btn{background:#fff;border:1px solid var(--border);border-radius:8px;color:var(--text-2);font-family:'Inter',sans-serif;font-size:11px;font-weight:750;padding:8px 12px;cursor:pointer;white-space:nowrap;}
   .home-reset-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .home-filter-toggle{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--accent);font-family:'Inter',sans-serif;font-size:11px;font-weight:800;padding:8px 12px;cursor:pointer;white-space:nowrap;}
+  .home-filter-toggle:hover{border-color:var(--accent);background:#fff;}
   .home-dashboard-grid{display:grid;grid-template-columns:repeat(4,minmax(170px,1fr));gap:10px;margin-bottom:12px;}
   .home-metric{background:#fff;border:1px solid var(--border);border-radius:13px;padding:13px 14px;box-shadow:0 2px 12px rgba(13,27,42,.05);min-width:0;}
   .home-metric,.status-total-card{position:relative;}
@@ -1334,17 +1339,30 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	    .fut-new-btn{width:100%;min-height:44px;}
 	    .home-filter-card{padding:12px;border-radius:12px;margin-bottom:10px;}
 	    .home-filter-head{display:grid;grid-template-columns:1fr;gap:9px;align-items:start;margin-bottom:10px;}
+	    .home-filter-head-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 	    .home-filter-title{font-size:14px;}
 	    .home-filter-sub{line-height:1.35;}
 	    .home-reset-btn{width:100%;min-height:40px;}
+	    .home-filter-toggle{width:100%;min-height:40px;}
 	    .home-dashboard-grid{grid-template-columns:1fr 1fr;gap:8px;}
-	    .home-metric{padding:11px 10px;border-radius:11px;}
+	    .home-metric{min-height:94px;padding:11px 10px;border-radius:11px;}
 	    .dashboard-cards-shell{margin-bottom:10px;}
+	    .dashboard-cards-toolbar{margin-bottom:5px;}
+	    .dashboard-cards-toggle{min-height:32px;padding:0 11px;font-size:10px;}
+	    .dashboard-cards-collapsed{min-height:42px;padding:0 10px;border-radius:10px;gap:10px;}
+	    .dashboard-cards-collapsed span{font-size:9px;line-height:1.25;}
+	    .dashboard-cards-collapsed button{min-height:32px;padding:0 4px;font-size:10px;white-space:nowrap;}
+	    .home-dashboard-grid .dashboard-card-add{min-height:94px;border-radius:11px;}
 	    .dashboard-card-remove{opacity:1;background:var(--surface2);}
 	    .dashboard-card-picker{position:fixed;inset:auto 12px 12px;width:auto;max-height:60vh;overflow-y:auto;}
 	    .home-metric-label{font-size:8px;letter-spacing:.75px;margin-bottom:5px;}
 	    .home-metric-value{font-size:18px;white-space:normal;overflow-wrap:anywhere;}
 	    .home-metric-sub{white-space:normal;font-size:9.5px;}
+	    .home-filter-card.collapsed{padding:10px 12px;}
+	    .home-filter-card.collapsed .home-filter-head{display:flex;align-items:center;gap:10px;margin:0;}
+	    .home-filter-card.collapsed .home-filter-sub{max-width:calc(100vw - 160px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+	    .home-filter-card.collapsed .home-filter-head-actions{display:block;flex:0 0 auto;}
+	    .home-filter-card.collapsed .home-filter-toggle{width:auto;min-height:34px;padding:0 10px;font-size:10px;}
 	    .home-filter-grid{grid-template-columns:1fr;}
 	    .home-section-grid{grid-template-columns:1fr;}
 	    .home-status-grid{grid-template-columns:1fr 1fr;}
@@ -1437,7 +1455,8 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	    .fut-filters{display:grid;grid-template-columns:1fr;width:100%;}
 	    .fut-filters select{width:100%;}
 	    .home-filter-head{display:block;}
-	    .home-reset-btn{margin-top:10px;width:100%;}
+	    .home-filter-head-actions{display:grid;grid-template-columns:1fr 1fr;margin-top:10px;}
+	    .home-reset-btn{margin-top:0;width:100%;}
 	    .brand-name{font-size:12px;}
 	    .h-kpi-stack,.bonus-grid,.animal-info-box,.home-kpi-grid{grid-template-columns:1fr;}
 	    .home-kpi.primary{grid-column:1;}
@@ -1602,7 +1621,12 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	    body.status-mobile-filter-open #panel-lotes .lotes-toolbar{display:block;}
 	    #panel-lotes .status-pills{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;overflow:visible;padding:0;}
 	    #panel-lotes .status-pills .pill{min-height:36px;padding:7px 8px;font-size:10px;border-radius:999px;}
-	    #panel-lotes .status-summary{display:none!important;}
+	    #panel-lotes .status-summary{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 12px;}
+	    #panel-lotes .status-summary .status-total-card{min-height:88px;padding:10px;border-radius:12px;}
+	    #panel-lotes .status-summary .dashboard-card-add{min-height:88px;border-radius:12px;}
+	    #panel-lotes .status-summary .status-total-value{font-size:15px;line-height:1.15;}
+	    #panel-lotes .dashboard-cards-shell{margin-bottom:12px;}
+	    #panel-lotes .dashboard-cards-toolbar{margin-bottom:5px;}
 	    .status-mobile-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;margin:0 0 18px;padding:8px;border-radius:18px;background:linear-gradient(135deg,#fff,rgba(242,237,227,.82));box-shadow:0 10px 28px rgba(13,27,42,.07);border:1px solid rgba(201,162,78,.18);}
 	    .status-mobile-filter,.status-mobile-count{appearance:none;border:none;background:transparent;color:var(--text);font-family:Inter,sans-serif;font-weight:850;display:flex;align-items:center;gap:9px;min-height:38px;padding:0 10px;border-radius:13px;}
 	    .status-mobile-filter-icon{width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;color:var(--navy);}
@@ -6604,6 +6628,15 @@ function homeResetFilters(){
   homeOpenFilter='';
   renderHome();
 }
+function homeFiltersCollapsed(){
+  try{return localStorage.getItem('vm_home_filters_collapsed_v1')==='1';}catch(e){return false;}
+}
+function toggleHomeFilters(){
+  var next=!homeFiltersCollapsed();
+  try{localStorage.setItem('vm_home_filters_collapsed_v1',next?'1':'0');}catch(e){}
+  homeOpenFilter='';
+  renderHome();
+}
 function renderHomeDashboardNovo(lotes){
   var live=document.getElementById('home-dashboard-live');
   if(!live)return;
@@ -6950,19 +6983,23 @@ function renderHomeDashboardNovo(lotes){
     eficienciaChegada:metricCard('eficienciaChegada','Efic. biológica chegada',total.eficienciaChegada?fmtNum(total.eficienciaChegada,2)+' kg MS/@':'—','Projetado ou realizado')
   };
   var homeCardKeys=getDashboardCards('home');
+  var filtrosMinimizados=homeFiltersCollapsed();
   live.innerHTML=''
-    +'<div class="home-filter-card">'
+    +'<div class="home-filter-card'+(filtrosMinimizados?' collapsed':'')+'">'
       +'<div class="home-filter-head">'
         +'<div><div class="home-filter-title">Dashboard dos lotes</div><div class="home-filter-sub">'+escHtml(filtroResumo)+'</div></div>'
-        +'<button type="button" class="home-reset-btn" onclick="homeResetFilters()">Limpar filtros</button>'
+        +'<div class="home-filter-head-actions">'
+          +'<button type="button" class="home-filter-toggle" onclick="toggleHomeFilters()">'+(filtrosMinimizados?'Mostrar filtros':'Minimizar filtros')+'</button>'
+          +(filtrosMinimizados?'':'<button type="button" class="home-reset-btn" onclick="homeResetFilters()">Limpar filtros</button>')
+        +'</div>'
       +'</div>'
-      +'<div class="home-filter-grid">'
+      +(filtrosMinimizados?'':'<div class="home-filter-grid">'
         +homeMultiFilterHtml('ano','Ano',optionObjects(anos),'Todos os anos')
         +homeMultiFilterHtml('status','Status',STATUS_ORDER.map(function(status){return {value:status,label:STATUS_CFG[status].label};}),'Todos os status')
         +homeMultiFilterHtml('confinamento','Confinamento',optionObjects(confs),'Todos os confinamentos')
         +homeMultiFilterHtml('origem','Origem',optionObjects(origens),'Todas as origens')
         +homeMultiFilterHtml('vendedor','Vendedor',optionObjects(vendedores),'Todos os vendedores')
-      +'</div>'
+      +'</div>')
     +'</div>'
     +dashboardCardsShellHtml('home','home-dashboard-grid',homeCardKeys.map(function(key){return homeCards[key]||'';}).join('')+dashboardAddCardHtml('home'))
     +'<div class="home-panel home-list-only">'
