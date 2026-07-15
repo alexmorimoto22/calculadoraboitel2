@@ -12880,19 +12880,20 @@ async function downloadCalculatorReportJpg(report,complete,tab){
     host.querySelectorAll('*').forEach(function(el){if(getComputedStyle(el).overflow!=='visible'){el.style.maxHeight='none';el.style.overflow='visible';}});
     await waitCalculatorReportAssets(host);
     var fullWidth=Math.ceil(host.scrollWidth),fullHeight=Math.ceil(host.scrollHeight),scale=calculatorReportRenderScale(host,complete);
-    var mode='single';
+    var mobileHd=complete&&isMobileShareDevice();
+    var mode=mobileHd?'parts':'single';
     if(complete){
-      setExportStage(tab||'calc','Preparando relatório completo...');
-      if(!isSafeSingleCalculatorCanvas(Math.ceil(fullWidth*scale),Math.ceil(fullHeight*scale))){
+      setExportStage(tab||'calc',mobileHd?'Preparando páginas em alta definição...':'Preparando relatório completo...');
+      if(!mobileHd&&!isSafeSingleCalculatorCanvas(Math.ceil(fullWidth*scale),Math.ceil(fullHeight*scale))){
         mode=await showCalculatorLongReportChoice();
         if(!mode)return;
       }
-      setExportStage(tab||'calc',mode==='parts'?'Gerando imagens HD...':'Gerando imagem em alta qualidade...');
+      setExportStage(tab||'calc',mode==='parts'?'Gerando páginas JPG em alta definição...':'Gerando imagem em alta qualidade...');
     }
     var canvases=await renderCalculatorReportCanvases(host,complete,mode,report),files=[];
     for(var i=0;i<canvases.length;i++)files.push({blob:await calculatorReportCanvasBlob(canvases[i],complete?1:0.95),name:calculatorReportJpgName(report,complete,i,canvases.length,complete&&mode==='parts'),type:'image/jpeg'});
     var result=await deliverReportFiles(files,tab||'calc',complete?'Simulação completa da VM Agro':'Resumo da simulação da VM Agro',{individualFallback:complete&&mode==='parts'});
-    if(result==='downloaded')toast('✓ '+(complete?'JPG completo':'JPG resumo')+' exportado');else if(result==='shared')toast('✓ JPG compartilhado');
+    if(result==='downloaded')toast('✓ '+(mobileHd?'Páginas JPG em alta definição exportadas':'JPG '+(complete?'completo':'resumo')+' exportado'));else if(result==='shared')toast('✓ '+(mobileHd?'Páginas JPG em alta definição compartilhadas':'JPG compartilhado'));
   }finally{host.remove();style.remove();}
 }
 function genericReportImageHtml(data){
