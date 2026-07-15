@@ -4659,6 +4659,18 @@ function zootecRealCalc(lote,orc,aj){
   var custoAtChegada=atProd>0?custoConfinamento/atProd:0;
   return {gmd:gmd,rendA:rendA,dias:dias,pesoOrigem:pesoCom,pesoEntrada:pesoEntrada,pesoSaida:pesoSaida,pesoCarcaca:pesoCarcaca,consumoPct:consumoPct,consumoDiario:consumoDiario,consumoTotal:consumoTotal,efic:efic,eficOrigem:eficOrigem,atEntradaOrigem:atEntradaOrigem,atEntrada:atEntrada,atProd:atProd>0?atProd:0,atProdOrigem:atProdOrigem>0?atProdOrigem:0,atAbate:atAbate,custoAtOrigem:custoAtOrigem,custoAtChegada:custoAtChegada,custoAtReal:custoAtChegada};
 }
+function indicadoresTecnicosStatus(zoo){
+  zoo=zoo||{};
+  var dias=finNum(zoo.dias), pesoFinal=finNum(zoo.pesoSaida||zoo.pesoAbate);
+  var pesoOrigem=finNum(zoo.pesoOrigem||zoo.pesoCompra), pesoChegada=finNum(zoo.pesoEntrada);
+  var atOrigem=finNum(zoo.atProdOrigem), atChegada=finNum(zoo.atProd);
+  return {
+    gmdOrigem:dias>0&&pesoFinal>0&&pesoOrigem>0?(pesoFinal-pesoOrigem)/dias:0,
+    gmdChegada:dias>0&&pesoFinal>0&&pesoChegada>0?(pesoFinal-pesoChegada)/dias:0,
+    gmcOrigem:dias>0&&atOrigem>0?atOrigem*15/dias:0,
+    gmcChegada:dias>0&&atChegada>0?atChegada*15/dias:0
+  };
+}
 function valorAjustePorArroba(base,val,mode){
   base=finNum(base);
   val=finNum(val);
@@ -6391,6 +6403,21 @@ function renderHomeDashboardNovo(lotes){
     var tipo=(l.tipoAnimal&&TIPO_LABEL[l.tipoAnimal])?TIPO_LABEL[l.tipoAnimal]:(l.tipoCustom||'Lote');
     return tipo+' · '+(l.qtd||o&&o.qtd||0)+' cab.';
   }
+  function indicadoresTecnicosLote(zoo){
+    zoo=zoo||{};
+    var dias=finNum(zoo.dias);
+    var pesoFinal=finNum(zoo.pesoSaida||zoo.pesoAbate);
+    var pesoOrigem=finNum(zoo.pesoOrigem||zoo.pesoCompra);
+    var pesoChegada=finNum(zoo.pesoEntrada);
+    var atOrigem=finNum(zoo.atProdOrigem);
+    var atChegada=finNum(zoo.atProd);
+    return {
+      gmdOrigem:dias>0&&pesoFinal>0&&pesoOrigem>0?(pesoFinal-pesoOrigem)/dias:0,
+      gmdChegada:dias>0&&pesoFinal>0&&pesoChegada>0?(pesoFinal-pesoChegada)/dias:0,
+      gmcOrigem:dias>0&&atOrigem>0?atOrigem*15/dias:0,
+      gmcChegada:dias>0&&atChegada>0?atChegada*15/dias:0
+    };
+  }
   function rowFromLote(l){
     var o=(l.orcamentos&&l.orcamentos[0])||{};
     var aj=l.ajusteReal||l.apuracao||{};
@@ -6402,6 +6429,7 @@ function renderHomeDashboardNovo(lotes){
     if(!receb&&abate)receb=isoFromDate(_addDias(abate,parseInt(o.prazoPag)||0));
     if(!receb&&entrada)receb=isoFromDate(_addDias(entrada,(parseInt(o.dias)||0)+(parseInt(o.prazoPag)||0)));
     var zoo=metric.real?zootecRealCalc(l,o,aj):biometriaSimuladaOrc(o);
+    var tech=indicadoresTecnicosLote(zoo);
     var qtd=parseFloat(o.qtd||l.qtd)||0;
     var origemCompra=l.origemCompra||l.origem||o.origemCompra_orc||o.origemCompra||'A definir';
     var vendedorId=o.vendedorId_orc||l.vendedorId||'';
@@ -6427,14 +6455,18 @@ function renderHomeDashboardNovo(lotes){
       rent:metric.rent||0,
       rentMes:metric.rentMes||0,
       prazo:prazoDiasResultadoLote(l,o)||0,
-      gmd:metric.real?(zoo.gmd||0):(parseFloat(o.gmd)||0),
+      gmd:tech.gmdChegada||0,
+      gmdOrigem:tech.gmdOrigem||0,
+      gmdChegada:tech.gmdChegada||0,
+      gmcOrigem:tech.gmcOrigem||0,
+      gmcChegada:tech.gmcChegada||0,
       eficiencia:metric.eficienciaBio||zoo.efic||0,
       resultado:metric.real?'Realizado':'Projetado'
     };
   }
   function sumRows(rows){
-    var out={lotes:rows.length,qtd:0,faturamento:0,capital:0,lucro:0,rent:0,rentMes:0,prazoMedio:0,gmd:0,eficiencia:0};
-    var prazoPeso=0,prazoBase=0,gmdPeso=0,eficPeso=0;
+    var out={lotes:rows.length,qtd:0,faturamento:0,capital:0,lucro:0,rent:0,rentMes:0,prazoMedio:0,gmd:0,gmdOrigem:0,gmdChegada:0,gmcOrigem:0,gmcChegada:0,eficiencia:0};
+    var prazoPeso=0,prazoBase=0,gmdPeso=0,gmdOrigemPeso=0,gmdChegadaPeso=0,gmcOrigemPeso=0,gmcChegadaPeso=0,eficPeso=0;
     rows.forEach(function(r){
       out.qtd+=r.qtd;
       out.faturamento+=r.faturamento;
@@ -6443,6 +6475,10 @@ function renderHomeDashboardNovo(lotes){
       if(r.capital>0&&r.prazo>0){prazoPeso+=r.prazo*r.capital;prazoBase+=r.capital;}
       if(r.qtd>0){
         if(r.gmd>0){gmdPeso+=r.gmd*r.qtd;}
+        if(r.gmdOrigem>0){gmdOrigemPeso+=r.gmdOrigem*r.qtd;}
+        if(r.gmdChegada>0){gmdChegadaPeso+=r.gmdChegada*r.qtd;}
+        if(r.gmcOrigem>0){gmcOrigemPeso+=r.gmcOrigem*r.qtd;}
+        if(r.gmcChegada>0){gmcChegadaPeso+=r.gmcChegada*r.qtd;}
         if(r.eficiencia>0){eficPeso+=r.eficiencia*r.qtd;}
       }
     });
@@ -6450,6 +6486,10 @@ function renderHomeDashboardNovo(lotes){
     out.prazoMedio=prazoBase>0?prazoPeso/prazoBase:0;
     out.rentMes=out.prazoMedio>0?out.rent/(out.prazoMedio/30):0;
     out.gmd=out.qtd>0?gmdPeso/out.qtd:0;
+    out.gmdOrigem=out.qtd>0?gmdOrigemPeso/out.qtd:0;
+    out.gmdChegada=out.qtd>0?gmdChegadaPeso/out.qtd:0;
+    out.gmcOrigem=out.qtd>0?gmcOrigemPeso/out.qtd:0;
+    out.gmcChegada=out.qtd>0?gmcChegadaPeso/out.qtd:0;
     out.eficiencia=out.qtd>0?eficPeso/out.qtd:0;
     return out;
   }
@@ -6552,7 +6592,10 @@ function renderHomeDashboardNovo(lotes){
       +metricCard('Lucro total','<span style="color:'+(total.lucro>=0?'var(--green)':'var(--red)')+'">'+moneyShort(total.lucro)+'</span>',fmtPct(total.rent)+' da operação')
       +metricCard('% lucro operação',fmtPct(total.rent),moneyShort(total.capital)+' de capital')
       +metricCard('% lucro ao mês',fmtPct(total.rentMes),'Prazo médio: '+(total.prazoMedio?Math.round(total.prazoMedio):0)+' dias')
-      +metricCard('GMD médio',total.gmd?brNum(total.gmd,2)+' kg/dia':'—','Média ponderada por qtd')
+      +metricCard('GMD origem',total.gmdOrigem?brNum(total.gmdOrigem,2)+' kg/dia':'—','Média ponderada por qtd')
+      +metricCard('GMD chegada',total.gmdChegada?brNum(total.gmdChegada,2)+' kg/dia':'—','Média ponderada por qtd')
+      +metricCard('GMC origem',total.gmcOrigem?brNum(total.gmcOrigem,3)+' kg carcaça/dia':'—','Média ponderada por qtd')
+      +metricCard('GMC chegada',total.gmcChegada?brNum(total.gmcChegada,3)+' kg carcaça/dia':'—','Média ponderada por qtd')
       +metricCard('Efic. biológica',total.eficiencia?fmtNum(total.eficiencia,2)+' kg MS/@':'—','Projetado ou realizado')
     +'</div>'
     +'<div class="home-panel home-list-only">'
@@ -9232,7 +9275,7 @@ function renderLotes(){
     var placeholders={
       status:'Todos',ano:'Ano',confinamento:'Confinamento',origem:'Origem',vendedor:'Vendedor',lote:'Lote',b3:'B3',qtd:'Qtd',
       entrada:'Entrada',abate:'Abate',recebimento:'Receb.',faturamento:'R$',capital:'R$',
-      lucro:'R$',rent:'%',rentmes:'%',eficiencia:'kg MS/@ origem',eficienciaChegada:'kg MS/@ cheg.'
+      lucro:'R$',rent:'%',rentmes:'%',gmdOrigem:'kg/dia',gmdChegada:'kg/dia',gmcOrigem:'kg carcaça/dia',gmcChegada:'kg carcaça/dia',eficiencia:'kg MS/@ origem',eficienciaChegada:'kg MS/@ cheg.'
     };
     return STATUS_COLS.map(function(c){
       return c.key==='status'?filterStatus(c):filterInput(c,placeholders[c.key]||c.label);
@@ -9284,6 +9327,8 @@ function renderLotes(){
     var dataRecebimento=recebDate?_fmtDataBR(recebDate):'—';
     var prazoDias=(entradaDate&&recebDate)?Math.max(0,Math.round((recebDate-entradaDate)/86400000)):0;
     var metric=resultadoStatusLote(l,o);
+    var zooStatus=metric.real?zootecRealCalc(l,o,l.ajusteReal||l.apuracao||{}):biometriaSimuladaOrc(o);
+    var techStatus=indicadoresTecnicosStatus(zooStatus);
     var capital=metric.capital;
     var lucro=metric.lucro;
     var faturamento=metric.faturamento;
@@ -9296,6 +9341,10 @@ function renderLotes(){
     var lucroVal=o?fmt(lucro):'—';
     var rentVal=o?fmtPct(metric.rent):'—';
     var rentMesVal=o?fmtPct(metric.rentMes):'—';
+    var gmdOrigemVal=o&&techStatus.gmdOrigem?fmtNum(techStatus.gmdOrigem,2)+' kg/dia':'—';
+    var gmdChegadaVal=o&&techStatus.gmdChegada?fmtNum(techStatus.gmdChegada,2)+' kg/dia':'—';
+    var gmcOrigemVal=o&&techStatus.gmcOrigem?fmtNum(techStatus.gmcOrigem,3)+' kg carcaça/dia':'—';
+    var gmcChegadaVal=o&&techStatus.gmcChegada?fmtNum(techStatus.gmcChegada,3)+' kg carcaça/dia':'—';
     var origemVal=(l.origemCompra||l.origem||(o&&(o.origemCompra_orc||o.origemCompra))||'—');
     var dataEntradaCurta=dataEntrada&&dataEntrada!=='—'?dataEntrada.slice(0,5):'—';
     var dataAbateCurta=dataAbate&&dataAbate!=='—'?dataAbate.slice(0,5):'—';
@@ -9327,6 +9376,10 @@ function renderLotes(){
       +' data-filter-lucro="'+escHtml(lucroVal)+'"'
       +' data-filter-rent="'+escHtml(rentVal)+'"'
       +' data-filter-rentmes="'+escHtml(rentMesVal)+'"'
+      +' data-filter-gmdOrigem="'+escHtml(gmdOrigemVal)+'"'
+      +' data-filter-gmdChegada="'+escHtml(gmdChegadaVal)+'"'
+      +' data-filter-gmcOrigem="'+escHtml(gmcOrigemVal)+'"'
+      +' data-filter-gmcChegada="'+escHtml(gmcChegadaVal)+'"'
       +' data-filter-eficiencia="'+escHtml(eficienciaVal)+'"'
       +' data-filter-eficienciaChegada="'+escHtml(eficienciaChegadaVal)+'"'
       +' data-sort-status="'+STATUS_ORDER.indexOf(l.status||'embarque')+'"'
@@ -9345,6 +9398,10 @@ function renderLotes(){
       +' data-sort-lucro="'+(o?lucro:0)+'"'
       +' data-sort-rent="'+(o?metric.rent:0)+'"'
       +' data-sort-rentmes="'+(o?metric.rentMes:0)+'"'
+      +' data-sort-gmdOrigem="'+techStatus.gmdOrigem+'"'
+      +' data-sort-gmdChegada="'+techStatus.gmdChegada+'"'
+      +' data-sort-gmcOrigem="'+techStatus.gmcOrigem+'"'
+      +' data-sort-gmcChegada="'+techStatus.gmcChegada+'"'
       +' data-sort-eficiencia="'+(o&&metric.eficienciaBio?metric.eficienciaBio:0)+'"'
       +' data-sort-eficienciaChegada="'+(o&&metric.eficienciaBioChegada?metric.eficienciaBioChegada:0)+'"';
     var statusLabel='<div class="status-cell status-badge-cell '+statusColClass('status')+'">'
@@ -9374,6 +9431,10 @@ function renderLotes(){
       +'<span class="profit" data-status-mobile-field="lucro"><em>Lucro</em>'+escHtml(fmtCompactMoney(lucro))+'</span>'
       +'<span class="rate" data-status-mobile-field="rent"><em>% oper.</em>'+escHtml(rentVal)+'</span>'
       +'<span class="rate" data-status-mobile-field="rentmes"><em>% mês</em>'+escHtml(rentMesVal)+'</span>'
+      +'<span data-status-mobile-field="gmdOrigem"><em>GMD origem</em>'+escHtml(gmdOrigemVal)+'</span>'
+      +'<span data-status-mobile-field="gmdChegada"><em>GMD chegada</em>'+escHtml(gmdChegadaVal)+'</span>'
+      +'<span data-status-mobile-field="gmcOrigem"><em>GMC origem</em>'+escHtml(gmcOrigemVal)+'</span>'
+      +'<span data-status-mobile-field="gmcChegada"><em>GMC chegada</em>'+escHtml(gmcChegadaVal)+'</span>'
       +'<span class="confinement" data-status-mobile-field="boitel" title="'+escHtml(confinamento)+'"><em>Boitel</em>'+escHtml(confinamento)+'</span>'
       +'<span data-status-mobile-field="eficiencia" title="'+escHtml(eficienciaVal)+'"><em>Efic. origem</em>'+escHtml(eficienciaVal)+'</span>'
       +'<span data-status-mobile-field="eficienciaChegada" title="'+escHtml(eficienciaChegadaVal)+'"><em>Efic. chegada</em>'+escHtml(eficienciaChegadaVal)+'</span>'
@@ -9395,6 +9456,10 @@ function renderLotes(){
       +statusCell('lucro',lucroVal,'money '+lucroCls)
       +statusCell('rent',rentVal,'rate')
       +statusCell('rentmes',rentMesVal,'rate')
+      +statusCell('gmdOrigem',gmdOrigemVal,'rate')
+      +statusCell('gmdChegada',gmdChegadaVal,'rate')
+      +statusCell('gmcOrigem',gmcOrigemVal,'rate')
+      +statusCell('gmcChegada',gmcChegadaVal,'rate')
       +statusCell('eficiencia',eficienciaVal,'rate')
       +statusCell('eficienciaChegada',eficienciaChegadaVal,'rate')
       +mobileLine
@@ -9439,6 +9504,8 @@ function renderLotes(){
     var recebDate=realDates.dataRecebimentoReal?_addDias(realDates.dataRecebimentoReal,0):(saidaIso?_addDias(saidaIso,prazo):(entradaIso&&(dias||prazo)?_addDias(entradaIso,dias+prazo):null));
     var dataRecebimento=recebDate?_fmtDataBR(recebDate):'—';
     var metric=resultadoStatusLote(l,o);
+    var zooStatus=metric.real?zootecRealCalc(l,o,l.ajusteReal||l.apuracao||{}):biometriaSimuladaOrc(o);
+    var techStatus=indicadoresTecnicosStatus(zooStatus);
     addStatusFilterOption('status',sc.label);
     addStatusFilterOption('ano',statusYear(entradaIso,o));
     addStatusFilterOption('confinamento',confinamento);
@@ -9457,6 +9524,10 @@ function renderLotes(){
       addStatusFilterOption('lucro',fmt(metric.lucro));
       addStatusFilterOption('rent',fmtPct(metric.rent));
       addStatusFilterOption('rentmes',fmtPct(metric.rentMes));
+      if(techStatus.gmdOrigem)addStatusFilterOption('gmdOrigem',fmtNum(techStatus.gmdOrigem,2)+' kg/dia');
+      if(techStatus.gmdChegada)addStatusFilterOption('gmdChegada',fmtNum(techStatus.gmdChegada,2)+' kg/dia');
+      if(techStatus.gmcOrigem)addStatusFilterOption('gmcOrigem',fmtNum(techStatus.gmcOrigem,3)+' kg carcaça/dia');
+      if(techStatus.gmcChegada)addStatusFilterOption('gmcChegada',fmtNum(techStatus.gmcChegada,3)+' kg carcaça/dia');
       if(metric.eficienciaBio)addStatusFilterOption('eficiencia',fmtNum(metric.eficienciaBio,2)+' kg MS/@');
       if(metric.eficienciaBioChegada)addStatusFilterOption('eficienciaChegada',fmtNum(metric.eficienciaBioChegada,2)+' kg MS/@');
     }
@@ -13342,6 +13413,10 @@ restoreBasicSession();
     { key: 'lucro', label: 'Lucro', group: 'Financeiro' },
     { key: 'rent', label: '% operacao', group: 'Financeiro' },
     { key: 'rentmes', label: '% mes', group: 'Financeiro' },
+    { key: 'gmdOrigem', label: 'GMD origem', group: 'Tecnico' },
+    { key: 'gmdChegada', label: 'GMD chegada', group: 'Tecnico' },
+    { key: 'gmcOrigem', label: 'GMC origem', group: 'Tecnico' },
+    { key: 'gmcChegada', label: 'GMC chegada', group: 'Tecnico' },
     { key: 'eficiencia', label: 'Eficiencia origem', group: 'Tecnico' },
     { key: 'eficienciaChegada', label: 'Eficiencia chegada', group: 'Tecnico' }
   ];
