@@ -582,15 +582,14 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .fut-column-panel-sub{font-size:10px;color:var(--text-3);line-height:1.35;margin-bottom:8px;}
   .fut-column-option{display:flex;align-items:center;gap:8px;border-top:1px solid rgba(216,203,181,.55);padding:8px 0;font-size:11px;font-weight:700;color:var(--text-2);}
   .fut-column-option input{width:16px;height:16px;accent-color:var(--accent);}
-  .fut-table-head-line{display:flex;align-items:center;gap:2px;min-height:42px;padding:0 5px 0 10px;}
+  .fut-table-head-line{display:flex;align-items:center;gap:5px;min-height:42px;padding:0 7px 0 10px;}
   .fut-table-sort{display:flex;align-items:center;min-width:0;flex:1;min-height:34px;padding:8px 2px 8px 0;border:0;background:transparent;color:inherit;font:inherit;font-size:8.5px;font-weight:850;letter-spacing:.9px;text-transform:uppercase;text-align:left;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .fut-table-sort:hover{color:var(--navy);background:rgba(201,162,78,.08);}
+  .fut-table-sort:hover{color:var(--accent);}
   .fut-sort-mark{margin-left:5px;color:var(--accent);font-size:12px;line-height:1;}
-  .fut-filter-toggle{width:24px;height:24px;flex:0 0 auto;display:grid;place-items:center;border:0;border-radius:6px;background:transparent;color:var(--taupe);font-size:14px;line-height:1;cursor:pointer;}
-  .fut-filter-toggle:hover,.fut-filter-toggle.is-open{background:rgba(201,162,78,.13);color:var(--navy);}
-  .fut-header-filter-popup{position:absolute;top:calc(100% - 3px);left:4px;z-index:12;width:max(170px,calc(100% - 8px));padding:8px;background:#fff;border:1px solid var(--border);border-radius:9px;box-shadow:0 12px 26px rgba(13,27,42,.16);}
-  .fut-header-filter-popup select,.fut-header-filter-popup input{width:100%;height:32px;box-sizing:border-box;border:1px solid var(--border);border-radius:7px;background:#fff;color:var(--text);font:inherit;font-size:10px;padding:0 8px;outline:none;}
-  .fut-header-filter-popup select{padding-right:20px;}
+  .fut-filter-native-wrap{position:relative;width:24px;height:24px;flex:0 0 auto;display:grid;place-items:center;border:1px solid var(--border);border-radius:7px;background:var(--surface2);color:var(--taupe);transition:border-color .16s,background .16s,color .16s,box-shadow .16s;}
+  .fut-filter-native-wrap:hover,.fut-filter-native-wrap:focus-within{border-color:var(--accent);background:#fff;color:var(--navy);box-shadow:0 0 0 2px rgba(201,162,78,.12);}
+  .fut-filter-native{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:1;}
+  .fut-filter-native-icon{font-size:14px;line-height:1;pointer-events:none;}
   .fut-col-resizer{position:absolute;top:0;right:-3px;bottom:0;width:7px;cursor:col-resize;z-index:2;}
   .fut-col-resizer:hover,.fut-col-resizer:active{background:rgba(201,162,78,.34);}
 .fut-action.success{background:rgba(107,112,86,.08);border-color:rgba(107,112,86,.22);color:var(--green);}
@@ -3385,8 +3384,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
         <div class="export-menu">
           <button type="button" data-export-kind="pdf" onclick="exportReport(currentExportTab(),'pdf')">Exportar PDF</button>
           <button type="button" data-export-kind="excel" onclick="exportReport(currentExportTab(),'excel')">Exportar Excel</button>
-          <button type="button" class="calc-export-only" data-export-kind="jpg-resumo" onclick="exportReport(currentExportTab(),'jpg-resumo')">Baixar JPG - Resumo</button>
-          <button type="button" class="calc-export-only" data-export-kind="jpg-completo" onclick="exportReport(currentExportTab(),'jpg-completo')">Baixar JPG - Completo</button>
+          <button type="button" data-export-kind="jpg" onclick="exportReport(currentExportTab(),'jpg')">Exportar JPG</button>
         </div>
       </div>
       <span class="user-badge" id="user-display"></span>
@@ -4428,7 +4426,7 @@ var statusSortState=(function(){
 })();
 if(!statusSortState.key){statusSortState={key:'status',dir:'asc'};}
 var FUT_COLS=[
-  {key:'status',label:'Status',w:84},{key:'tipo',label:'Tipo',w:82},{key:'lote',label:'Lote / operação',w:210},
+  {key:'status',label:'Status',w:84},{key:'tipo',label:'Tipo',w:82},{key:'lote',label:'Lote / operação',w:210},{key:'momentoLote',label:'Momento lote',w:118},
   {key:'confinamento',label:'Confinamento',w:128},{key:'origem',label:'Origem',w:128},{key:'qtdLote',label:'Qtd lote',w:82},
   {key:'entradaLote',label:'Entrada',w:96},{key:'faturamentoLote',label:'Fat. lote',w:132},{key:'codigo',label:'Código',w:122},
   {key:'lado',label:'Lado',w:76},{key:'qtdOriginal',label:'Qtd original',w:92},{key:'aberto',label:'Aberto',w:82},
@@ -4442,8 +4440,7 @@ var futSortState=(function(){
   try{return JSON.parse(localStorage.getItem(FUT_SORT_KEY)||'{}')||{};}catch(e){return {};}
 })();
 if(!futSortState.key){futSortState={key:'abertura',dir:'desc'};}
-var futColumnFilters={status:'',tipo:'',lote:'',confinamento:'',origem:'',qtdLote:'',entradaLote:'',faturamentoLote:'',codigo:'',lado:'',qtdOriginal:'',aberto:'',liquidado:'',abertura:'',liquidacao:'',resultadoRealizado:'',resultadoAberto:''};
-var futOpenHeaderFilter='';
+var futColumnFilters={status:'',tipo:'',lote:'',momentoLote:'',confinamento:'',origem:'',qtdLote:'',entradaLote:'',faturamentoLote:'',codigo:'',lado:'',qtdOriginal:'',aberto:'',liquidado:'',abertura:'',liquidacao:'',resultadoRealizado:'',resultadoAberto:''};
 
 const DEFAULT_RACAS={
   nelore:    {nome:'Nelore',                     rendE:50,rendA:56,gmd:1.30,ms:1.8,qExtra:0.0, desc:'Melhor rendimento de carcaça. Alta rusticidade. Carne magra. Ideal para acabamento rápido.'},
@@ -6968,28 +6965,16 @@ function updateFutColumnFilter(key,value){
   futColumnFilters[key]=value||'';
   renderFuturos();
 }
-function toggleFutHeaderFilter(ev,key){
-  ev.preventDefault();ev.stopPropagation();
-  var abrir=futOpenHeaderFilter!==key;
-  futOpenHeaderFilter=abrir?key:'';
-  renderFuturos();
-  if(abrir){
-    var select=document.getElementById('fut-header-filter-'+key);
-    if(select){
-      select.focus();
-      try{if(select.showPicker)select.showPicker();}catch(e){}
-    }
-  }
-}
 function futTableFilterHtml(key,options){
   var value=futColumnFilters[key]||'';
   if(key==='acoes')return '';
-  return '<select id="fut-header-filter-'+key+'" onchange="updateFutColumnFilter(\''+key+'\',this.value)"><option value="">Todos</option>'+options.map(function(option){return '<option value="'+escHtml(option.value)+'"'+(value===String(option.value)?' selected':'')+'>'+escHtml(option.label)+'</option>';}).join('')+'</select>';
+  return '<select class="fut-filter-native" id="fut-header-filter-'+key+'" aria-label="Filtrar '+escHtml(key)+'" onchange="updateFutColumnFilter(\''+key+'\',this.value)"><option value="">Todos</option>'+options.map(function(option){return '<option value="'+escHtml(option.value)+'"'+(value===String(option.value)?' selected':'')+'>'+escHtml(option.label)+'</option>';}).join('')+'</select>';
 }
 function futColumnFilterValue(c,r,lote,dados,key){
   if(key==='status')return r.status||'';
   if(key==='tipo')return r.operacao||'';
   if(key==='lote')return lote?lote.id:'';
+  if(key==='momentoLote')return lote&&STATUS_CFG[lote.status]?STATUS_CFG[lote.status].label:(lote?'—':'Operação livre');
   if(key==='confinamento')return dados.confinamento;
   if(key==='origem')return dados.origem;
   if(key==='qtdLote')return dados.qtd;
@@ -7081,10 +7066,8 @@ function renderFuturos(){
       var title=col.key==='acoes'?'<span class="fut-table-sort">'+escHtml(col.label)+'</span>'
         :'<button type="button" class="fut-table-sort" onclick="setFutSort(\''+col.key+'\')">'+escHtml(col.label)+'<span class="fut-sort-mark">'+mark+'</span></button>';
       var filter=futTableFilterHtml(col.key,futHeaderFilterOptions(col.key,arr,loteMap));
-      var isOpen=futOpenHeaderFilter===col.key;
-      var trigger=filter?'<button type="button" class="fut-filter-toggle'+(isOpen?' is-open':'')+'" title="Filtrar '+escHtml(col.label)+'" onclick="toggleFutHeaderFilter(event,\''+col.key+'\')">⌄</button>':'';
-      var popup=filter&&isOpen?'<div class="fut-header-filter-popup">'+filter+'</div>':'';
-      return '<th data-fut-col="'+col.key+'"'+futColumnStyle(col.key)+'><div class="fut-table-head-line">'+title+trigger+'</div>'+popup+'<span class="fut-col-resizer" onmousedown="startFutColumnResize(event,\''+col.key+'\')"></span></th>';
+      var trigger=filter?'<span class="fut-filter-native-wrap" title="Filtrar '+escHtml(col.label)+'">'+filter+'<span class="fut-filter-native-icon" aria-hidden="true">⌄</span></span>':'';
+      return '<th data-fut-col="'+col.key+'"'+futColumnStyle(col.key)+'><div class="fut-table-head-line">'+title+trigger+'</div><span class="fut-col-resizer" onmousedown="startFutColumnResize(event,\''+col.key+'\')"></span></th>';
     }).join('');
   }
   renderFutColumnsPanel();
@@ -7105,6 +7088,7 @@ function renderFuturos(){
     if(key==='status'){av=a.r.status;bv=b.r.status;}
     else if(key==='tipo'){av=a.r.operacao;bv=b.r.operacao;}
     else if(key==='lote'){av=a.lote?loteLabelB3(a.lote):(a.c.operacaoNome||'Operação livre');bv=b.lote?loteLabelB3(b.lote):(b.c.operacaoNome||'Operação livre');}
+    else if(key==='momentoLote'){av=a.lote&&STATUS_CFG[a.lote.status]?STATUS_CFG[a.lote.status].label:(a.lote?'—':'Operação livre');bv=b.lote&&STATUS_CFG[b.lote.status]?STATUS_CFG[b.lote.status].label:(b.lote?'—':'Operação livre');}
     else if(key==='confinamento'||key==='origem'||key==='qtdLote'||key==='entradaLote'||key==='faturamentoLote'){av=a.dadosLote[key.replace('Lote','')];bv=b.dadosLote[key.replace('Lote','')];if(key==='qtdLote'){av=a.dadosLote.qtdRaw;bv=b.dadosLote.qtdRaw;}if(key==='entradaLote'){av=a.dadosLote.entradaIso;bv=b.dadosLote.entradaIso;}if(key==='faturamentoLote'){av=a.dadosLote.faturamentoRaw;bv=b.dadosLote.faturamentoRaw;}}
     else if(key==='codigo'){av=gerarCodigoB3(a.c.vencimento)||a.c.codigo||'';bv=gerarCodigoB3(b.c.vencimento)||b.c.codigo||'';}
     else if(key==='lado'){av=a.r.lado;bv=b.r.lado;}
@@ -7147,6 +7131,7 @@ function renderFuturos(){
       status:st,
       tipo:'<span class="strong">'+(r.operacao==='livre'?'Livre':'Hedge')+'</span><div class="muted">'+escHtml(tipo)+'</div>',
       lote:'<span class="strong">'+loteNome+'</span><div class="muted">'+loteStatus+'</div>',
+      momentoLote:'<span class="strong">'+loteStatus+'</span>',
       confinamento:escHtml(dadosLote.confinamento),origem:escHtml(dadosLote.origem),qtdLote:escHtml(dadosLote.qtd),entradaLote:escHtml(dadosLote.entrada),
       faturamentoLote:'<span class="money">'+escHtml(dadosLote.faturamento)+'</span>',
       codigo:contratoComMes+'<div class="muted">'+escHtml(c.vencimento||'Sem vencimento')+'</div>',lado:escHtml(r.lado==='compra'?'Compra':'Venda'),
@@ -7165,6 +7150,7 @@ function renderFuturos(){
       +'</summary>'
       +'<div class="fut-mobile-grid">'
         +'<div class="fut-mobile-cell"><div class="fut-mobile-label">Tipo / lado</div><div class="fut-mobile-value">'+(r.operacao==='livre'?'Livre':'Hedge')+' · '+(r.lado==='compra'?'Compra':'Venda')+'</div></div>'
+        +'<div class="fut-mobile-cell"><div class="fut-mobile-label">Momento do lote</div><div class="fut-mobile-value">'+loteStatus+'</div></div>'
         +'<div class="fut-mobile-cell"><div class="fut-mobile-label">Cobertura</div><div class="fut-mobile-value">'+escHtml(cobertura)+'</div></div>'
         +'<div class="fut-mobile-cell"><div class="fut-mobile-label">Saldo</div><div class="fut-mobile-value">'+fmtContratosB3(r.qtdAberta)+' aberto(s)<div class="muted">'+fmtContratosB3(r.qtdLiquidada)+' liquidado(s)</div></div></div>'
         +'<div class="fut-mobile-cell"><div class="fut-mobile-label">Abertura</div><div class="fut-mobile-value">'+abertura+'<div class="muted">'+vendaData+'</div></div></div>'
@@ -12071,14 +12057,20 @@ function exportButtonHtml(tab,label){
       +'<div class="export-menu">'
         +'<button type="button" data-export-kind="pdf" onclick="exportReport(\''+tab+'\',\'pdf\')">Exportar PDF</button>'
         +'<button type="button" data-export-kind="excel" onclick="exportReport(\''+tab+'\',\'excel\')">Exportar Excel</button>'
-        +(tab==='calc'?'<button type="button" data-export-kind="jpg-resumo" onclick="exportReport(\'calc\',\'jpg-resumo\')">Baixar JPG - Resumo</button><button type="button" data-export-kind="jpg-completo" onclick="exportReport(\'calc\',\'jpg-completo\')">Baixar JPG - Completo</button>':'')
+        +'<button type="button" data-export-kind="jpg" onclick="exportReport(\''+tab+'\',\'jpg\')">Exportar JPG</button>'
       +'</div>'
     +'</div>'
   +'</div>';
 }
 function ensureExportControls(){
-  var btn=document.querySelector('#export-wrap-current .export-btn span');
-  if(btn)btn.textContent='Relatório';
+  var wrap=document.getElementById('export-wrap-current');
+  var btn=wrap&&wrap.querySelector('.export-btn');
+  var mobile=isMobileShareDevice();
+  if(btn){
+    btn.title=mobile?'Compartilhar relatório':'Exportar relatório';
+    var text=btn.querySelector('span');if(text)text.textContent=mobile?'Compartilhar':'Relatório';
+  }
+  refreshExportMenuLabels(wrap);
 }
 function currentExportTab(){
   var active=document.querySelector('.tab-btn.active')||document.querySelector('.desktop-nav.active');
@@ -12086,6 +12078,8 @@ function currentExportTab(){
   if(tab==='lotes')return 'status';
   if(tab==='futuros')return 'b3';
   if(tab==='calc')return 'calc';
+  if(tab==='caixa')return 'caixa';
+  if(tab==='config')return 'config';
   return 'home';
 }
 function isMobileShareDevice(){
@@ -12095,9 +12089,9 @@ function refreshExportMenuLabels(wrap){
   if(!wrap)return;
   var mobile=isMobileShareDevice();
   var labels=mobile?{
-    pdf:'Compartilhar PDF',excel:'Compartilhar Excel','jpg-resumo':'Compartilhar JPG - Resumo','jpg-completo':'Compartilhar JPG - Completo'
+    pdf:'Compartilhar PDF',excel:'Compartilhar Excel',jpg:'Compartilhar JPG'
   }:{
-    pdf:'Exportar PDF',excel:'Exportar Excel','jpg-resumo':'Baixar JPG - Resumo','jpg-completo':'Baixar JPG - Completo'
+    pdf:'Exportar PDF',excel:'Exportar Excel',jpg:'Exportar JPG'
   };
   wrap.querySelectorAll('[data-export-kind]').forEach(function(btn){var kind=btn.getAttribute('data-export-kind');if(labels[kind])btn.textContent=labels[kind];});
 }
@@ -12105,7 +12099,6 @@ function toggleExportMenu(tab,ev){
   if(ev)ev.stopPropagation();
   document.querySelectorAll('.export-wrap').forEach(function(w){if(w.id!=='export-wrap-'+tab)w.classList.remove('open');});
   var wrap=document.getElementById('export-wrap-'+tab);if(wrap){
-    wrap.querySelectorAll('.calc-export-only').forEach(function(btn){btn.style.display=currentExportTab()==='calc'?'block':'none';});
     refreshExportMenuLabels(wrap);
     wrap.classList.toggle('open');
   }
@@ -12115,7 +12108,7 @@ function setExportLoading(tab,on,type){
   var wrap=document.getElementById('export-wrap-'+tab)||document.getElementById('export-wrap-current');if(!wrap)return;
   var btn=wrap.querySelector('.export-btn');if(!btn)return;
   btn.disabled=!!on;
-  var txt=btn.querySelector('span');if(txt)txt.textContent=on?(type==='pdf'?'Gerando PDF...':type==='excel'?'Gerando Excel...':type==='jpg-completo'?'Gerando imagem completa...':'Gerando imagem...'):'Relatório';
+  var txt=btn.querySelector('span');if(txt)txt.textContent=on?(type==='pdf'?'Gerando PDF...':type==='excel'?'Gerando Excel...':'Gerando JPG...'):(isMobileShareDevice()?'Compartilhar':'Relatório');
 }
 function setExportStage(tab,label){
   var wrap=document.getElementById('export-wrap-'+tab)||document.getElementById('export-wrap-current');
@@ -12162,7 +12155,8 @@ async function exportReport(tab,type){
     if(!data){toast('Não foi possível gerar o relatório. Tente novamente.');return;}
     if(type==='pdf')await downloadReportPdf(data,tab);
     else if(type==='excel')await downloadReportXlsx(data,tab);
-    else if(tab==='calc')await downloadCalculatorReportJpg(data.calculatorReport,type==='jpg-completo',tab);
+    else if(type==='jpg'&&tab==='calc')await downloadCalculatorReportJpg(data.calculatorReport,true,tab);
+    else if(type==='jpg')await downloadReportJpg(data,tab);
   }catch(e){
     console.error(e);
     toast('Não foi possível gerar o relatório. Tente novamente.');
@@ -12221,7 +12215,9 @@ function buildExportData(tab){
   if(tab==='home')return buildHomeExportData();
   if(tab==='status')return buildStatusExportData();
   if(tab==='b3')return buildB3ExportData();
+  if(tab==='caixa')return buildCaixaExportData();
   if(tab==='calc')return buildCalcExportData();
+  if(tab==='config')return buildConfigExportData();
   return null;
 }
 function buildHomeExportData(){
@@ -12231,6 +12227,57 @@ function buildHomeExportData(){
   var lotes=exportRowsFromTable('#panel-home','.home-table');
   if(lotes.length<2)lotes=buildStatusLotRows();
   return {tab:'Home',title:'Relatório Home',file:'VM_Agro_Home_'+exportDateFile(),filters:filters,sheets:[{name:'Resumo',rows:resumo},{name:'Lotes',rows:lotes}]};
+}
+function buildCaixaExportData(){
+  var pagar=[['Lote','Quantidade','Data de entrada','Capital investido']];
+  var receber=[['Lote','Quantidade','Data de recebimento','Faturamento do lote']];
+  var totalPagar=0,totalReceber=0;
+  getLotes().filter(canViewLot).forEach(function(lote){
+    var orc=(lote.orcamentos&&lote.orcamentos[0])||null;
+    if(!orc)return;
+    var metric=resultadoStatusLote(lote,orc);
+    var qtd=(parseFloat(lote.qtd||orc.qtd)||0).toLocaleString('pt-BR',{maximumFractionDigits:0})+' cab.';
+    if(lote.status==='embarque'){
+      totalPagar+=parseFloat(metric.capital)||0;
+      pagar.push([finLotLabel(lote.id),qtd,finDateBR(finLoteEntradaIso(lote,orc)),fmt(metric.capital||0)]);
+    }
+    if(lote.status==='abatido'){
+      totalReceber+=parseFloat(metric.faturamento)||0;
+      receber.push([finLotLabel(lote.id),qtd,finDateBR(finLoteRecebIso(lote,orc)),fmt(metric.faturamento||0)]);
+    }
+  });
+  var caixa=getCaixaManual(),livre=caixa+totalReceber-totalPagar;
+  var resumo=[['Indicador','Valor','Observação'],['Caixa',fmt(caixa),'Atualizado em '+caixaManualAtualizacaoLabel()],['A pagar',fmt(totalPagar),'Lotes em embarque'],['A receber',fmt(totalReceber),'Lotes abatidos'],['Caixa livre',fmt(livre),'Caixa + a receber - a pagar']];
+  return {tab:'Caixa',title:'Relatório de Caixa',file:'VM_Agro_Caixa_'+exportDateFile(),filters:[],sheets:[{name:'Resumo do Caixa',rows:resumo},{name:'A Pagar',rows:pagar},{name:'A Receber',rows:receber}]};
+}
+function buildConfigExportData(){
+  var fields=[['Campo','Valor']],seen={};
+  document.querySelectorAll('#panel-config input,#panel-config select,#panel-config textarea').forEach(function(el){
+    if(!exportVisible(el)||el.type==='file'||el.type==='password'||el.type==='hidden')return;
+    var field=el.closest('.field')||el.parentElement;
+    var labelEl=field&&field.querySelector?field.querySelector('label,small'):null;
+    var label=exportText(labelEl)||el.getAttribute('aria-label')||el.id||el.name||'Campo';
+    var value='';
+    if(el.type==='checkbox')value=el.checked?'Sim':'Não';
+    else if(el.tagName==='SELECT')value=el.options&&el.selectedIndex>=0?exportText(el.options[el.selectedIndex]):'';
+    else value=String(el.value||'').trim();
+    var key=label+'|'+value;if(!value||seen[key])return;seen[key]=true;fields.push([label,value]);
+  });
+  var sheets=[{name:'Configurações visíveis',rows:fields}];
+  var tableIndex=0;
+  document.querySelectorAll('#panel-config table').forEach(function(table){
+    if(!exportVisible(table))return;
+    var rows=[],heads=[].map.call(table.querySelectorAll('thead th'),exportText).filter(Boolean);
+    if(heads.length)rows.push(heads);
+    [].forEach.call(table.querySelectorAll('tbody tr'),function(tr){
+      if(!exportVisible(tr))return;
+      var cells=[].map.call(tr.children,function(td){return exportText(td);});
+      if(cells.some(Boolean))rows.push(cells);
+    });
+    if(rows.length){tableIndex++;sheets.push({name:'Tabela '+tableIndex,rows:rows});}
+  });
+  if(fields.length===1&&sheets.length===1)fields.push(['Informação','Nenhuma configuração visível nesta tela']);
+  return {tab:'Configurações',title:'Relatório de Configurações',file:'VM_Agro_Configuracoes_'+exportDateFile(),filters:[],sheets:sheets};
 }
 function buildStatusLotRows(){
   var rows=[['Status','Ano','Confinamento','Origem','Vendedor','Lote','B3','Qtd','Entrada','Abate','Recebimento','Faturamento','Capital','Lucro','% operação','% ao mês','Efic. origem','Efic. chegada']];
@@ -12356,7 +12403,7 @@ function buildB3ExportData(){
   var filtroLote=futColumnFilters.lote||'todos';
   var filtroCodigo=String(futColumnFilters.codigo||'').trim().toUpperCase();
   var filtroVenc='';
-  var contratos=[['Status','Tipo operação','Lote / operação','Confinamento','Origem','Qtd lote','Data entrada','Faturamento lote','Código','Vencimento','Lado','Qtd original','Qtd aberta','Qtd liquidada','Preço abertura','Data abertura','Liquidação média','Resultado realizado','Custos']];
+  var contratos=[['Status','Tipo operação','Lote / operação','Momento lote','Confinamento','Origem','Qtd lote','Data entrada','Faturamento lote','Código','Vencimento','Lado','Qtd original','Qtd aberta','Qtd liquidada','Preço abertura','Data abertura','Liquidação média','Resultado realizado','Custos']];
   getFuturos().filter(function(c){
     var r=futuroResultado(c);
     var codigo=String(gerarCodigoB3(c.vencimento)||c.codigo||'').toUpperCase();
@@ -12374,6 +12421,7 @@ function buildB3ExportData(){
       futuroStatusLabel(r.status),
       r.operacao==='livre'?'Livre / especulativa':'Hedge vinculado a lote',
       lote?loteLabelB3(lote):(c.operacaoNome||'Operação livre'),
+      lote&&STATUS_CFG[lote.status]?STATUS_CFG[lote.status].label:(lote?'—':'Operação livre'),
       dadosLote.confinamento,
       dadosLote.origem,
       dadosLote.qtd,
@@ -12845,6 +12893,69 @@ async function downloadCalculatorReportJpg(report,complete,tab){
     for(var i=0;i<canvases.length;i++)files.push({blob:await calculatorReportCanvasBlob(canvases[i],complete?1:0.95),name:calculatorReportJpgName(report,complete,i,canvases.length,complete&&mode==='parts'),type:'image/jpeg'});
     var result=await deliverReportFiles(files,tab||'calc',complete?'Simulação completa da VM Agro':'Resumo da simulação da VM Agro',{individualFallback:complete&&mode==='parts'});
     if(result==='downloaded')toast('✓ '+(complete?'JPG completo':'JPG resumo')+' exportado');else if(result==='shared')toast('✓ JPG compartilhado');
+  }finally{host.remove();style.remove();}
+}
+function genericReportImageHtml(data){
+  var filters=(data.filters||[]).filter(function(item){return item&&item[0]&&item[1];});
+  var sections=(data.sheets||[]).map(function(sheet){
+    return '<section class="gri-section"><h2>'+exportXml(sheet.name||'Dados')+'</h2><div class="gri-table-wrap">'+htmlTable(sheet.rows)+'</div></section>';
+  }).join('');
+  return '<div class="gri-titlebar"><div><small>RELATÓRIO DA PÁGINA</small><h1>'+exportXml(data.title||'Relatório')+'</h1></div><strong>'+exportXml(exportNowLabel())+'</strong></div>'
+    +(filters.length?'<div class="gri-filters">'+filters.map(function(item){return '<div><small>'+exportXml(item[0])+'</small><strong>'+exportXml(item[1])+'</strong></div>';}).join('')+'</div>':'')
+    +(sections||'<section class="gri-section"><h2>Dados</h2><p>Sem dados para exibir.</p></section>')
+    +'<div class="gri-foot">VM Agro · Gestão de Lotes · '+exportXml(exportUser())+'</div>';
+}
+function genericReportImageStyles(){
+  return '#generic-report-image *{box-sizing:border-box}#generic-report-image{letter-spacing:0}#generic-report-image .gri-titlebar{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;margin-bottom:18px;padding:0 2px 16px;border-bottom:4px solid #C9A24E}#generic-report-image .gri-titlebar small{display:block;color:#8A7967;font-size:13px;font-weight:800}#generic-report-image .gri-titlebar h1{margin:5px 0 0;color:#0D1B2A;font-size:30px;line-height:1.1}#generic-report-image .gri-titlebar>strong{color:#6F6457;font-size:14px;white-space:nowrap}#generic-report-image .gri-filters{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:16px}#generic-report-image .gri-filters>div{min-width:150px;padding:10px 12px;background:#FFFDF7;border:1px solid #D8CBB5;border-radius:7px}#generic-report-image .gri-filters small{display:block;color:#8A7967;font-size:10px;font-weight:800;text-transform:uppercase}#generic-report-image .gri-filters strong{display:block;margin-top:3px;color:#0D1B2A;font-size:13px}#generic-report-image .gri-section{margin-top:14px;padding:16px;background:#FFFFFF;border:1px solid #D8CBB5;border-radius:8px}#generic-report-image .gri-section h2{margin:0 0 12px;padding-bottom:9px;border-bottom:2px solid #C9A24E;color:#0D1B2A;font-size:17px;text-transform:uppercase}#generic-report-image .gri-table-wrap{width:100%;overflow:visible}#generic-report-image table{width:100%;border-collapse:collapse;table-layout:auto;color:#0D1B2A;font-size:11px}#generic-report-image th{padding:10px 9px;background:#0D1B2A;color:#FFFFFF;text-align:left;font-size:10px;text-transform:uppercase;vertical-align:bottom}#generic-report-image th:first-child{border-radius:5px 0 0 0}#generic-report-image th:last-child{border-radius:0 5px 0 0}#generic-report-image td{padding:9px;border-bottom:1px solid #E4DCCE;background:#FFFFFF;vertical-align:top;line-height:1.3}#generic-report-image tbody tr:nth-child(even) td{background:#FAF7F0}#generic-report-image .gri-foot{padding:22px 0 4px;color:#8A7967;font-size:11px;font-weight:650;text-align:center}';
+}
+function genericReportImageWidth(data){
+  var maxCols=(data.sheets||[]).reduce(function(max,sheet){
+    return Math.max(max,(sheet.rows||[]).reduce(function(rowMax,row){return Math.max(rowMax,(row||[]).length);},1));
+  },1);
+  return Math.min(2600,Math.max(1200,300+maxCols*105));
+}
+function genericReportSliceRanges(host,maxHeight){
+  var full=Math.ceil(host.scrollHeight);if(full<=maxHeight)return [{y:0,height:full}];
+  var points=[].slice.call(host.querySelectorAll('.gri-titlebar,.gri-filters,.gri-section h2,.gri-section tr,.gri-foot')).map(function(el){return Math.ceil(el.offsetTop+el.offsetHeight);}).filter(function(v){return v>0;}).sort(function(a,b){return a-b;});
+  var ranges=[],start=0;
+  while(start<full){
+    var target=Math.min(full,start+maxHeight),end=0;
+    points.forEach(function(point){if(point>start+700&&point<=target)end=point;});
+    if(!end)end=target;
+    ranges.push({y:start,height:end-start});start=end;
+  }
+  return ranges;
+}
+function decorateGenericReportImage(canvas,data,index,total,scale){
+  var header=Math.round(76*scale),footer=Math.round(36*scale),out=document.createElement('canvas');
+  out.width=canvas.width;out.height=header+canvas.height+footer;
+  var ctx=out.getContext('2d');ctx.fillStyle='#F2EDE3';ctx.fillRect(0,0,out.width,out.height);
+  ctx.fillStyle='#0D1B2A';ctx.fillRect(0,0,out.width,header);ctx.fillStyle='#C9A24E';ctx.fillRect(0,header-Math.max(3,Math.round(4*scale)),out.width,Math.max(3,Math.round(4*scale)));
+  ctx.textBaseline='middle';ctx.fillStyle='#FFFFFF';ctx.font='900 '+Math.round(19*scale)+'px Inter, Arial, sans-serif';ctx.fillText('VM AGRO',Math.round(26*scale),Math.round(29*scale));
+  ctx.fillStyle='#C9A24E';ctx.font='700 '+Math.round(9*scale)+'px Inter, Arial, sans-serif';ctx.fillText('GESTÃO DE LOTES',Math.round(26*scale),Math.round(51*scale));
+  ctx.textAlign='right';ctx.fillStyle='#FFFFFF';ctx.font='800 '+Math.round(13*scale)+'px Inter, Arial, sans-serif';ctx.fillText((data.title||'Relatório')+(total>1?' · Parte '+(index+1)+' de '+total:''),out.width-Math.round(26*scale),Math.round(38*scale));
+  ctx.textAlign='left';ctx.drawImage(canvas,0,header);ctx.fillStyle='#6F6457';ctx.font='600 '+Math.round(9*scale)+'px Inter, Arial, sans-serif';ctx.fillText('VM Agro · '+exportNowLabel(),Math.round(26*scale),header+canvas.height+Math.round(20*scale));
+  if(total>1){ctx.textAlign='right';ctx.fillText('Parte '+(index+1)+' de '+total,out.width-Math.round(26*scale),header+canvas.height+Math.round(20*scale));}
+  return out;
+}
+async function downloadReportJpg(data,tab){
+  if(!data||!window.html2canvas)throw new Error('Biblioteca de imagem indisponível');
+  var width=genericReportImageWidth(data),host=document.createElement('div');host.id='generic-report-image';host.innerHTML=genericReportImageHtml(data);
+  host.style.cssText='position:fixed;left:-20000px;top:0;width:'+width+'px;height:auto;max-height:none;overflow:visible;background:#F2EDE3;color:#0D1B2A;padding:42px;font-family:Inter,Arial,sans-serif;box-sizing:border-box;z-index:-1';
+  var style=document.createElement('style');style.textContent=genericReportImageStyles();document.head.appendChild(style);document.body.appendChild(host);
+  try{
+    await waitCalculatorReportAssets(host);
+    var fullWidth=Math.ceil(host.scrollWidth),fullHeight=Math.ceil(host.scrollHeight),scale=1.35;
+    var ranges=genericReportSliceRanges(host,Math.floor(10500/scale)),canvases=[];
+    setExportStage(tab||currentExportTab(),ranges.length>1?'Gerando JPG em partes...':'Gerando JPG...');
+    for(var i=0;i<ranges.length;i++){
+      var range=ranges[i],part=await html2canvas(host,{scale:scale,backgroundColor:'#F2EDE3',useCORS:true,allowTaint:false,logging:false,width:fullWidth,height:range.height,y:range.y,windowWidth:fullWidth,windowHeight:fullHeight,scrollX:0,scrollY:0,imageTimeout:15000,removeContainer:true});
+      canvases.push(decorateGenericReportImage(part,data,i,ranges.length,scale));
+    }
+    var files=[];
+    for(var j=0;j<canvases.length;j++)files.push({blob:await calculatorReportCanvasBlob(canvases[j],0.94),name:data.file+(canvases.length>1?'_parte_'+(j+1):'')+'.jpg',type:'image/jpeg'});
+    var result=await deliverReportFiles(files,tab||currentExportTab(),data.title||'Relatório da VM Agro',{individualFallback:files.length>1});
+    if(result==='downloaded')toast('✓ JPG exportado');else if(result==='shared')toast('✓ JPG compartilhado');
   }finally{host.remove();style.remove();}
 }
 function htmlTable(rows){
