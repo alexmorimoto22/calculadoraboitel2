@@ -4511,7 +4511,8 @@ function statusHasConfinamento(status){return ['confinando','escalado','abatido'
 function resultadoStatusLote(lote,orc){
   lote=lote||{};
   orc=orc||(lote.orcamentos&&lote.orcamentos[0])||null;
-  var real=lote.ajusteReal||lote.apuracao||null;
+  var realCandidate=lote.ajusteReal||lote.apuracao||null;
+  var real=realCandidate&&typeof realCandidate==='object'&&Object.keys(realCandidate).length?realCandidate:null;
   var finalMode=lote.finalResultMode||(real?'realized':'projected');
   var capital=orc?finNum(orc.investLote):0;
   var custoTotal=capital+(orc?finNum(orc.custoOpLote):0);
@@ -4750,7 +4751,8 @@ function resultadoRealizadoLote(lote,orc,aj){
 function statusRealizadoLote(lote){
   if(!lote)return {key:'none',label:'Sem realizado'};
   if(lote.finalResultMode==='manual'&&lote.manualFinalResult)return {key:'manually_adjusted',label:'Resultado ajustado'};
-  var aj=lote.ajusteReal||lote.apuracao;
+  var ajCandidate=lote.ajusteReal||lote.apuracao;
+  var aj=ajCandidate&&typeof ajCandidate==='object'&&Object.keys(ajCandidate).length?ajCandidate:null;
   if(!aj)return {key:'none',label:'Sem realizado'};
   var required=['dataEntradaReal','dataAbateReal','dataRecebimentoReal','qtdReal','pesoEntradaReal','pesoSaidaReal','receitaReal','custoReal'];
   var complete=required.every(function(k){return aj[k]!==undefined&&aj[k]!==null&&String(aj[k]).trim()!=='';});
