@@ -6919,6 +6919,11 @@ function renderHomeDashboardNovo(lotes){
     var status=l.status||'embarque';
     var b3Status=coberturaStatusB3(l,o,metric);
     var prazo=prazoDiasResultadoLote(l,o)||0;
+    if(!prazo){
+      var entradaData=parseISODate(entrada),recebData=parseISODate(receb);
+      if(entradaData&&recebData)prazo=Math.max(0,Math.round((recebData-entradaData)/86400000));
+    }
+    if(!prazo)prazo=finNum(o.dias)+finNum(o.prazoPag);
     return {
       id:l.id,
       ano:ano,
