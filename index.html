@@ -588,6 +588,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-bars-legend span{display:flex;align-items:center;gap:5px;font-size:9px;color:var(--text-3);}
   .home-bars-legend i{width:9px;height:9px;border-radius:2px;display:block;}
   .home-charts-controls{display:flex;align-items:flex-end;gap:9px;flex-wrap:wrap;margin:0 0 12px;padding:11px 13px;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.82);}
+  .home-chart-inline-controls{display:flex;align-items:flex-end;gap:9px;flex-wrap:wrap;margin:-2px 0 12px;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--surface2);}
   .home-chart-control{min-width:130px;}
   .home-chart-control label{display:block;margin:0 0 5px;font-size:8px;font-weight:850;letter-spacing:.8px;text-transform:uppercase;color:var(--text-3);}
   .home-chart-control select{width:100%;height:36px;padding:0 28px 0 9px;border:1px solid var(--border);border-radius:7px;background:var(--surface2);color:var(--text);font-family:'Inter',sans-serif;font-size:10px;font-weight:750;}
@@ -595,6 +596,9 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-chart-metric-btn{height:36px;padding:0 10px;border:1px solid var(--border);border-radius:7px;background:#fff;color:var(--text-3);font-family:'Inter',sans-serif;font-size:10px;font-weight:800;cursor:pointer;}
   .home-chart-metric-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
   .home-chart-clear{height:36px;padding:0 11px;border:1px solid var(--border);border-radius:7px;background:#fff;color:var(--text-2);font-family:'Inter',sans-serif;font-size:10px;font-weight:800;cursor:pointer;}
+  .home-chart-period-mode{display:flex;height:36px;padding:3px;border:1px solid var(--border);border-radius:8px;background:#fff;}
+  .home-chart-period-btn{padding:0 9px;border:0;border-radius:5px;background:transparent;color:var(--text-3);font-family:'Inter',sans-serif;font-size:10px;font-weight:850;cursor:pointer;white-space:nowrap;}
+  .home-chart-period-btn.active{background:var(--accent);color:#fff;}
   .home-pie-slice{cursor:pointer;transition:opacity .15s;}
   .home-pie-slice:hover,.home-pie-slice.active{opacity:.72;}
   .home-chart-legend-button{width:100%;display:grid;grid-template-columns:9px minmax(0,1fr) auto;gap:7px;align-items:center;padding:3px 4px;border:0;border-radius:6px;background:transparent;color:var(--text-2);font-family:'Inter',sans-serif;font-size:10px;text-align:left;cursor:pointer;}
@@ -1413,7 +1417,11 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	    .home-pie.multi .home-pie-center strong{font-size:10px;}
 	    .home-bars{min-width:520px;height:190px;}
 	    .home-charts-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px;}
+	    .home-chart-inline-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:9px;margin:-2px 0 10px;}
 	    .home-chart-control{min-width:0;}
+	    .home-chart-inline-controls .metrics{grid-column:1/-1;}
+	    .home-chart-period-mode{width:100%;}
+	    .home-chart-period-btn{flex:1;}
 	    .home-chart-control.metrics{grid-column:1/-1;}
 	    .home-chart-metric-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));}
 	    .home-chart-metric-btn{padding:0 6px;font-size:9px;}
@@ -6345,7 +6353,7 @@ var HOME_PIE_METRICS=[
   {key:'eficiencia',label:'Efic. biológica origem',format:'efic'},
   {key:'eficienciaChegada',label:'Efic. biológica chegada',format:'efic'}
 ];
-var homeChartState={inicio:'',fim:'',metricas:{faturamento:true,capital:true,lucro:true},pieMetrics:['qtd'],pieOptionsOpen:false};
+var homeChartState={inicio:'',fim:'',modo:'periodo',metricas:{faturamento:true,capital:true,lucro:true},pieMetrics:['qtd'],pieOptionsOpen:false};
 var homeOpenFilter='';
 function homeFilterSelected(type){return Array.isArray(homeFilterState[type])?homeFilterState[type]:[];}
 function homeFilterMatches(type,value){var selected=homeFilterSelected(type);return !selected.length||selected.indexOf(String(value))>=0;}
@@ -6399,6 +6407,10 @@ function homeChartSetPeriod(campo,valor){
   }
   renderHome();
 }
+function homeChartSetMode(modo){
+  homeChartState.modo=modo==='total'?'total':'periodo';
+  renderHome();
+}
 function homeChartToggleMetric(metrica){
   if(!Object.prototype.hasOwnProperty.call(homeChartState.metricas,metrica))return;
   homeChartState.metricas[metrica]=!homeChartState.metricas[metrica];
@@ -6436,7 +6448,7 @@ function homeChartFilterStatus(encoded){
   renderHome();
 }
 function homeChartResetControls(){
-  homeChartState.inicio='';homeChartState.fim='';homeChartState.metricas={faturamento:true,capital:true,lucro:true};homeChartState.pieMetrics=['qtd'];homeChartState.pieOptionsOpen=false;
+  homeChartState.inicio='';homeChartState.fim='';homeChartState.modo='periodo';homeChartState.metricas={faturamento:true,capital:true,lucro:true};homeChartState.pieMetrics=['qtd'];homeChartState.pieOptionsOpen=false;
   renderHome();
 }
 document.addEventListener('click',function(event){
@@ -6972,9 +6984,10 @@ function renderHomeDashboardNovo(lotes){
       +'<div class="home-chart-note" style="margin:-4px 0 10px">'+escHtml(metricHint)+'</div>'
       +'<div class="home-pie-layout"><div class="home-pie'+(selected.length>1?' multi':'')+'"><svg viewBox="0 0 100 100" role="img" aria-label="Distribuição por status">'+slices.join('')+'</svg><div class="home-pie-center"><strong>'+escHtml(centerValue(firstMetric,firstTotal))+'</strong><span>'+escHtml(firstMetric.label)+'</span></div></div><div class="home-chart-legend">'+legend+'</div></div></div>';
   }
-  function homeMonthlyBarsHtml(rows,metricas){
+  function homeMonthlyBarsHtml(rows,metricas,chartOptions){
     metricas=metricas||homeChartState.metricas;
-    var months={};
+    chartOptions=chartOptions||{};
+    var months={},modo=homeChartState.modo==='total'?'total':'periodo';
     rows.forEach(function(row){
       var iso=row.entrada||row.abate||row.recebimento||'';
       if(!iso||iso.length<7)return;
@@ -6985,25 +6998,44 @@ function renderHomeDashboardNovo(lotes){
       months[key].lucro+=finNum(row.lucro);
     });
     var keys=Object.keys(months).sort();
-    var max=1;
-    keys.forEach(function(key){
-      if(metricas.faturamento)max=Math.max(max,Math.abs(months[key].faturamento));
-      if(metricas.capital)max=Math.max(max,Math.abs(months[key].capital));
-      if(metricas.lucro)max=Math.max(max,Math.abs(months[key].lucro));
-    });
-    var bars=keys.map(function(key){
-      var item=months[key];
+    var items=keys.map(function(key){
       var date=new Date(key+'-01T00:00:00');
-      var label=isNaN(date.getTime())?key:date.toLocaleDateString('pt-BR',{month:'short',year:'2-digit'}).replace('.','');
+      return {label:isNaN(date.getTime())?key:date.toLocaleDateString('pt-BR',{month:'short',year:'2-digit'}).replace('.',''),values:months[key]};
+    });
+    if(modo==='total'){
+      var total={faturamento:0,capital:0,lucro:0};
+      keys.forEach(function(key){total.faturamento+=months[key].faturamento;total.capital+=months[key].capital;total.lucro+=months[key].lucro;});
+      items=keys.length?[{label:'Total do período',values:total}]:[];
+    }
+    var max=1;
+    items.forEach(function(item){
+      if(metricas.faturamento)max=Math.max(max,Math.abs(item.values.faturamento));
+      if(metricas.capital)max=Math.max(max,Math.abs(item.values.capital));
+      if(metricas.lucro)max=Math.max(max,Math.abs(item.values.lucro));
+    });
+    var bars=items.map(function(item){
+      var label=item.label,values=item.values;
       function bar(value,cls){
         var height=value?Math.max(3,Math.round(Math.abs(value)/max*160)):2;
         return '<span class="home-bar '+cls+(value<0?' neg':'')+'" style="height:'+height+'px" title="'+escHtml(label)+' · '+escHtml(fmt(value))+'"></span>';
       }
-      return '<div class="home-bar-month"><div class="home-bar-stack">'+(metricas.faturamento?bar(item.faturamento,'faturamento'):'')+(metricas.capital?bar(item.capital,'capital'):'')+(metricas.lucro?bar(item.lucro,'lucro'):'')+'</div><div class="home-bar-label">'+escHtml(label)+'</div></div>';
+      return '<div class="home-bar-month"><div class="home-bar-stack">'+(metricas.faturamento?bar(values.faturamento,'faturamento'):'')+(metricas.capital?bar(values.capital,'capital'):'')+(metricas.lucro?bar(values.lucro,'lucro'):'')+'</div><div class="home-bar-label">'+escHtml(label)+'</div></div>';
     }).join('');
-    if(!bars)bars='<div class="home-empty-small" style="width:100%;align-self:center">Sem datas para montar o gráfico mensal.</div>';
-    return '<div class="home-chart-panel"><div class="home-chart-head"><div><div class="home-chart-title">Resultado mês a mês</div><div class="home-chart-note">Valores agrupados pela data de entrada</div></div></div>'
-      +'<div class="home-bars-wrap"><div class="home-bars">'+bars+'</div></div>'
+    if(!bars)bars='<div class="home-empty-small" style="width:100%;align-self:center">Sem datas para montar o gráfico.</div>';
+    var controls='<div class="home-chart-inline-controls">'
+      +'<div class="home-chart-control"><label>Exibição</label><div class="home-chart-period-mode"><button type="button" class="home-chart-period-btn'+(modo==='periodo'?' active':'')+'" onclick="homeChartSetMode(\'periodo\')">Por período</button><button type="button" class="home-chart-period-btn'+(modo==='total'?' active':'')+'" onclick="homeChartSetMode(\'total\')">Total</button></div></div>'
+      +'<div class="home-chart-control"><label for="home-chart-inicio">De</label><select id="home-chart-inicio" onchange="homeChartSetPeriod(\'inicio\',this.value)">'+(chartOptions.inicio||'')+'</select></div>'
+      +'<div class="home-chart-control"><label for="home-chart-fim">Até</label><select id="home-chart-fim" onchange="homeChartSetPeriod(\'fim\',this.value)">'+(chartOptions.fim||'')+'</select></div>'
+      +'<div class="home-chart-control metrics"><label>Dados visíveis</label><div class="home-chart-metric-options">'
+        +'<button type="button" class="home-chart-metric-btn'+(metricas.faturamento?' active':'')+'" onclick="homeChartToggleMetric(\'faturamento\')">Faturamento</button>'
+        +'<button type="button" class="home-chart-metric-btn'+(metricas.capital?' active':'')+'" onclick="homeChartToggleMetric(\'capital\')">Capital</button>'
+        +'<button type="button" class="home-chart-metric-btn'+(metricas.lucro?' active':'')+'" onclick="homeChartToggleMetric(\'lucro\')">Lucro</button>'
+      +'</div></div>'
+      +'<button type="button" class="home-chart-clear" onclick="homeChartResetControls()">Limpar</button>'
+    +'</div>';
+    var note=modo==='total'?'Valores somados no período selecionado.':'Valores agrupados pela data de entrada.';
+    return '<div class="home-chart-panel"><div class="home-chart-head"><div><div class="home-chart-title">Resultado mês a mês</div><div class="home-chart-note">'+note+'</div></div></div>'
+      +controls+'<div class="home-bars-wrap"><div class="home-bars">'+bars+'</div></div>'
       +'<div class="home-bars-legend">'+(metricas.faturamento?'<span><i style="background:var(--accent)"></i>Faturamento</span>':'')+(metricas.capital?'<span><i style="background:var(--gold)"></i>Capital</span>':'')+(metricas.lucro?'<span><i style="background:var(--green)"></i>Lucro</span>':'')+'</div></div>';
   }
 
@@ -7066,16 +7098,7 @@ function renderHomeDashboardNovo(lotes){
   var chartMonthOptionsFim='<option value="">Todos os meses</option>'+chartMonths.map(function(month){
     return '<option value="'+escHtml(month)+'"'+(month===homeChartState.fim?' selected':'')+'>'+escHtml(chartMonthLabel(month))+'</option>';
   }).join('');
-  var chartControls='<div class="home-charts-controls">'
-    +'<div class="home-chart-control"><label for="home-chart-inicio">De</label><select id="home-chart-inicio" onchange="homeChartSetPeriod(\'inicio\',this.value)">'+chartMonthOptions+'</select></div>'
-    +'<div class="home-chart-control"><label for="home-chart-fim">Até</label><select id="home-chart-fim" onchange="homeChartSetPeriod(\'fim\',this.value)">'+chartMonthOptionsFim+'</select></div>'
-    +'<div class="home-chart-control metrics"><label>Indicadores do gráfico mensal</label><div class="home-chart-metric-options">'
-      +'<button type="button" class="home-chart-metric-btn'+(homeChartState.metricas.faturamento?' active':'')+'" onclick="homeChartToggleMetric(\'faturamento\')">Faturamento</button>'
-      +'<button type="button" class="home-chart-metric-btn'+(homeChartState.metricas.capital?' active':'')+'" onclick="homeChartToggleMetric(\'capital\')">Capital</button>'
-      +'<button type="button" class="home-chart-metric-btn'+(homeChartState.metricas.lucro?' active':'')+'" onclick="homeChartToggleMetric(\'lucro\')">Lucro</button>'
-    +'</div></div>'
-    +'<button type="button" class="home-chart-clear" onclick="homeChartResetControls()">Limpar gráfico</button>'
-  +'</div>';
+  var chartPeriodOptions={inicio:chartMonthOptions,fim:chartMonthOptionsFim};
   function homeTableCellHtml(key,row){
     if(key==='status')return '<span class="badge '+(STATUS_CFG[row.status]||{}).cls+'">'+escHtml(row.statusLabel)+'</span>';
     if(key==='ano'||key==='confinamento'||key==='modalidade'||key==='origem'||key==='vendedor'||key==='b3')return escHtml(row[key]);
@@ -7149,8 +7172,7 @@ function renderHomeDashboardNovo(lotes){
       +'</div>'
       +homeTableHtml(loteRows)
     +'</div>'
-    +chartControls
-    +'<div class="home-charts-grid">'+homePieChartHtml(statusGroups,total.qtd)+homeMonthlyBarsHtml(chartRows,homeChartState.metricas)+'</div>';
+    +'<div class="home-charts-grid">'+homePieChartHtml(statusGroups,total.qtd)+homeMonthlyBarsHtml(chartRows,homeChartState.metricas,chartPeriodOptions)+'</div>';
 
   live.querySelectorAll('[data-home-lid]').forEach(function(el){
     el.addEventListener('click',function(){openLoteDetail(el.dataset.homeLid);});
