@@ -8468,11 +8468,11 @@ function openEditPanel(loteId, cardEl){
           +simItem('Peso origem',simBio.pesoCompra?brNum(simBio.pesoCompra,1)+' kg':'—')
           +simItem('Peso chegada',simBio.pesoEntrada?brNum(simBio.pesoEntrada,1)+' kg':'—')
           +simItem('Capital investido',fmt(simCapital))
+          +simModalidadeItens
         +'</div></section>'
         +'<section class="ep-sim-block"><h4 class="ep-sim-title">Zootécnico</h4><div class="ep-sim-grid">'
           +simItem('Confinamento',simConfinamento)
           +simItem('Dias',(o.dias||'—')+' dias')
-          +simModalidadeItens
           +simItem('Rend. entrada',o.rendE_pct?brNum(o.rendE_pct,2)+'%':'—')
           +simItem('Rendimento de carcaça',o.rendA_pct?brNum(o.rendA_pct,2)+'%':'—')
           +simItem('Peso final',simBio.pesoAbate?brNum(simBio.pesoAbate,1)+' kg':'—')
