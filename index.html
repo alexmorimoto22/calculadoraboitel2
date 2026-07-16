@@ -560,8 +560,8 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-column-option{display:flex;align-items:center;gap:6px;padding:5px;border-radius:6px;font-size:10px;font-weight:650;color:var(--text-2);cursor:pointer;}
   .home-column-option:hover{background:var(--surface2);}
   .home-column-option input{accent-color:var(--accent);}
-  .home-charts-grid{display:grid;grid-template-columns:minmax(300px,.72fr) minmax(560px,1.28fr);gap:12px;margin-bottom:12px;}
-  .home-chart-panel{background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:0 4px 18px rgba(13,27,42,.05);min-width:0;}
+  .home-charts-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px;}
+  .home-chart-panel{container-type:inline-size;background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:0 4px 18px rgba(13,27,42,.05);min-width:0;}
   .home-chart-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;}
   .home-chart-title{font-size:10px;font-weight:850;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);}
   .home-chart-note{font-size:10px;color:var(--text-3);margin-top:3px;}
@@ -577,14 +577,14 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-chart-legend-dot{width:9px;height:9px;border-radius:3px;}
   .home-chart-legend-item strong{font-size:10px;color:var(--text);}
   .home-bars-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:4px 2px 0;}
-  .home-bars{height:205px;min-width:560px;display:flex;align-items:flex-end;gap:12px;border-bottom:1px solid var(--border2);padding:0 8px;}
+  .home-bars{height:260px;min-width:560px;box-sizing:border-box;display:flex;align-items:flex-end;gap:12px;border-bottom:1px solid var(--border2);padding:52px 8px 0;}
   .home-bar-month{height:100%;min-width:56px;flex:1;display:grid;grid-template-rows:minmax(0,1fr) 28px;gap:5px;}
   .home-bar-stack{display:flex;align-items:flex-end;justify-content:center;gap:4px;min-height:0;}
   .home-bar-wrap{position:relative;display:flex;align-items:flex-end;height:100%;}
   .home-bar{width:11px;min-height:2px;border-radius:3px 3px 0 0;transition:opacity .15s;}
   .home-bar:hover{opacity:.72;}
   .home-bar.neg{background:var(--red)!important;}
-  .home-bar-value{position:absolute;left:50%;bottom:calc(100% + 4px);transform:translateX(-50%);font-size:7.5px;font-style:normal;font-weight:850;line-height:1;color:var(--text-2);white-space:nowrap;pointer-events:none;}
+  .home-bar-value{position:absolute;z-index:2;left:calc(50% + 4px);bottom:calc(100% + 8px);transform:rotate(-90deg);transform-origin:left bottom;font-size:7.5px;font-style:normal;font-weight:850;line-height:1;color:var(--text-2);white-space:nowrap;pointer-events:none;}
   .home-bar.faturamento{background:var(--accent);}
   .home-bar.capital{background:var(--gold);}
   .home-bar.lucro{background:var(--green);}
@@ -637,6 +637,13 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-pie.multi .home-pie-center{inset:56px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(13,27,42,.08);}
   .home-pie.multi .home-pie-center strong{font-size:12px;}
   .home-pie.multi .home-pie-center span{font-size:6.5px;letter-spacing:.45px;}
+  @container (max-width: 760px){
+    .home-pie-layout{grid-template-columns:1fr;justify-items:center;gap:14px;}
+    .home-chart-legend{width:100%;}
+    .home-chart-legend-button{grid-template-columns:9px minmax(0,1fr);align-items:start;gap:7px 8px;padding:5px 4px;}
+    .home-chart-legend-values{grid-column:2;justify-content:flex-start;max-width:none;gap:4px;}
+    .home-chart-legend-values strong{white-space:normal;line-height:1.25;}
+  }
   #panel-futuros{width:min(1440px,calc(100vw - 48px));margin-left:50%;transform:translateX(-50%);}
   .fut-hero{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap;gap:12px;padding:16px 18px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(135deg,rgba(255,253,247,.88),rgba(242,237,227,.84));box-shadow:0 8px 24px rgba(13,27,42,.06);}
   .fut-hero .h-greeting-name{font-size:25px;}
