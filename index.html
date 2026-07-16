@@ -518,6 +518,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-metric-label{font-size:8.5px;font-weight:850;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);margin-bottom:6px;}
   .home-metric.primary .home-metric-label{color:rgba(255,255,255,.68);}
   .home-metric-value{font-size:22px;font-weight:850;color:var(--text);line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .home-money-fit{display:inline-block;max-width:100%;white-space:nowrap;}
   .home-metric.primary .home-metric-value{color:#fff;}
   .home-metric-sub{font-size:10px;color:var(--text-3);margin-top:5px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .home-metric.primary .home-metric-sub{color:rgba(255,255,255,.7);}
@@ -7114,6 +7115,26 @@ function toggleHomeChartPanel(key){
   try{localStorage.setItem('vm_home_chart_collapsed_'+key+'_v1',next?'1':'0');}catch(e){}
   renderHome();
 }
+var homeMoneyFitObserver=null;
+function fitHomeMoneyValues(root){
+  root=root||document;
+  var values=Array.from(root.querySelectorAll('.home-money-fit'));
+  function fit(el){
+    if(!el)return;
+    var parent=el.parentElement;
+    if(!parent)return;
+    el.textContent=el.dataset.full||'';
+    if(el.scrollWidth>parent.clientWidth)el.textContent=el.dataset.short||el.dataset.full||'';
+  }
+  values.forEach(fit);
+  if(homeMoneyFitObserver)homeMoneyFitObserver.disconnect();
+  if(typeof ResizeObserver==='function'){
+    homeMoneyFitObserver=new ResizeObserver(function(entries){
+      entries.forEach(function(entry){fit(entry.target.querySelector('.home-money-fit'));});
+    });
+    values.forEach(function(el){if(el.parentElement)homeMoneyFitObserver.observe(el.parentElement);});
+  }
+}
 function renderHomeDashboardNovo(lotes){
   var live=document.getElementById('home-dashboard-live');
   if(!live)return;
@@ -7314,6 +7335,10 @@ function renderHomeDashboardNovo(lotes){
       +'<div class="home-metric-value">'+value+'</div>'
       +'<div class="home-metric-sub">'+escHtml(sub||'')+'</div>'
     +'</div>';
+  }
+  function responsiveMoney(value,color){
+    var full=fmt(value),short=moneyShort(value);
+    return '<span class="home-money-fit" data-full="'+escHtml(full)+'" data-short="'+escHtml(short)+'" title="'+escHtml(full)+'"'+(color?' style="color:'+color+'"':'')+'>'+escHtml(full)+'</span>';
   }
   function tableEmpty(cols,msg){
     return '<tr><td colspan="'+cols+'" class="home-empty-small">'+escHtml(msg)+'</td></tr>';
@@ -7675,9 +7700,9 @@ function renderHomeDashboardNovo(lotes){
   var homeCards={
     lotes:metricCard('lotes','Lotes',total.lotes+' lote(s)',numCab(total.qtd)),
     qtd:metricCard('qtd','Qtd total',numCab(total.qtd),total.lotes+' lote(s)','primary'),
-    faturamento:metricCard('faturamento','Faturamento total',moneyShort(total.faturamento),'Lucro + capital'),
-    capital:metricCard('capital','Capital total',moneyShort(total.capital),'Compra + comissão + frete'),
-    lucro:metricCard('lucro','Lucro total','<span style="color:'+(total.lucro>=0?'var(--green)':'var(--red)')+'">'+moneyShort(total.lucro)+'</span>',fmtPct(total.rent)+' da operação'),
+    faturamento:metricCard('faturamento','Faturamento total',responsiveMoney(total.faturamento),'Lucro + capital'),
+    capital:metricCard('capital','Capital total',responsiveMoney(total.capital),'Compra + comissão + frete'),
+    lucro:metricCard('lucro','Lucro total',responsiveMoney(total.lucro,total.lucro>=0?'var(--green)':'var(--red)'),fmtPct(total.rent)+' da operação'),
     rent:metricCard('rent','% lucro operação',fmtPct(total.rent),moneyShort(total.capital)+' de capital'),
     rentmes:metricCard('rentmes','% lucro ao mês',fmtPct(total.rentMes),'Prazo médio: '+(total.prazoMedio?Math.round(total.prazoMedio):0)+' dias'),
     prazo:metricCard('prazo','Prazo médio',total.prazoMedio?Math.round(total.prazoMedio)+' dias':'—','Baseado no capital investido'),
@@ -7726,6 +7751,7 @@ function renderHomeDashboardNovo(lotes){
     +(quadrosMinimizados?'':'<div class="home-charts-grid">'+homePieChartHtml(pieGroups,total.qtd,pieGroupDef)+homeMonthlyBarsHtml(chartRows,homeChartState.metricas,chartPeriodOptions)+homeOverviewLineChartHtml(filtrados)+'</div>'+homeOperationalPanelsHtml());
 
   applyHomeColumnWidths();
+  fitHomeMoneyValues(live);
   live.querySelectorAll('[data-home-lid]').forEach(function(el){
     el.addEventListener('click',function(){openLoteDetail(el.dataset.homeLid);});
   });
