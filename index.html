@@ -4643,13 +4643,13 @@ let activeLoteDetailId=null;
 let activeOrcEditIndex=null;
 let activeLoteReturnStatus=null;
 let pillFilter='';
-var statusColumnFilters={status:'',ano:'',confinamento:'',modalidade:'',origem:'',vendedor:'',lote:'',b3:'',qtd:'',entrada:'',abate:'',recebimento:'',faturamento:'',capital:'',lucro:'',rent:'',rentmes:'',gmdOrigem:'',gmdChegada:'',gmcOrigem:'',gmcChegada:'',eficiencia:'',eficienciaChegada:''};
+var statusColumnFilters={status:'',ano:'',confinamento:'',modalidade:'',origem:'',vendedor:'',lote:'',b3:'',qtd:'',entrada:'',abate:'',recebimento:'',faturamento:'',capital:'',lucro:'',rent:'',rentmes:'',rc:'',gmdOrigem:'',gmdChegada:'',gmcOrigem:'',gmcChegada:'',eficiencia:'',eficienciaChegada:''};
 var STATUS_COLS=[
   {key:'status',label:'Status',w:88},{key:'ano',label:'Ano',w:52},{key:'confinamento',label:'Confinamento',w:112},
   {key:'modalidade',label:'Modalidade',w:128},{key:'origem',label:'Origem',w:118},{key:'vendedor',label:'Vendedor',w:112},{key:'lote',label:'Lote',w:230},{key:'b3',label:'B3',w:136},{key:'qtd',label:'Qtd',w:62},
   {key:'entrada',label:'Entrada',w:92},{key:'abate',label:'Abate',w:92},{key:'recebimento',label:'Recebimento',w:104},
   {key:'faturamento',label:'Fat. lote',w:126},{key:'capital',label:'Capital',w:126},{key:'lucro',label:'Lucro',w:116},
-  {key:'rent',label:'% Oper.',w:76},{key:'rentmes',label:'% Mês',w:76},{key:'gmdOrigem',label:'GMD Origem',w:108},{key:'gmdChegada',label:'GMD Chegada',w:108},{key:'gmcOrigem',label:'GMC Origem',w:116},{key:'gmcChegada',label:'GMC Chegada',w:116},{key:'eficiencia',label:'Efic. Origem',w:116},{key:'eficienciaChegada',label:'Efic. Cheg.',w:116}
+  {key:'rent',label:'% Oper.',w:76},{key:'rentmes',label:'% Mês',w:76},{key:'rc',label:'RC',w:72},{key:'gmdOrigem',label:'GMD Origem',w:108},{key:'gmdChegada',label:'GMD Chegada',w:108},{key:'gmcOrigem',label:'GMC Origem',w:116},{key:'gmcChegada',label:'GMC Chegada',w:116},{key:'eficiencia',label:'Efic. Origem',w:116},{key:'eficienciaChegada',label:'Efic. Cheg.',w:116}
 ];
 var STATUS_COL_VISIBLE_KEY='vm_status_cols_visible_v1';
 var STATUS_COL_WIDTH_KEY='vm_status_cols_width_v1';
@@ -4662,7 +4662,7 @@ var HOME_TABLE_COLS=[
   {key:'status',label:'Status'},{key:'ano',label:'Ano'},{key:'confinamento',label:'Confinamento'},{key:'modalidade',label:'Modalidade'},
   {key:'origem',label:'Origem'},{key:'vendedor',label:'Vendedor'},{key:'lote',label:'Lote'},{key:'b3',label:'B3'},
   {key:'qtd',label:'Qtd'},{key:'entrada',label:'Entrada'},{key:'abate',label:'Abate'},{key:'recebimento',label:'Recebimento'},
-  {key:'faturamento',label:'Fat. lote'},{key:'capital',label:'Capital'},{key:'lucro',label:'Lucro'},{key:'rent',label:'% Oper.'},{key:'rentmes',label:'% Mês'},
+  {key:'faturamento',label:'Fat. lote'},{key:'capital',label:'Capital'},{key:'lucro',label:'Lucro'},{key:'rent',label:'% Oper.'},{key:'rentmes',label:'% Mês'},{key:'rc',label:'RC'},
   {key:'gmdOrigem',label:'GMD origem'},{key:'gmdChegada',label:'GMD chegada'},{key:'gmcOrigem',label:'GMC origem'},{key:'gmcChegada',label:'GMC chegada'},
   {key:'eficiencia',label:'Efic. origem'},{key:'eficienciaChegada',label:'Efic. chegada'}
 ];
@@ -6362,6 +6362,7 @@ var HOME_PIE_METRICS=[
   {key:'lucro',label:'Lucro',format:'money'},
   {key:'rent',label:'% lucro operação',format:'pct'},
   {key:'rentMes',label:'% lucro ao mês',format:'pct'},
+  {key:'rc',label:'RC',format:'pct'},
   {key:'gmdOrigem',label:'GMD origem',format:'gmd'},
   {key:'gmdChegada',label:'GMD chegada',format:'gmd'},
   {key:'gmcOrigem',label:'GMC origem',format:'gmc'},
@@ -6376,6 +6377,7 @@ var HOME_BAR_METRICS=[
   {key:'lucro',label:'Lucro',format:'money',color:'#6B7056'},
   {key:'rent',label:'% lucro operação',format:'pct',color:'#1F5B8F'},
   {key:'rentMes',label:'% lucro ao mês',format:'pct',color:'#9A8C7A'},
+  {key:'rc',label:'RC',format:'pct',color:'#6C7A89'},
   {key:'gmdOrigem',label:'GMD origem',format:'gmd',color:'#4D7C6B'},
   {key:'gmdChegada',label:'GMD chegada',format:'gmd',color:'#3C6E91'},
   {key:'gmcOrigem',label:'GMC origem',format:'gmc',color:'#8C6B4E'},
@@ -6895,6 +6897,7 @@ function renderHomeDashboardNovo(lotes){
       lucro:metric.lucro||0,
       rent:metric.rent||0,
       rentMes:metric.rentMes||0,
+      rc:metric.rendA||0,
       prazo:prazoDiasResultadoLote(l,o)||0,
       gmd:tech.gmdChegada||0,
       gmdOrigem:tech.gmdOrigem||0,
@@ -6907,8 +6910,8 @@ function renderHomeDashboardNovo(lotes){
     };
   }
   function sumRows(rows){
-    var out={lotes:rows.length,qtd:0,faturamento:0,capital:0,lucro:0,rent:0,rentMes:0,prazoMedio:0,gmd:0,gmdOrigem:0,gmdChegada:0,gmcOrigem:0,gmcChegada:0,eficiencia:0,eficienciaChegada:0};
-    var prazoPeso=0,prazoBase=0,gmdPeso=0,gmdOrigemPeso=0,gmdChegadaPeso=0,gmcOrigemPeso=0,gmcChegadaPeso=0,eficPeso=0,eficChegadaPeso=0;
+    var out={lotes:rows.length,qtd:0,faturamento:0,capital:0,lucro:0,rent:0,rentMes:0,rc:0,prazoMedio:0,gmd:0,gmdOrigem:0,gmdChegada:0,gmcOrigem:0,gmcChegada:0,eficiencia:0,eficienciaChegada:0};
+    var prazoPeso=0,prazoBase=0,rcPeso=0,gmdPeso=0,gmdOrigemPeso=0,gmdChegadaPeso=0,gmcOrigemPeso=0,gmcChegadaPeso=0,eficPeso=0,eficChegadaPeso=0;
     rows.forEach(function(r){
       out.qtd+=r.qtd;
       out.faturamento+=r.faturamento;
@@ -6916,6 +6919,7 @@ function renderHomeDashboardNovo(lotes){
       out.lucro+=r.lucro;
       if(r.capital>0&&r.prazo>0){prazoPeso+=r.prazo*r.capital;prazoBase+=r.capital;}
       if(r.qtd>0){
+        if(r.rc>0){rcPeso+=r.rc*r.qtd;}
         if(r.gmd>0){gmdPeso+=r.gmd*r.qtd;}
         if(r.gmdOrigem>0){gmdOrigemPeso+=r.gmdOrigem*r.qtd;}
         if(r.gmdChegada>0){gmdChegadaPeso+=r.gmdChegada*r.qtd;}
@@ -6928,6 +6932,7 @@ function renderHomeDashboardNovo(lotes){
     out.rent=out.capital>0?out.lucro/out.capital:0;
     out.prazoMedio=prazoBase>0?prazoPeso/prazoBase:0;
     out.rentMes=out.prazoMedio>0?out.rent/(out.prazoMedio/30):0;
+    out.rc=out.qtd>0?rcPeso/out.qtd:0;
     out.gmd=out.qtd>0?gmdPeso/out.qtd:0;
     out.gmdOrigem=out.qtd>0?gmdOrigemPeso/out.qtd:0;
     out.gmdChegada=out.qtd>0?gmdChegadaPeso/out.qtd:0;
@@ -7170,6 +7175,7 @@ function renderHomeDashboardNovo(lotes){
     if(key==='faturamento'||key==='capital')return '<span class="money">'+fmt(row[key])+'</span>';
     if(key==='lucro')return '<span class="money '+(row.lucro>=0?'pos':'neg')+'">'+fmt(row.lucro)+'</span>';
     if(key==='rent'||key==='rentmes')return fmtPct(row[key]);
+    if(key==='rc')return row.rc?fmtNum(row.rc,2)+'%':'—';
     if(key==='gmdOrigem'||key==='gmdChegada')return row[key]?fmtNum(row[key],2)+' kg/dia':'—';
     if(key==='gmcOrigem'||key==='gmcChegada')return row[key]?fmtNum(row[key],3)+' kg/dia':'—';
     if(key==='eficiencia'||key==='eficienciaChegada')return row[key]?fmtNum(row[key],2)+' kg MS/@':'—';
@@ -9806,7 +9812,7 @@ function statusSortValue(row,key){
   var v=row.getAttribute('data-sort-'+key);
   if(v===null||v===undefined)v=row.getAttribute('data-filter-'+key)||row.textContent||'';
   var n=parseFloat(String(v).replace(/\./g,'').replace(',','.'));
-  if(['ano','qtd','faturamento','capital','lucro','rent','rentmes','eficiencia','eficienciaChegada','status'].indexOf(key)>=0&&!isNaN(n))return n;
+  if(['ano','qtd','faturamento','capital','lucro','rent','rentmes','rc','eficiencia','eficienciaChegada','status'].indexOf(key)>=0&&!isNaN(n))return n;
   return _statusNorm(v);
 }
 function sortStatusRows(){
@@ -9943,7 +9949,7 @@ function renderLotes(){
     var placeholders={
       status:'Todos',ano:'Ano',confinamento:'Confinamento',modalidade:'Modalidade',origem:'Origem',vendedor:'Vendedor',lote:'Lote',b3:'B3',qtd:'Qtd',
       entrada:'Entrada',abate:'Abate',recebimento:'Receb.',faturamento:'R$',capital:'R$',
-      lucro:'R$',rent:'%',rentmes:'%',gmdOrigem:'kg/dia',gmdChegada:'kg/dia',gmcOrigem:'kg/dia',gmcChegada:'kg/dia',eficiencia:'kg MS/@ origem',eficienciaChegada:'kg MS/@ cheg.'
+      lucro:'R$',rent:'%',rentmes:'%',rc:'%',gmdOrigem:'kg/dia',gmdChegada:'kg/dia',gmcOrigem:'kg/dia',gmcChegada:'kg/dia',eficiencia:'kg MS/@ origem',eficienciaChegada:'kg MS/@ cheg.'
     };
     return STATUS_COLS.map(function(c){
       return c.key==='status'?filterStatus(c):filterInput(c,placeholders[c.key]||c.label);
@@ -10010,6 +10016,7 @@ function renderLotes(){
     var lucroVal=o?fmt(lucro):'—';
     var rentVal=o?fmtPct(metric.rent):'—';
     var rentMesVal=o?fmtPct(metric.rentMes):'—';
+    var rcVal=o&&metric.rendA?fmtNum(metric.rendA,2)+'%':'—';
     var modalidadeVal=o?calcModeloLabel(o.modeloConta||'msop'):'—';
     var gmdOrigemVal=o&&techStatus.gmdOrigem?fmtNum(techStatus.gmdOrigem,2)+' kg/dia':'—';
     var gmdChegadaVal=o&&techStatus.gmdChegada?fmtNum(techStatus.gmdChegada,2)+' kg/dia':'—';
@@ -10047,6 +10054,7 @@ function renderLotes(){
       +' data-filter-lucro="'+escHtml(lucroVal)+'"'
       +' data-filter-rent="'+escHtml(rentVal)+'"'
       +' data-filter-rentmes="'+escHtml(rentMesVal)+'"'
+      +' data-filter-rc="'+escHtml(rcVal)+'"'
       +' data-filter-gmdOrigem="'+escHtml(gmdOrigemVal)+'"'
       +' data-filter-gmdChegada="'+escHtml(gmdChegadaVal)+'"'
       +' data-filter-gmcOrigem="'+escHtml(gmcOrigemVal)+'"'
@@ -10070,6 +10078,7 @@ function renderLotes(){
       +' data-sort-lucro="'+(o?lucro:0)+'"'
       +' data-sort-rent="'+(o?metric.rent:0)+'"'
       +' data-sort-rentmes="'+(o?metric.rentMes:0)+'"'
+      +' data-sort-rc="'+(o&&metric.rendA?metric.rendA:0)+'"'
       +' data-sort-gmdOrigem="'+techStatus.gmdOrigem+'"'
       +' data-sort-gmdChegada="'+techStatus.gmdChegada+'"'
       +' data-sort-gmcOrigem="'+techStatus.gmcOrigem+'"'
@@ -10103,6 +10112,7 @@ function renderLotes(){
       +'<span class="profit" data-status-mobile-field="lucro"><em>Lucro</em>'+escHtml(fmtCompactMoney(lucro))+'</span>'
       +'<span class="rate" data-status-mobile-field="rent"><em>% oper.</em>'+escHtml(rentVal)+'</span>'
       +'<span class="rate" data-status-mobile-field="rentmes"><em>% mês</em>'+escHtml(rentMesVal)+'</span>'
+      +'<span class="rate" data-status-mobile-field="rc"><em>RC</em>'+escHtml(rcVal)+'</span>'
       +'<span data-status-mobile-field="gmdOrigem"><em>GMD origem</em>'+escHtml(gmdOrigemVal)+'</span>'
       +'<span data-status-mobile-field="gmdChegada"><em>GMD chegada</em>'+escHtml(gmdChegadaVal)+'</span>'
       +'<span data-status-mobile-field="gmcOrigem"><em>GMC origem</em>'+escHtml(gmcOrigemVal)+'</span>'
@@ -10130,6 +10140,7 @@ function renderLotes(){
       +statusCell('lucro',lucroVal,'money '+lucroCls)
       +statusCell('rent',rentVal,'rate')
       +statusCell('rentmes',rentMesVal,'rate')
+      +statusCell('rc',rcVal,'rate')
       +statusCell('gmdOrigem',gmdOrigemVal,'rate')
       +statusCell('gmdChegada',gmdChegadaVal,'rate')
       +statusCell('gmcOrigem',gmcOrigemVal,'rate')
@@ -10200,6 +10211,7 @@ function renderLotes(){
       addStatusFilterOption('lucro',fmt(metric.lucro));
       addStatusFilterOption('rent',fmtPct(metric.rent));
       addStatusFilterOption('rentmes',fmtPct(metric.rentMes));
+      if(metric.rendA)addStatusFilterOption('rc',fmtNum(metric.rendA,2)+'%');
       if(techStatus.gmdOrigem)addStatusFilterOption('gmdOrigem',fmtNum(techStatus.gmdOrigem,2)+' kg/dia');
       if(techStatus.gmdChegada)addStatusFilterOption('gmdChegada',fmtNum(techStatus.gmdChegada,2)+' kg/dia');
       if(techStatus.gmcOrigem)addStatusFilterOption('gmcOrigem',fmtNum(techStatus.gmcOrigem,3)+' kg/dia');
@@ -13160,13 +13172,13 @@ function buildConfigExportData(){
   return {tab:'Configurações',title:'Relatório de Configurações',file:'VM_Agro_Configuracoes_'+exportDateFile(),filters:[],sheets:sheets};
 }
 function buildStatusLotRows(){
-  var rows=[['Status','Ano','Confinamento','Modalidade','Origem','Vendedor','Lote','B3','Qtd','Entrada','Abate','Recebimento','Faturamento','Capital','Lucro','% operação','% ao mês','Efic. origem','Efic. chegada']];
+  var rows=[['Status','Ano','Confinamento','Modalidade','Origem','Vendedor','Lote','B3','Qtd','Entrada','Abate','Recebimento','Faturamento','Capital','Lucro','% operação','% ao mês','RC','Efic. origem','Efic. chegada']];
   [].forEach.call(document.querySelectorAll('#lote-list .status-row[data-lid]'),function(row){
     if(!exportVisible(row)||row.style.display==='none')return;
     rows.push([
       row.dataset.filterStatus||'',row.dataset.filterAno||'',row.dataset.filterConfinamento||'',row.dataset.filterModalidade||'',row.dataset.filterOrigem||'',row.dataset.filterVendedor||'',row.dataset.filterLote||'',row.dataset.filterB3||'',
       row.dataset.filterQtd||'',row.dataset.filterEntrada||'',row.dataset.filterAbate||'',row.dataset.filterRecebimento||'',
-      row.dataset.filterFaturamento||'',row.dataset.filterCapital||'',row.dataset.filterLucro||'',row.dataset.filterRent||'',row.dataset.filterRentmes||'',
+      row.dataset.filterFaturamento||'',row.dataset.filterCapital||'',row.dataset.filterLucro||'',row.dataset.filterRent||'',row.dataset.filterRentmes||'',row.dataset.filterRc||'',
       row.dataset.filterEficiencia||'',row.dataset.filterEficienciachegada||row.dataset.filterEficienciaChegada||''
     ]);
   });
@@ -14091,6 +14103,7 @@ restoreBasicSession();
     { key: 'lucro', label: 'Lucro', group: 'Financeiro' },
     { key: 'rent', label: '% operacao', group: 'Financeiro' },
     { key: 'rentmes', label: '% mes', group: 'Financeiro' },
+    { key: 'rc', label: 'RC', group: 'Tecnico' },
     { key: 'gmdOrigem', label: 'GMD origem', group: 'Tecnico' },
     { key: 'gmdChegada', label: 'GMD chegada', group: 'Tecnico' },
     { key: 'gmcOrigem', label: 'GMC origem', group: 'Tecnico' },
