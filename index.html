@@ -577,8 +577,11 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-bars{height:205px;min-width:560px;display:flex;align-items:flex-end;gap:12px;border-bottom:1px solid var(--border2);padding:0 8px;}
   .home-bar-month{height:100%;min-width:56px;flex:1;display:grid;grid-template-rows:minmax(0,1fr) 28px;gap:5px;}
   .home-bar-stack{display:flex;align-items:flex-end;justify-content:center;gap:4px;min-height:0;}
+  .home-bar-wrap{position:relative;display:flex;align-items:flex-end;height:100%;}
   .home-bar{width:11px;min-height:2px;border-radius:3px 3px 0 0;transition:opacity .15s;}
   .home-bar:hover{opacity:.72;}
+  .home-bar.neg{background:var(--red)!important;}
+  .home-bar-value{position:absolute;left:50%;bottom:calc(100% + 4px);transform:translateX(-50%);font-size:7.5px;font-style:normal;font-weight:850;line-height:1;color:var(--text-2);white-space:nowrap;pointer-events:none;}
   .home-bar.faturamento{background:var(--accent);}
   .home-bar.capital{background:var(--gold);}
   .home-bar.lucro{background:var(--green);}
@@ -599,6 +602,17 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-chart-period-mode{display:flex;height:36px;padding:3px;border:1px solid var(--border);border-radius:8px;background:#fff;}
   .home-chart-period-btn{padding:0 9px;border:0;border-radius:5px;background:transparent;color:var(--text-3);font-family:'Inter',sans-serif;font-size:10px;font-weight:850;cursor:pointer;white-space:nowrap;}
   .home-chart-period-btn.active{background:var(--accent);color:#fff;}
+  .home-bar-options{position:relative;}
+  .home-bar-options-btn{width:100%;height:36px;padding:0 10px;border:1px solid var(--border);border-radius:7px;background:#fff;color:var(--text);font-family:'Inter',sans-serif;font-size:10px;font-weight:850;cursor:pointer;white-space:nowrap;}
+  .home-bar-options-btn:hover,.home-bar-options-btn.active{border-color:var(--accent);color:var(--accent);}
+  .home-bar-options-panel{display:none;position:absolute;z-index:92;right:0;top:calc(100% + 7px);width:310px;padding:12px;border:1px solid var(--border);border-radius:11px;background:#fff;box-shadow:0 16px 34px rgba(13,27,42,.18);}
+  .home-bar-options-panel.open{display:block;}
+  .home-bar-options-title{font-size:12px;font-weight:850;color:var(--text);}
+  .home-bar-options-sub{margin:3px 0 9px;font-size:10px;color:var(--text-3);line-height:1.35;}
+  .home-bar-options-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;max-height:260px;overflow-y:auto;}
+  .home-bar-option{display:flex;align-items:center;gap:6px;padding:6px;border-radius:6px;color:var(--text-2);font-size:10px;font-weight:700;cursor:pointer;}
+  .home-bar-option:hover{background:var(--surface2);}
+  .home-bar-option input{width:15px;height:15px;accent-color:var(--accent);}
   .home-pie-slice{cursor:pointer;transition:opacity .15s;}
   .home-pie-slice:hover,.home-pie-slice.active{opacity:.72;}
   .home-chart-legend-button{width:100%;display:grid;grid-template-columns:9px minmax(0,1fr) auto;gap:7px;align-items:center;padding:3px 4px;border:0;border-radius:6px;background:transparent;color:var(--text-2);font-family:'Inter',sans-serif;font-size:10px;text-align:left;cursor:pointer;}
@@ -1422,6 +1436,8 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	    .home-chart-inline-controls .metrics{grid-column:1/-1;}
 	    .home-chart-period-mode{width:100%;}
 	    .home-chart-period-btn{flex:1;}
+	    .home-bar-options-panel{position:fixed;inset:auto 12px calc(64px + env(safe-area-inset-bottom));z-index:1101;width:auto;max-height:min(58dvh,calc(100dvh - 144px));overflow-y:auto;}
+	    .home-bar-options-grid{max-height:none;}
 	    .home-chart-control.metrics{grid-column:1/-1;}
 	    .home-chart-metric-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));}
 	    .home-chart-metric-btn{padding:0 6px;font-size:9px;}
@@ -6353,7 +6369,21 @@ var HOME_PIE_METRICS=[
   {key:'eficiencia',label:'Efic. biológica origem',format:'efic'},
   {key:'eficienciaChegada',label:'Efic. biológica chegada',format:'efic'}
 ];
-var homeChartState={inicio:'',fim:'',modo:'periodo',metricas:{faturamento:true,capital:true,lucro:true},pieMetrics:['qtd'],pieOptionsOpen:false};
+var HOME_BAR_METRICS=[
+  {key:'qtd',label:'Quantidade',format:'qtd',color:'#0D1B2A'},
+  {key:'faturamento',label:'Faturamento',format:'money',color:'#0D1B2A'},
+  {key:'capital',label:'Capital',format:'money',color:'#C9A24E'},
+  {key:'lucro',label:'Lucro',format:'money',color:'#6B7056'},
+  {key:'rent',label:'% lucro operação',format:'pct',color:'#1F5B8F'},
+  {key:'rentMes',label:'% lucro ao mês',format:'pct',color:'#9A8C7A'},
+  {key:'gmdOrigem',label:'GMD origem',format:'gmd',color:'#4D7C6B'},
+  {key:'gmdChegada',label:'GMD chegada',format:'gmd',color:'#3C6E91'},
+  {key:'gmcOrigem',label:'GMC origem',format:'gmc',color:'#8C6B4E'},
+  {key:'gmcChegada',label:'GMC chegada',format:'gmc',color:'#9E7FBA'},
+  {key:'eficiencia',label:'Efic. biológica origem',format:'efic',color:'#4E6B36'},
+  {key:'eficienciaChegada',label:'Efic. biológica chegada',format:'efic',color:'#B05D5D'}
+];
+var homeChartState={inicio:'',fim:'',modo:'periodo',metricas:{faturamento:true,capital:true,lucro:true},barOptionsOpen:false,pieMetrics:['qtd'],pieOptionsOpen:false};
 var homeOpenFilter='';
 function homeFilterSelected(type){return Array.isArray(homeFilterState[type])?homeFilterState[type]:[];}
 function homeFilterMatches(type,value){var selected=homeFilterSelected(type);return !selected.length||selected.indexOf(String(value))>=0;}
@@ -6412,9 +6442,20 @@ function homeChartSetMode(modo){
   renderHome();
 }
 function homeChartToggleMetric(metrica){
-  if(!Object.prototype.hasOwnProperty.call(homeChartState.metricas,metrica))return;
-  homeChartState.metricas[metrica]=!homeChartState.metricas[metrica];
-  if(!homeChartState.metricas.faturamento&&!homeChartState.metricas.capital&&!homeChartState.metricas.lucro)homeChartState.metricas[metrica]=true;
+  if(!HOME_BAR_METRICS.some(function(metric){return metric.key===metrica;}))return;
+  var active=HOME_BAR_METRICS.filter(function(metric){return homeChartState.metricas[metric.key];});
+  if(homeChartState.metricas[metrica]){
+    if(active.length===1){toast('Mantenha ao menos um indicador no gráfico.');return;}
+    homeChartState.metricas[metrica]=false;
+  }else{
+    if(active.length>=3){toast('Selecione no máximo três indicadores para o gráfico.');return;}
+    homeChartState.metricas[metrica]=true;
+  }
+  renderHome();
+}
+function homeBarToggleOptions(event){
+  if(event)event.stopPropagation();
+  homeChartState.barOptionsOpen=!homeChartState.barOptionsOpen;
   renderHome();
 }
 function homePieToggleOptions(event){
@@ -6448,7 +6489,7 @@ function homeChartFilterStatus(encoded){
   renderHome();
 }
 function homeChartResetControls(){
-  homeChartState.inicio='';homeChartState.fim='';homeChartState.modo='periodo';homeChartState.metricas={faturamento:true,capital:true,lucro:true};homeChartState.pieMetrics=['qtd'];homeChartState.pieOptionsOpen=false;
+  homeChartState.inicio='';homeChartState.fim='';homeChartState.modo='periodo';homeChartState.metricas={faturamento:true,capital:true,lucro:true};homeChartState.barOptionsOpen=false;homeChartState.pieMetrics=['qtd'];homeChartState.pieOptionsOpen=false;
   renderHome();
 }
 document.addEventListener('click',function(event){
@@ -6988,55 +7029,76 @@ function renderHomeDashboardNovo(lotes){
     metricas=metricas||homeChartState.metricas;
     chartOptions=chartOptions||{};
     var months={},modo=homeChartState.modo==='total'?'total':'periodo';
+    var selected=HOME_BAR_METRICS.filter(function(metric){return metricas[metric.key];});
+    if(!selected.length){selected=[HOME_BAR_METRICS[1]];metricas.faturamento=true;}
     rows.forEach(function(row){
       var iso=row.entrada||row.abate||row.recebimento||'';
       if(!iso||iso.length<7)return;
       var key=iso.slice(0,7);
-      if(!months[key])months[key]={faturamento:0,capital:0,lucro:0};
-      months[key].faturamento+=finNum(row.faturamento);
-      months[key].capital+=finNum(row.capital);
-      months[key].lucro+=finNum(row.lucro);
+      if(!months[key])months[key]=[];
+      months[key].push(row);
     });
     var keys=Object.keys(months).sort();
     var items=keys.map(function(key){
       var date=new Date(key+'-01T00:00:00');
-      return {label:isNaN(date.getTime())?key:date.toLocaleDateString('pt-BR',{month:'short',year:'2-digit'}).replace('.',''),values:months[key]};
+      return {label:isNaN(date.getTime())?key:date.toLocaleDateString('pt-BR',{month:'short',year:'2-digit'}).replace('.',''),values:sumRows(months[key])};
     });
     if(modo==='total'){
-      var total={faturamento:0,capital:0,lucro:0};
-      keys.forEach(function(key){total.faturamento+=months[key].faturamento;total.capital+=months[key].capital;total.lucro+=months[key].lucro;});
-      items=keys.length?[{label:'Total do período',values:total}]:[];
+      items=keys.length?[{label:'Total do período',values:sumRows(rows)}]:[];
     }
     var max=1;
     items.forEach(function(item){
-      if(metricas.faturamento)max=Math.max(max,Math.abs(item.values.faturamento));
-      if(metricas.capital)max=Math.max(max,Math.abs(item.values.capital));
-      if(metricas.lucro)max=Math.max(max,Math.abs(item.values.lucro));
+      selected.forEach(function(metric){max=Math.max(max,Math.abs(finNum(item.values[metric.key])));});
     });
+    function shortValue(metric,value){
+      var abs=Math.abs(value),sign=value<0?'-':'';
+      if(metric.format==='money'){
+        if(abs>=1000000)return sign+'R$ '+(abs/1000000).toLocaleString('pt-BR',{maximumFractionDigits:1})+'mi';
+        if(abs>=1000)return sign+'R$ '+(abs/1000).toLocaleString('pt-BR',{maximumFractionDigits:0})+'mil';
+        return sign+'R$ '+abs.toLocaleString('pt-BR',{maximumFractionDigits:0});
+      }
+      if(metric.format==='qtd')return Math.round(value).toLocaleString('pt-BR');
+      if(metric.format==='pct')return fmtNum(value*100,1)+'%';
+      if(metric.format==='gmd')return fmtNum(value,2);
+      if(metric.format==='gmc')return fmtNum(value,3);
+      if(metric.format==='efic')return fmtNum(value,1);
+      return fmtNum(value,1);
+    }
+    function fullValue(metric,value){
+      if(metric.format==='money')return fmt(value);
+      if(metric.format==='qtd')return numCab(value);
+      if(metric.format==='pct')return fmtPct(value);
+      if(metric.format==='gmd')return value?fmtNum(value,2)+' kg/dia':'—';
+      if(metric.format==='gmc')return value?fmtNum(value,3)+' kg/dia':'—';
+      if(metric.format==='efic')return value?fmtNum(value,2)+' kg MS/@':'—';
+      return fmtNum(value,2);
+    }
     var bars=items.map(function(item){
       var label=item.label,values=item.values;
-      function bar(value,cls){
+      function bar(metric){
+        var value=finNum(values[metric.key]);
         var height=value?Math.max(3,Math.round(Math.abs(value)/max*160)):2;
-        return '<span class="home-bar '+cls+(value<0?' neg':'')+'" style="height:'+height+'px" title="'+escHtml(label)+' · '+escHtml(fmt(value))+'"></span>';
+        return '<span class="home-bar-wrap" style="height:'+height+'px"><span class="home-bar'+(value<0?' neg':'')+'" style="height:100%;background:'+metric.color+'" title="'+escHtml(label)+' · '+escHtml(metric.label)+': '+escHtml(fullValue(metric,value))+'"></span><em class="home-bar-value">'+escHtml(shortValue(metric,value))+'</em></span>';
       }
-      return '<div class="home-bar-month"><div class="home-bar-stack">'+(metricas.faturamento?bar(values.faturamento,'faturamento'):'')+(metricas.capital?bar(values.capital,'capital'):'')+(metricas.lucro?bar(values.lucro,'lucro'):'')+'</div><div class="home-bar-label">'+escHtml(label)+'</div></div>';
+      return '<div class="home-bar-month"><div class="home-bar-stack">'+selected.map(bar).join('')+'</div><div class="home-bar-label">'+escHtml(label)+'</div></div>';
     }).join('');
     if(!bars)bars='<div class="home-empty-small" style="width:100%;align-self:center">Sem datas para montar o gráfico.</div>';
+    var options=HOME_BAR_METRICS.map(function(metric){
+      var checked=metricas[metric.key]?' checked':'';
+      return '<label class="home-bar-option"><input type="checkbox"'+checked+' onchange="homeChartToggleMetric(\''+metric.key+'\')"><span>'+escHtml(metric.label)+'</span></label>';
+    }).join('');
     var controls='<div class="home-chart-inline-controls">'
       +'<div class="home-chart-control"><label>Exibição</label><div class="home-chart-period-mode"><button type="button" class="home-chart-period-btn'+(modo==='periodo'?' active':'')+'" onclick="homeChartSetMode(\'periodo\')">Por período</button><button type="button" class="home-chart-period-btn'+(modo==='total'?' active':'')+'" onclick="homeChartSetMode(\'total\')">Total</button></div></div>'
       +'<div class="home-chart-control"><label for="home-chart-inicio">De</label><select id="home-chart-inicio" onchange="homeChartSetPeriod(\'inicio\',this.value)">'+(chartOptions.inicio||'')+'</select></div>'
       +'<div class="home-chart-control"><label for="home-chart-fim">Até</label><select id="home-chart-fim" onchange="homeChartSetPeriod(\'fim\',this.value)">'+(chartOptions.fim||'')+'</select></div>'
-      +'<div class="home-chart-control metrics"><label>Dados visíveis</label><div class="home-chart-metric-options">'
-        +'<button type="button" class="home-chart-metric-btn'+(metricas.faturamento?' active':'')+'" onclick="homeChartToggleMetric(\'faturamento\')">Faturamento</button>'
-        +'<button type="button" class="home-chart-metric-btn'+(metricas.capital?' active':'')+'" onclick="homeChartToggleMetric(\'capital\')">Capital</button>'
-        +'<button type="button" class="home-chart-metric-btn'+(metricas.lucro?' active':'')+'" onclick="homeChartToggleMetric(\'lucro\')">Lucro</button>'
-      +'</div></div>'
+      +'<div class="home-chart-control metrics"><label>Dados visíveis</label><div class="home-bar-options"><button type="button" class="home-bar-options-btn'+(homeChartState.barOptionsOpen?' active':'')+'" onclick="homeBarToggleOptions(event)">Dados visíveis · '+selected.length+'/3</button><div class="home-bar-options-panel'+(homeChartState.barOptionsOpen?' open':'')+'" onclick="event.stopPropagation()"><div class="home-bar-options-title">Dados visíveis</div><div class="home-bar-options-sub">Escolha até três indicadores para comparar no gráfico.</div><div class="home-bar-options-grid">'+options+'</div></div></div></div>'
       +'<button type="button" class="home-chart-clear" onclick="homeChartResetControls()">Limpar</button>'
     +'</div>';
     var note=modo==='total'?'Valores somados no período selecionado.':'Valores agrupados pela data de entrada.';
-    return '<div class="home-chart-panel"><div class="home-chart-head"><div><div class="home-chart-title">Resultado mês a mês</div><div class="home-chart-note">'+note+'</div></div></div>'
+    var title=modo==='total'?'Resultado total':'Resultado mês a mês';
+    return '<div class="home-chart-panel"><div class="home-chart-head"><div><div class="home-chart-title">'+title+'</div><div class="home-chart-note">'+note+'</div></div></div>'
       +controls+'<div class="home-bars-wrap"><div class="home-bars">'+bars+'</div></div>'
-      +'<div class="home-bars-legend">'+(metricas.faturamento?'<span><i style="background:var(--accent)"></i>Faturamento</span>':'')+(metricas.capital?'<span><i style="background:var(--gold)"></i>Capital</span>':'')+(metricas.lucro?'<span><i style="background:var(--green)"></i>Lucro</span>':'')+'</div></div>';
+      +'<div class="home-bars-legend">'+selected.map(function(metric){return '<span><i style="background:'+metric.color+'"></i>'+escHtml(metric.label)+'</span>';}).join('')+'</div></div>';
   }
 
   var rows=lotes.map(rowFromLote);
