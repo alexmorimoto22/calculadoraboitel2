@@ -4653,10 +4653,10 @@ let activeLoteDetailId=null;
 let activeOrcEditIndex=null;
 let activeLoteReturnStatus=null;
 let pillFilter='';
-var statusColumnFilters={status:'',ano:'',confinamento:'',modalidade:'',origem:'',vendedor:'',lote:'',b3:'',qtd:'',entrada:'',abate:'',recebimento:'',faturamento:'',capital:'',lucro:'',rent:'',rentmes:'',rc:'',gmdOrigem:'',gmdChegada:'',gmcOrigem:'',gmcChegada:'',eficiencia:'',eficienciaChegada:''};
+var statusColumnFilters={status:'',ano:'',confinamento:'',modalidade:'',raca:'',origem:'',vendedor:'',lote:'',b3:'',qtd:'',entrada:'',abate:'',recebimento:'',faturamento:'',capital:'',lucro:'',rent:'',rentmes:'',rc:'',gmdOrigem:'',gmdChegada:'',gmcOrigem:'',gmcChegada:'',eficiencia:'',eficienciaChegada:''};
 var STATUS_COLS=[
   {key:'status',label:'Status',w:88},{key:'ano',label:'Ano',w:52},{key:'confinamento',label:'Confinamento',w:112},
-  {key:'modalidade',label:'Modalidade',w:128},{key:'origem',label:'Origem',w:118},{key:'vendedor',label:'Vendedor',w:112},{key:'lote',label:'Lote',w:230},{key:'b3',label:'B3',w:136},{key:'qtd',label:'Qtd',w:62},
+  {key:'modalidade',label:'Modalidade',w:128},{key:'raca',label:'Raça',w:118},{key:'origem',label:'Origem',w:118},{key:'vendedor',label:'Vendedor',w:112},{key:'lote',label:'Lote',w:230},{key:'b3',label:'B3',w:136},{key:'qtd',label:'Qtd',w:62},
   {key:'entrada',label:'Entrada',w:92},{key:'abate',label:'Abate',w:92},{key:'recebimento',label:'Recebimento',w:104},
   {key:'faturamento',label:'Fat. lote',w:126},{key:'capital',label:'Capital',w:126},{key:'lucro',label:'Lucro',w:116},
   {key:'rent',label:'% Oper.',w:76},{key:'rentmes',label:'% Mês',w:76},{key:'rc',label:'RC',w:72},{key:'gmdOrigem',label:'GMD Origem',w:108},{key:'gmdChegada',label:'GMD Chegada',w:108},{key:'gmcOrigem',label:'GMC Origem',w:116},{key:'gmcChegada',label:'GMC Chegada',w:116},{key:'eficiencia',label:'Efic. Origem',w:116},{key:'eficienciaChegada',label:'Efic. Cheg.',w:116}
@@ -4669,7 +4669,7 @@ var statusSortState=(function(){
 })();
 if(!statusSortState.key){statusSortState={key:'status',dir:'asc'};}
 var HOME_TABLE_COLS=[
-  {key:'status',label:'Status'},{key:'ano',label:'Ano'},{key:'confinamento',label:'Confinamento'},{key:'modalidade',label:'Modalidade'},
+  {key:'status',label:'Status'},{key:'ano',label:'Ano'},{key:'confinamento',label:'Confinamento'},{key:'modalidade',label:'Modalidade'},{key:'raca',label:'Raça'},
   {key:'origem',label:'Origem'},{key:'vendedor',label:'Vendedor'},{key:'lote',label:'Lote'},{key:'b3',label:'B3'},
   {key:'qtd',label:'Qtd'},{key:'entrada',label:'Entrada'},{key:'abate',label:'Abate'},{key:'recebimento',label:'Recebimento'},
   {key:'faturamento',label:'Fat. lote'},{key:'capital',label:'Capital'},{key:'lucro',label:'Lucro'},{key:'rent',label:'% Oper.'},{key:'rentmes',label:'% Mês'},{key:'rc',label:'RC'},
@@ -4678,7 +4678,7 @@ var HOME_TABLE_COLS=[
 ];
 var HOME_COL_VISIBLE_KEY='vm_home_cols_visible_v1';
 var HOME_COL_WIDTH_KEY='vm_home_cols_width_v1';
-var HOME_COL_DEFAULT_WIDTHS={status:92,ano:58,confinamento:120,modalidade:126,origem:112,vendedor:118,lote:220,b3:130,qtd:72,entrada:96,abate:96,recebimento:106,faturamento:126,capital:126,lucro:116,rent:78,rentmes:78,rc:70,gmdOrigem:108,gmdChegada:108,gmcOrigem:112,gmcChegada:112,eficiencia:118,eficienciaChegada:118};
+var HOME_COL_DEFAULT_WIDTHS={status:92,ano:58,confinamento:120,modalidade:126,raca:118,origem:112,vendedor:118,lote:220,b3:130,qtd:72,entrada:96,abate:96,recebimento:106,faturamento:126,capital:126,lucro:116,rent:78,rentmes:78,rc:70,gmdOrigem:108,gmdChegada:108,gmcOrigem:112,gmcChegada:112,eficiencia:118,eficienciaChegada:118};
 var homeColumnResizeState=null;
 var homeColumnsPanelOpen=false;
 function getHomeColumnsVisible(){
@@ -6938,6 +6938,7 @@ function renderHomeDashboardNovo(lotes){
       statusLabel:(STATUS_CFG[status]||STATUS_CFG.embarque).label,
       confinamento:nomeConfinamento(l,o),
       modalidade:calcModeloLabel(o.modeloConta||'msop'),
+      raca:l.tipoCustom||labelRaca(l.tipoAnimal)||o.tipoCustom||labelRaca(o.tipoAnimal)||'A definir',
       origem:origemCompra,
       vendedor:vendedor?vendedor.nome:'A definir',
       lote:tituloLote(l,o),
@@ -7222,7 +7223,7 @@ function renderHomeDashboardNovo(lotes){
   var chartPeriodOptions={inicio:chartMonthOptions,fim:chartMonthOptionsFim};
   function homeTableCellHtml(key,row){
     if(key==='status')return '<span class="badge '+(STATUS_CFG[row.status]||{}).cls+'">'+escHtml(row.statusLabel)+'</span>';
-    if(key==='ano'||key==='confinamento'||key==='modalidade'||key==='origem'||key==='vendedor'||key==='b3')return escHtml(row[key]);
+    if(key==='ano'||key==='confinamento'||key==='modalidade'||key==='raca'||key==='origem'||key==='vendedor'||key==='b3')return escHtml(row[key]);
     if(key==='lote')return '<span class="strong">'+escHtml(row.lote)+'</span><div class="muted">'+escHtml(row.resultado)+'</div>';
     if(key==='qtd')return numCab(row.qtd);
     if(key==='entrada'||key==='abate'||key==='recebimento')return dateBR(row[key]);
@@ -10016,7 +10017,7 @@ function renderLotes(){
   }
   function statusFiltersHtml(){
     var placeholders={
-      status:'Todos',ano:'Ano',confinamento:'Confinamento',modalidade:'Modalidade',origem:'Origem',vendedor:'Vendedor',lote:'Lote',b3:'B3',qtd:'Qtd',
+      status:'Todos',ano:'Ano',confinamento:'Confinamento',modalidade:'Modalidade',raca:'Raça',origem:'Origem',vendedor:'Vendedor',lote:'Lote',b3:'B3',qtd:'Qtd',
       entrada:'Entrada',abate:'Abate',recebimento:'Receb.',faturamento:'R$',capital:'R$',
       lucro:'R$',rent:'%',rentmes:'%',rc:'%',gmdOrigem:'kg/dia',gmdChegada:'kg/dia',gmcOrigem:'kg/dia',gmcChegada:'kg/dia',eficiencia:'kg MS/@ origem',eficienciaChegada:'kg MS/@ cheg.'
     };
@@ -10088,6 +10089,7 @@ function renderLotes(){
     var rcRaw=finNum(zooStatus.rendA)||finNum(o&&o.rendA_pct);
     var rcVal=rcRaw?fmtNum(rcRaw,2)+'%':'—';
     var modalidadeVal=o?calcModeloLabel(o.modeloConta||'msop'):'—';
+    var racaVal=l.tipoCustom||labelRaca(l.tipoAnimal)||(o&&(o.tipoCustom||labelRaca(o.tipoAnimal)))||'A definir';
     var gmdOrigemVal=o&&techStatus.gmdOrigem?fmtNum(techStatus.gmdOrigem,2)+' kg/dia':'—';
     var gmdChegadaVal=o&&techStatus.gmdChegada?fmtNum(techStatus.gmdChegada,2)+' kg/dia':'—';
     var gmcOrigemVal=o&&techStatus.gmcOrigem?fmtNum(techStatus.gmcOrigem,3)+' kg/dia':'—';
@@ -10111,6 +10113,7 @@ function renderLotes(){
       +' data-filter-ano="'+escHtml(anoVal)+'"'
       +' data-filter-confinamento="'+escHtml(confinamento)+'"'
       +' data-filter-modalidade="'+escHtml(modalidadeVal)+'"'
+      +' data-filter-raca="'+escHtml(racaVal)+'"'
       +' data-filter-origem="'+escHtml(origemVal)+'"'
       +' data-filter-vendedor="'+escHtml(vendedorVal)+'"'
       +' data-filter-lote="'+escHtml(filtroLote)+'"'
@@ -10135,6 +10138,7 @@ function renderLotes(){
       +' data-sort-ano="'+escHtml(anoVal)+'"'
       +' data-sort-confinamento="'+escHtml(confinamento)+'"'
       +' data-sort-modalidade="'+escHtml(modalidadeVal)+'"'
+      +' data-sort-raca="'+escHtml(racaVal)+'"'
       +' data-sort-origem="'+escHtml(origemVal)+'"'
       +' data-sort-vendedor="'+escHtml(vendedorVal)+'"'
       +' data-sort-lote="'+escHtml(numeroLote+' '+cardTitle)+'"'
@@ -10183,6 +10187,7 @@ function renderLotes(){
       +'<span class="rate" data-status-mobile-field="rent"><em>% oper.</em>'+escHtml(rentVal)+'</span>'
       +'<span class="rate" data-status-mobile-field="rentmes"><em>% mês</em>'+escHtml(rentMesVal)+'</span>'
       +'<span class="rate" data-status-mobile-field="rc"><em>RC</em>'+escHtml(rcVal)+'</span>'
+      +'<span data-status-mobile-field="raca"><em>Raça</em>'+escHtml(racaVal)+'</span>'
       +'<span data-status-mobile-field="gmdOrigem"><em>GMD origem</em>'+escHtml(gmdOrigemVal)+'</span>'
       +'<span data-status-mobile-field="gmdChegada"><em>GMD chegada</em>'+escHtml(gmdChegadaVal)+'</span>'
       +'<span data-status-mobile-field="gmcOrigem"><em>GMC origem</em>'+escHtml(gmcOrigemVal)+'</span>'
@@ -10197,6 +10202,7 @@ function renderLotes(){
       +statusCell('ano',anoVal,'muted')
       +statusCell('confinamento',confinamento,'muted')
       +statusCell('modalidade',modalidadeVal,'muted')
+      +statusCell('raca',racaVal,'muted')
       +statusCell('origem',origemVal,'muted')
       +statusCell('vendedor',vendedorVal,'muted')
       +loteCell
@@ -10266,6 +10272,7 @@ function renderLotes(){
     addStatusFilterOption('ano',statusYear(entradaIso,o));
     addStatusFilterOption('confinamento',confinamento);
     if(o)addStatusFilterOption('modalidade',calcModeloLabel(o.modeloConta||'msop'));
+    addStatusFilterOption('raca',l.tipoCustom||labelRaca(l.tipoAnimal)||(o&&(o.tipoCustom||labelRaca(o.tipoAnimal)))||'A definir');
     addStatusFilterOption('origem',origemVal);
     addStatusFilterOption('vendedor',(vend&&vend.nome)?vend.nome:'A definir');
     addStatusFilterOption('lote','Lote '+numeroLote+(cardTitle?' '+cardTitle:''));
@@ -13243,11 +13250,11 @@ function buildConfigExportData(){
   return {tab:'Configurações',title:'Relatório de Configurações',file:'VM_Agro_Configuracoes_'+exportDateFile(),filters:[],sheets:sheets};
 }
 function buildStatusLotRows(){
-  var rows=[['Status','Ano','Confinamento','Modalidade','Origem','Vendedor','Lote','B3','Qtd','Entrada','Abate','Recebimento','Faturamento','Capital','Lucro','% operação','% ao mês','RC','Efic. origem','Efic. chegada']];
+  var rows=[['Status','Ano','Confinamento','Modalidade','Raça','Origem','Vendedor','Lote','B3','Qtd','Entrada','Abate','Recebimento','Faturamento','Capital','Lucro','% operação','% ao mês','RC','Efic. origem','Efic. chegada']];
   [].forEach.call(document.querySelectorAll('#lote-list .status-row[data-lid]'),function(row){
     if(!exportVisible(row)||row.style.display==='none')return;
     rows.push([
-      row.dataset.filterStatus||'',row.dataset.filterAno||'',row.dataset.filterConfinamento||'',row.dataset.filterModalidade||'',row.dataset.filterOrigem||'',row.dataset.filterVendedor||'',row.dataset.filterLote||'',row.dataset.filterB3||'',
+      row.dataset.filterStatus||'',row.dataset.filterAno||'',row.dataset.filterConfinamento||'',row.dataset.filterModalidade||'',row.dataset.filterRaca||'',row.dataset.filterOrigem||'',row.dataset.filterVendedor||'',row.dataset.filterLote||'',row.dataset.filterB3||'',
       row.dataset.filterQtd||'',row.dataset.filterEntrada||'',row.dataset.filterAbate||'',row.dataset.filterRecebimento||'',
       row.dataset.filterFaturamento||'',row.dataset.filterCapital||'',row.dataset.filterLucro||'',row.dataset.filterRent||'',row.dataset.filterRentmes||'',row.dataset.filterRc||'',
       row.dataset.filterEficiencia||'',row.dataset.filterEficienciachegada||row.dataset.filterEficienciaChegada||''
@@ -14162,6 +14169,7 @@ restoreBasicSession();
     { key: 'qtd', label: 'Quantidade', group: 'Operacao' },
     { key: 'boitel', label: 'Boitel', group: 'Operacao' },
     { key: 'modalidade', label: 'Modalidade', group: 'Operacao' },
+    { key: 'raca', label: 'Raça', group: 'Operacao' },
     { key: 'origem', label: 'Origem', group: 'Operacao' },
     { key: 'vendedor', label: 'Vendedor', group: 'Operacao' },
     { key: 'entrada', label: 'Entrada', group: 'Datas' },
