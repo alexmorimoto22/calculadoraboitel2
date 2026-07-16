@@ -5520,9 +5520,14 @@ function loadConfig(){
   return c;
 }
 function saveConfig(c){localStorage.setItem(CONFIG_KEY,JSON.stringify(c));}
-function getFrigs(){return loadConfig().frigorificos;}
-function getVends(){return loadConfig().vendedores||[];}
-function getBoiteis(){return loadConfig().boiteis||[];}
+function sortByName(items){
+  return (items||[]).slice().sort(function(a,b){
+    return String((a&&a.nome)||'').localeCompare(String((b&&b.nome)||''),'pt-BR',{sensitivity:'base',numeric:true});
+  });
+}
+function getFrigs(){return sortByName(loadConfig().frigorificos);}
+function getVends(){return sortByName(loadConfig().vendedores||[]);}
+function getBoiteis(){return sortByName(loadConfig().boiteis||[]);}
 function getParams(){var p=Object.assign({},dfParams(),loadConfig().params||{});if(p&&typeof p.funrural==='number'&&p.funrural>0&&p.funrural<0.05)p.funrural=p.funrural*100;return p;}
 function neutralizarAjusteFreteRealizadoLegado(lote){
   if(!lote)return false;
@@ -6416,7 +6421,8 @@ function normalizarFrigorifico(f){
     bonusMode:f.bonusMode==='pct'?'pct':'val',
     bonus:parseFloat(f.bonus!==undefined?f.bonus:oldBonus)||0,
     descontoMode:f.descontoMode==='pct'?'pct':'val',
-    desconto:parseFloat(f.desconto!==undefined?f.desconto:(f.descPeso||0))||0
+    desconto:parseFloat(f.desconto!==undefined?f.desconto:(f.descPeso||0))||0,
+    updatedAt:f.updatedAt||''
   };
 }
 function dfVends(){return[{id:'vend_alexmorimoto',nome:'alexmorimoto',tel:'',regiao:'',tipo:'misto',obs:'Configuração inicial para testes'}];}
@@ -6441,6 +6447,12 @@ function fmtAt(v){return v.toLocaleString('pt-BR',{minimumFractionDigits:2,maxim
 function fmtKg(v){return v.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg';}
 function fmtPct(v){if(v===null||v===undefined||isNaN(v))return '—';return(v*100).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';}
 function fmtNum(v,d=2){if(v===null||v===undefined||isNaN(v))return '—';return (parseFloat(v)||0).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function fmtLastUpdate(iso){
+  if(!iso)return 'Não registrada';
+  var d=new Date(iso);
+  if(isNaN(d.getTime()))return 'Não registrada';
+  return d.toLocaleDateString('pt-BR')+' às '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+}
 function fmtM(v){if(Math.abs(v)>=1000000)return(v/1000000).toFixed(1)+'M';if(Math.abs(v)>=1000)return(v/1000).toFixed(0)+'k';return fmt(v);}
 function fmtCompactMoney(v){
   v=parseFloat(v)||0;
@@ -10021,7 +10033,7 @@ function toggleCustomCost(id){
 }
 function renderCustomCostList(){
   const el=document.getElementById('custom-cost-list');if(!el)return;
-  const items=(getParams().customCosts||[]);
+  const items=sortByName(getParams().customCosts||[]);
   const tipoLabels={por_animal:'R$/animal',por_animal_dia:'R$/animal/dia',pct_compra:'% compra',por_lote:'R$/lote'};
   if(!items.length){el.innerHTML='<div style="text-align:center;padding:16px;font-size:12px;color:var(--text-3);">Nenhum custo adicional. Adicione para incluir no cálculo.</div>';return;}
   el.innerHTML=items.map(function(c){
@@ -13166,6 +13178,7 @@ function renderFrigList(){
       +'<div class="ic-header">'
         +'<div><div class="ic-name">'+f.nome+'</div>'
         +'<div class="ic-sub">Bônus: '+fmtFrigAdjustment(f.bonus,f.bonusMode)+' · Desconto: '+fmtFrigAdjustment(f.desconto,f.descontoMode)+'</div>'
+        +'<div class="ic-sub">Última atualização: '+escHtml(fmtLastUpdate(f.updatedAt))+'</div>'
         +'</div>'
         +'<div style="display:flex;gap:6px;">'
           +'<button class="btn-ic-edit" onclick="editarFrig(\''+f.id+'\')">Editar</button>'
@@ -13231,7 +13244,8 @@ function salvarFrigorifico(){
     bonusMode:getFrigFieldMode('bonus'),
     bonus:finInputNum('ff-bonus'),
     descontoMode:getFrigFieldMode('desconto'),
-    desconto:finInputNum('ff-desconto')
+    desconto:finInputNum('ff-desconto'),
+    updatedAt:new Date().toISOString()
   };
   if(editId){
     const i=cfg.frigorificos.findIndex(f=>f.id===editId);
@@ -13255,7 +13269,8 @@ function renderBoitelList(){
     out+='<div class="item-card">'
       +'<div class="ic-header">'
         +'<div><div class="ic-name">'+b.nome+'</div>'
-        +'<div class="ic-sub">Prazo receb.: '+(b.prazoPag||0)+' dias</div></div>'
+        +'<div class="ic-sub">Prazo receb.: '+(b.prazoPag||0)+' dias</div>'
+        +'<div class="ic-sub">Última atualização: '+escHtml(fmtLastUpdate(b.updatedAt))+'</div></div>'
         +'<div style="display:flex;gap:6px;">'
           +'<button class="btn-ic-edit" onclick="editarBoitel(\''+b.id+'\')">Editar</button>'
           +'<button class="btn-ic-del" onclick="deletarBoitel(\''+b.id+'\')">Excluir</button>'
@@ -13316,7 +13331,8 @@ function salvarBoitel(){
     opDia:finInputNum('bf-opDia'),
     sanidade:finInputNum('bf-sanidade'),
     custoArrobaProd:finInputNum('bf-custoArrobaProd'),
-    prazoPag:Math.round(finInputNum('bf-prazoPag'))
+    prazoPag:Math.round(finInputNum('bf-prazoPag')),
+    updatedAt:new Date().toISOString()
   };
   if(editId){
     var i=cfg.boiteis.findIndex(function(b){return b.id===editId;});
@@ -13341,7 +13357,7 @@ function deletarBoitel(id){
 }
 
 /* ─ TRANSPORTADORAS ───────────────────────────── */
-function getTransportadoras(){return loadConfig().transportadoras||[];}
+function getTransportadoras(){return sortByName(loadConfig().transportadoras||[]);}
 function renderTransportadoraList(){
   var el=document.getElementById('transportadora-list');
   if(!el)return;
@@ -13459,11 +13475,12 @@ function aplicarTecladoNumerico(root){
 
 function populateTipoSelects(){
   var racas=getRacas();
+  var racaKeys=Object.keys(racas).sort(function(a,b){return String(racas[a].nome||'').localeCompare(String(racas[b].nome||''),'pt-BR',{sensitivity:'base',numeric:true});});
   var calcSel=document.getElementById('tipoAnimal');
   if(calcSel&&calcSel.tagName==='SELECT'){
     var cur=calcSel.value;
     calcSel.innerHTML='<option value="">Sem raça definida</option>';
-    Object.keys(racas).forEach(function(k){
+    racaKeys.forEach(function(k){
       var o=document.createElement('option');o.value=k;o.textContent=racas[k].nome;
       if(k===cur)o.selected=true;calcSel.appendChild(o);
     });
@@ -13472,7 +13489,7 @@ function populateTipoSelects(){
   if(fSel){
     var cur2=fSel.value;
     fSel.innerHTML='<option value="">Todos os tipos</option>';
-    Object.keys(racas).forEach(function(k){
+    racaKeys.forEach(function(k){
       var o2=document.createElement('option');o2.value=k;o2.textContent=racas[k].nome;
       if(k===cur2)o2.selected=true;fSel.appendChild(o2);
     });
@@ -13492,8 +13509,9 @@ function renderRacasList(){
   var el=document.getElementById('racas-list');
   if(!el)return;
   var r=getRacas();
+  var racaKeys=Object.keys(r).sort(function(a,b){return String(r[a].nome||'').localeCompare(String(r[b].nome||''),'pt-BR',{sensitivity:'base',numeric:true});});
   var out='<div style="display:grid;grid-template-columns:100px repeat(5,1fr) 28px;gap:6px;align-items:center;font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;"><div>Raça</div><div>Rend.E %</div><div>Rend.A %</div><div>GMD</div><div>MS %PV</div><div>+Quebra %</div><div></div></div>';
-  Object.keys(r).forEach(function(k){
+  racaKeys.forEach(function(k){
     var a=r[k];
     out+='<div class="raca-row" data-key="'+k+'" style="display:grid;grid-template-columns:100px repeat(5,1fr) 28px;gap:6px;align-items:center;margin-bottom:6px;">'
       +'<div style="font-size:12px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+a.nome+'">'+a.nome+'</div>'
