@@ -560,6 +560,11 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-column-option{display:flex;align-items:center;gap:6px;padding:5px;border-radius:6px;font-size:10px;font-weight:650;color:var(--text-2);cursor:pointer;}
   .home-column-option:hover{background:var(--surface2);}
   .home-column-option input{accent-color:var(--accent);}
+  .columns-select-tools{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px;padding:7px 0;border-top:1px solid rgba(216,203,181,.55);border-bottom:1px solid rgba(216,203,181,.55);}
+  .columns-select-all{display:flex;align-items:center;gap:7px;color:var(--text);font-size:10px;font-weight:850;cursor:pointer;}
+  .columns-select-all input{width:16px;height:16px;accent-color:var(--accent);}
+  .columns-clear-btn{border:0;background:transparent;color:var(--text-3);font-family:'Inter',sans-serif;font-size:10px;font-weight:800;cursor:pointer;padding:3px 0;}
+  .columns-clear-btn:hover{color:var(--accent);}
   .home-charts-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px;}
   .home-chart-panel{container-type:inline-size;background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:0 4px 18px rgba(13,27,42,.05);min-width:0;}
   .home-chart-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;}
@@ -1010,11 +1015,12 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .status-view-actions{position:relative;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
   .status-view-btn{height:32px;border:1px solid var(--border);border-radius:9px;background:#fff;color:var(--text);font-family:'Inter',sans-serif;font-size:10px;font-weight:850;letter-spacing:.2px;padding:0 11px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(13,27,42,.04);}
   .status-view-btn:hover{border-color:var(--accent);color:var(--accent);}
-  .status-column-panel{position:absolute;right:0;top:calc(100% + 8px);z-index:30;width:260px;background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 18px 42px rgba(13,27,42,.18);padding:14px;display:none;}
+  .status-column-panel{position:absolute;right:0;top:calc(100% + 8px);z-index:30;width:min(520px,calc(100vw - 36px));background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 18px 42px rgba(13,27,42,.18);padding:14px;display:none;}
   .status-column-panel.open{display:block;}
   .status-column-panel-title{font-size:13px;font-weight:850;color:var(--text);margin-bottom:6px;}
   .status-column-panel-sub{font-size:10px;color:var(--text-3);line-height:1.35;margin-bottom:10px;}
-  .status-column-option{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid rgba(216,203,181,.55);padding:8px 0;font-size:11px;font-weight:700;color:var(--text-2);}
+  .status-column-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px;max-height:330px;overflow-y:auto;}
+  .status-column-option{display:flex;align-items:center;justify-content:flex-start;gap:8px;border-top:1px solid rgba(216,203,181,.55);padding:8px 0;font-size:11px;font-weight:700;color:var(--text-2);}
   .status-column-option input{width:16px;height:16px;accent-color:var(--accent);}
   .status-sort-tools{display:flex;align-items:center;gap:6px;}
   .status-sort-tools select{height:32px;border:1px solid var(--border);border-radius:9px;background:#fff;color:var(--text);font-size:10px;font-weight:750;padding:0 28px 0 10px;outline:none;}
@@ -4653,13 +4659,13 @@ let activeLoteDetailId=null;
 let activeOrcEditIndex=null;
 let activeLoteReturnStatus=null;
 let pillFilter='';
-var statusColumnFilters={status:'',ano:'',confinamento:'',modalidade:'',raca:'',origem:'',vendedor:'',lote:'',b3:'',qtd:'',entrada:'',abate:'',recebimento:'',faturamento:'',capital:'',lucro:'',rent:'',rentmes:'',rc:'',gmdOrigem:'',gmdChegada:'',gmcOrigem:'',gmcChegada:'',eficiencia:'',eficienciaChegada:''};
+var statusColumnFilters={status:'',ano:'',confinamento:'',modalidade:'',raca:'',origem:'',vendedor:'',lote:'',b3:'',qtd:'',entrada:'',abate:'',recebimento:'',faturamento:'',capital:'',lucro:'',rent:'',rentmes:'',rcExpectativa:'',rcRealizado:'',gmdOrigem:'',gmdChegada:'',gmcOrigem:'',gmcChegada:'',eficiencia:'',eficienciaChegada:''};
 var STATUS_COLS=[
   {key:'status',label:'Status',w:88},{key:'ano',label:'Ano',w:52},{key:'confinamento',label:'Confinamento',w:112},
   {key:'modalidade',label:'Modalidade',w:128},{key:'raca',label:'Raça',w:118},{key:'origem',label:'Origem',w:118},{key:'vendedor',label:'Vendedor',w:112},{key:'lote',label:'Lote',w:230},{key:'b3',label:'B3',w:136},{key:'qtd',label:'Qtd',w:62},
   {key:'entrada',label:'Entrada',w:92},{key:'abate',label:'Abate',w:92},{key:'recebimento',label:'Recebimento',w:104},
   {key:'faturamento',label:'Fat. lote',w:126},{key:'capital',label:'Capital',w:126},{key:'lucro',label:'Lucro',w:116},
-  {key:'rent',label:'% Oper.',w:76},{key:'rentmes',label:'% Mês',w:76},{key:'rc',label:'RC',w:72},{key:'gmdOrigem',label:'GMD Origem',w:108},{key:'gmdChegada',label:'GMD Chegada',w:108},{key:'gmcOrigem',label:'GMC Origem',w:116},{key:'gmcChegada',label:'GMC Chegada',w:116},{key:'eficiencia',label:'Efic. Origem',w:116},{key:'eficienciaChegada',label:'Efic. Cheg.',w:116}
+  {key:'rent',label:'% Oper.',w:76},{key:'rentmes',label:'% Mês',w:76},{key:'rcExpectativa',label:'RC expectativa',w:108},{key:'rcRealizado',label:'RC realizado',w:100},{key:'gmdOrigem',label:'GMD Origem',w:108},{key:'gmdChegada',label:'GMD Chegada',w:108},{key:'gmcOrigem',label:'GMC Origem',w:116},{key:'gmcChegada',label:'GMC Chegada',w:116},{key:'eficiencia',label:'Efic. Origem',w:116},{key:'eficienciaChegada',label:'Efic. Cheg.',w:116}
 ];
 var STATUS_COL_VISIBLE_KEY='vm_status_cols_visible_v1';
 var STATUS_COL_WIDTH_KEY='vm_status_cols_width_v1';
@@ -4672,13 +4678,13 @@ var HOME_TABLE_COLS=[
   {key:'status',label:'Status'},{key:'ano',label:'Ano'},{key:'confinamento',label:'Confinamento'},{key:'modalidade',label:'Modalidade'},{key:'raca',label:'Raça'},
   {key:'origem',label:'Origem'},{key:'vendedor',label:'Vendedor'},{key:'lote',label:'Lote'},{key:'b3',label:'B3'},
   {key:'qtd',label:'Qtd'},{key:'entrada',label:'Entrada'},{key:'abate',label:'Abate'},{key:'recebimento',label:'Recebimento'},
-  {key:'faturamento',label:'Fat. lote'},{key:'capital',label:'Capital'},{key:'lucro',label:'Lucro'},{key:'rent',label:'% Oper.'},{key:'rentmes',label:'% Mês'},{key:'rc',label:'RC'},
+  {key:'faturamento',label:'Fat. lote'},{key:'capital',label:'Capital'},{key:'lucro',label:'Lucro'},{key:'rent',label:'% Oper.'},{key:'rentmes',label:'% Mês'},{key:'rcExpectativa',label:'RC expectativa'},{key:'rcRealizado',label:'RC realizado'},
   {key:'gmdOrigem',label:'GMD origem'},{key:'gmdChegada',label:'GMD chegada'},{key:'gmcOrigem',label:'GMC origem'},{key:'gmcChegada',label:'GMC chegada'},
   {key:'eficiencia',label:'Efic. origem'},{key:'eficienciaChegada',label:'Efic. chegada'}
 ];
 var HOME_COL_VISIBLE_KEY='vm_home_cols_visible_v1';
 var HOME_COL_WIDTH_KEY='vm_home_cols_width_v1';
-var HOME_COL_DEFAULT_WIDTHS={status:92,ano:58,confinamento:120,modalidade:126,raca:118,origem:112,vendedor:118,lote:220,b3:130,qtd:72,entrada:96,abate:96,recebimento:106,faturamento:126,capital:126,lucro:116,rent:78,rentmes:78,rc:70,gmdOrigem:108,gmdChegada:108,gmcOrigem:112,gmcChegada:112,eficiencia:118,eficienciaChegada:118};
+var HOME_COL_DEFAULT_WIDTHS={status:92,ano:58,confinamento:120,modalidade:126,raca:118,origem:112,vendedor:118,lote:220,b3:130,qtd:72,entrada:96,abate:96,recebimento:106,faturamento:126,capital:126,lucro:116,rent:78,rentmes:78,rcExpectativa:108,rcRealizado:100,gmdOrigem:108,gmdChegada:108,gmcOrigem:112,gmcChegada:112,eficiencia:118,eficienciaChegada:118};
 var homeColumnResizeState=null;
 var homeColumnsPanelOpen=false;
 function getHomeColumnsVisible(){
@@ -4692,6 +4698,21 @@ function setHomeColumnVisible(key,visible){
   var saved={};
   try{saved=JSON.parse(localStorage.getItem(HOME_COL_VISIBLE_KEY)||'{}')||{};}catch(e){saved={};}
   saved[key]=visible!==false;
+  try{localStorage.setItem(HOME_COL_VISIBLE_KEY,JSON.stringify(saved));}catch(e){}
+  homeColumnsPanelOpen=true;
+  renderHome();
+}
+function setHomeAllColumns(checked){
+  var saved={};
+  HOME_TABLE_COLS.forEach(function(col){saved[col.key]=!!checked;});
+  if(!checked){saved.status=true;saved.lote=true;}
+  try{localStorage.setItem(HOME_COL_VISIBLE_KEY,JSON.stringify(saved));}catch(e){}
+  homeColumnsPanelOpen=true;
+  renderHome();
+}
+function clearHomeColumns(){
+  var saved={};
+  HOME_TABLE_COLS.forEach(function(col){saved[col.key]=col.key==='status'||col.key==='lote';});
   try{localStorage.setItem(HOME_COL_VISIBLE_KEY,JSON.stringify(saved));}catch(e){}
   homeColumnsPanelOpen=true;
   renderHome();
@@ -4739,8 +4760,9 @@ function endHomeColumnResize(){
 }
 function homeColumnsPanelHtml(){
   var visible=getHomeColumnsVisible();
+  var allSelected=HOME_TABLE_COLS.every(function(col){return visible[col.key]!==false;});
   return '<div class="home-column-actions"><button type="button" class="home-column-btn" onclick="toggleHomeColumnsPanel()">Colunas visíveis</button><button type="button" class="home-column-btn" onclick="resetHomeColumns()">Restaurar</button>'
-    +'<div class="home-column-panel'+(homeColumnsPanelOpen?' open':'')+'"><div class="home-column-panel-title">Colunas visíveis</div><div class="home-column-panel-sub">Selecione o que aparece na tabela da Home.</div><div class="home-column-options">'
+    +'<div class="home-column-panel'+(homeColumnsPanelOpen?' open':'')+'"><div class="home-column-panel-title">Colunas visíveis</div><div class="home-column-panel-sub">Selecione o que aparece na tabela da Home.</div><div class="columns-select-tools"><label class="columns-select-all"><input type="checkbox"'+(allSelected?' checked':'')+' onchange="setHomeAllColumns(this.checked)"><span>Selecionar tudo</span></label><button type="button" class="columns-clear-btn" onclick="clearHomeColumns()">Limpar</button></div><div class="home-column-options">'
     +HOME_TABLE_COLS.map(function(col){return '<label class="home-column-option"><input type="checkbox"'+(visible[col.key]!==false?' checked':'')+' onchange="setHomeColumnVisible(\''+col.key+'\',this.checked)"><span>'+escHtml(col.label)+'</span></label>';}).join('')
     +'</div></div></div>';
 }
@@ -6410,7 +6432,8 @@ var HOME_PIE_METRICS=[
   {key:'lucro',label:'Lucro',format:'money'},
   {key:'rent',label:'% lucro operação',format:'pct'},
   {key:'rentMes',label:'% lucro ao mês',format:'pct'},
-  {key:'rc',label:'RC',format:'pct'},
+  {key:'rcExpectativa',label:'RC expectativa',format:'pct'},
+  {key:'rcRealizado',label:'RC realizado',format:'pct'},
   {key:'gmdOrigem',label:'GMD origem',format:'gmd'},
   {key:'gmdChegada',label:'GMD chegada',format:'gmd'},
   {key:'gmcOrigem',label:'GMC origem',format:'gmc'},
@@ -6425,7 +6448,8 @@ var HOME_BAR_METRICS=[
   {key:'lucro',label:'Lucro',format:'money',color:'#6B7056'},
   {key:'rent',label:'% lucro operação',format:'pct',color:'#1F5B8F'},
   {key:'rentMes',label:'% lucro ao mês',format:'pct',color:'#9A8C7A'},
-  {key:'rc',label:'RC',format:'pct',color:'#6C7A89'},
+  {key:'rcExpectativa',label:'RC expectativa',format:'pct',color:'#6C7A89'},
+  {key:'rcRealizado',label:'RC realizado',format:'pct',color:'#A06B4E'},
   {key:'gmdOrigem',label:'GMD origem',format:'gmd',color:'#4D7C6B'},
   {key:'gmdChegada',label:'GMD chegada',format:'gmd',color:'#3C6E91'},
   {key:'gmcOrigem',label:'GMC origem',format:'gmc',color:'#8C6B4E'},
@@ -6917,6 +6941,7 @@ function renderHomeDashboardNovo(lotes){
     if(!receb&&entrada)receb=isoFromDate(_addDias(entrada,(parseInt(o.dias)||0)+(parseInt(o.prazoPag)||0)));
     var useRealizedTechnical=statusRealizadoLote(l).key==='complete';
     var zoo=useRealizedTechnical?zootecRealCalc(l,o,aj):biometriaSimuladaOrc(o);
+    var zooRealizado=zootecRealCalc(l,o,aj);
     var tech=indicadoresTecnicosLote(zoo);
     var qtd=parseFloat(o.qtd||l.qtd)||0;
     var origemCompra=l.origemCompra||l.origem||o.origemCompra_orc||o.origemCompra||'A definir';
@@ -6952,7 +6977,8 @@ function renderHomeDashboardNovo(lotes){
       lucro:metric.lucro||0,
       rent:metric.rent||0,
       rentMes:metric.rentMes||(prazo>0?(metric.rent||0)/(prazo/30):0),
-      rc:finNum(zoo.rendA)||finNum(o.rendA_pct),
+      rcExpectativa:finNum(o.rendA_pct),
+      rcRealizado:['abatido','recebido'].indexOf(status)>=0?finNum(zooRealizado.rendA):0,
       prazo:prazo,
       gmd:tech.gmdChegada||0,
       gmdOrigem:tech.gmdOrigem||0,
@@ -6965,8 +6991,8 @@ function renderHomeDashboardNovo(lotes){
     };
   }
   function sumRows(rows){
-    var out={lotes:rows.length,qtd:0,faturamento:0,capital:0,lucro:0,rent:0,rentMes:0,rc:0,prazoMedio:0,gmd:0,gmdOrigem:0,gmdChegada:0,gmcOrigem:0,gmcChegada:0,eficiencia:0,eficienciaChegada:0};
-    var prazoPeso=0,prazoBase=0,rcPeso=0,gmdPeso=0,gmdOrigemPeso=0,gmdChegadaPeso=0,gmcOrigemPeso=0,gmcChegadaPeso=0,eficPeso=0,eficChegadaPeso=0;
+    var out={lotes:rows.length,qtd:0,faturamento:0,capital:0,lucro:0,rent:0,rentMes:0,rcExpectativa:0,rcRealizado:0,prazoMedio:0,gmd:0,gmdOrigem:0,gmdChegada:0,gmcOrigem:0,gmcChegada:0,eficiencia:0,eficienciaChegada:0};
+    var prazoPeso=0,prazoBase=0,rcExpectativaPeso=0,rcRealizadoPeso=0,rcRealizadoQtd=0,gmdPeso=0,gmdOrigemPeso=0,gmdChegadaPeso=0,gmcOrigemPeso=0,gmcChegadaPeso=0,eficPeso=0,eficChegadaPeso=0;
     rows.forEach(function(r){
       out.qtd+=r.qtd;
       out.faturamento+=r.faturamento;
@@ -6974,7 +7000,8 @@ function renderHomeDashboardNovo(lotes){
       out.lucro+=r.lucro;
       if(r.capital>0&&r.prazo>0){prazoPeso+=r.prazo*r.capital;prazoBase+=r.capital;}
       if(r.qtd>0){
-        if(r.rc>0){rcPeso+=r.rc*r.qtd;}
+        if(r.rcExpectativa>0){rcExpectativaPeso+=r.rcExpectativa*r.qtd;}
+        if(r.rcRealizado>0){rcRealizadoPeso+=r.rcRealizado*r.qtd;rcRealizadoQtd+=r.qtd;}
         if(r.gmd>0){gmdPeso+=r.gmd*r.qtd;}
         if(r.gmdOrigem>0){gmdOrigemPeso+=r.gmdOrigem*r.qtd;}
         if(r.gmdChegada>0){gmdChegadaPeso+=r.gmdChegada*r.qtd;}
@@ -6987,7 +7014,8 @@ function renderHomeDashboardNovo(lotes){
     out.rent=out.capital>0?out.lucro/out.capital:0;
     out.prazoMedio=prazoBase>0?prazoPeso/prazoBase:0;
     out.rentMes=out.prazoMedio>0?out.rent/(out.prazoMedio/30):0;
-    out.rc=out.qtd>0?rcPeso/out.qtd:0;
+    out.rcExpectativa=out.qtd>0?rcExpectativaPeso/out.qtd:0;
+    out.rcRealizado=rcRealizadoQtd>0?rcRealizadoPeso/rcRealizadoQtd:0;
     out.gmd=out.qtd>0?gmdPeso/out.qtd:0;
     out.gmdOrigem=out.qtd>0?gmdOrigemPeso/out.qtd:0;
     out.gmdChegada=out.qtd>0?gmdChegadaPeso/out.qtd:0;
@@ -7231,7 +7259,7 @@ function renderHomeDashboardNovo(lotes){
     if(key==='lucro')return '<span class="money '+(row.lucro>=0?'pos':'neg')+'">'+fmt(row.lucro)+'</span>';
     if(key==='rent')return fmtPct(row.rent);
     if(key==='rentmes')return fmtPct(row.rentMes);
-    if(key==='rc')return row.rc?fmtNum(row.rc,2)+'%':'—';
+    if(key==='rcExpectativa'||key==='rcRealizado')return row[key]?fmtNum(row[key],2)+'%':'—';
     if(key==='gmdOrigem'||key==='gmdChegada')return row[key]?fmtNum(row[key],2)+' kg/dia':'—';
     if(key==='gmcOrigem'||key==='gmcChegada')return row[key]?fmtNum(row[key],3)+' kg/dia':'—';
     if(key==='eficiencia'||key==='eficienciaChegada')return row[key]?fmtNum(row[key],2)+' kg MS/@':'—';
@@ -9882,7 +9910,7 @@ function statusSortValue(row,key){
   var v=row.getAttribute('data-sort-'+key);
   if(v===null||v===undefined)v=row.getAttribute('data-filter-'+key)||row.textContent||'';
   var n=parseFloat(String(v).replace(/\./g,'').replace(',','.'));
-  if(['ano','qtd','faturamento','capital','lucro','rent','rentmes','rc','eficiencia','eficienciaChegada','status'].indexOf(key)>=0&&!isNaN(n))return n;
+  if(['ano','qtd','faturamento','capital','lucro','rent','rentmes','rcExpectativa','rcRealizado','eficiencia','eficienciaChegada','status'].indexOf(key)>=0&&!isNaN(n))return n;
   return _statusNorm(v);
 }
 function sortStatusRows(){
@@ -9911,6 +9939,14 @@ function setStatusColumnVisible(key,checked){
   try{localStorage.setItem(STATUS_COL_VISIBLE_KEY,JSON.stringify(visible));}catch(e){}
   renderLotes();
 }
+function setStatusAllColumns(checked){
+  var visible={};
+  STATUS_COLS.forEach(function(col){visible[col.key]=!!checked;});
+  if(!checked){visible.status=true;visible.lote=true;}
+  try{localStorage.setItem(STATUS_COL_VISIBLE_KEY,JSON.stringify(visible));}catch(e){}
+  renderLotes();
+}
+function clearStatusColumns(){setStatusAllColumns(false);}
 function resetStatusColumns(){
   try{
     localStorage.removeItem(STATUS_COL_VISIBLE_KEY);
@@ -10019,7 +10055,7 @@ function renderLotes(){
     var placeholders={
       status:'Todos',ano:'Ano',confinamento:'Confinamento',modalidade:'Modalidade',raca:'Raça',origem:'Origem',vendedor:'Vendedor',lote:'Lote',b3:'B3',qtd:'Qtd',
       entrada:'Entrada',abate:'Abate',recebimento:'Receb.',faturamento:'R$',capital:'R$',
-      lucro:'R$',rent:'%',rentmes:'%',rc:'%',gmdOrigem:'kg/dia',gmdChegada:'kg/dia',gmcOrigem:'kg/dia',gmcChegada:'kg/dia',eficiencia:'kg MS/@ origem',eficienciaChegada:'kg MS/@ cheg.'
+      lucro:'R$',rent:'%',rentmes:'%',rcExpectativa:'%',rcRealizado:'%',gmdOrigem:'kg/dia',gmdChegada:'kg/dia',gmcOrigem:'kg/dia',gmcChegada:'kg/dia',eficiencia:'kg MS/@ origem',eficienciaChegada:'kg MS/@ cheg.'
     };
     return STATUS_COLS.map(function(c){
       return c.key==='status'?filterStatus(c):filterInput(c,placeholders[c.key]||c.label);
@@ -10027,13 +10063,15 @@ function renderLotes(){
   }
   function statusColumnPanelHtml(){
     var visible=getStatusColVisible();
+    var allSelected=STATUS_COLS.every(function(c){return visible[c.key]!==false;});
     return '<div id="status-column-panel" class="status-column-panel">'
       +'<div class="status-column-panel-title">Informações visíveis</div>'
       +'<div class="status-column-panel-sub">Selecione quais colunas deseja ver na tabela de Status.</div>'
-      +STATUS_COLS.map(function(c){
+      +'<div class="columns-select-tools"><label class="columns-select-all"><input type="checkbox"'+(allSelected?' checked':'')+' onchange="setStatusAllColumns(this.checked)"><span>Selecionar tudo</span></label><button type="button" class="columns-clear-btn" onclick="clearStatusColumns()">Limpar</button></div>'
+      +'<div class="status-column-options">'+STATUS_COLS.map(function(c){
         var checked=visible[c.key]!==false?' checked':'';
         return '<label class="status-column-option"><input type="checkbox"'+checked+' onchange="setStatusColumnVisible(\''+c.key+'\',this.checked)"> <span>'+escHtml(c.label)+'</span></label>';
-      }).join('')
+      }).join('')+'</div>'
     +'</div>';
   }
   function statusViewbarHtml(){
@@ -10073,6 +10111,7 @@ function renderLotes(){
     var metric=resultadoStatusLote(l,o);
     var useRealizedTechnical=statusRealizadoLote(l).key==='complete';
     var zooStatus=useRealizedTechnical?zootecRealCalc(l,o,l.ajusteReal||l.apuracao||{}):biometriaSimuladaOrc(o);
+    var zooRealizadoRc=zootecRealCalc(l,o,l.ajusteReal||l.apuracao||{});
     var techStatus=indicadoresTecnicosStatus(zooStatus);
     var capital=metric.capital;
     var lucro=metric.lucro;
@@ -10086,8 +10125,10 @@ function renderLotes(){
     var lucroVal=o?fmt(lucro):'—';
     var rentVal=o?fmtPct(metric.rent):'—';
     var rentMesVal=o?fmtPct(metric.rentMes):'—';
-    var rcRaw=finNum(zooStatus.rendA)||finNum(o&&o.rendA_pct);
-    var rcVal=rcRaw?fmtNum(rcRaw,2)+'%':'—';
+    var rcExpectativaRaw=finNum(o&&o.rendA_pct);
+    var rcRealizadoRaw=['abatido','recebido'].indexOf(l.status)>=0?finNum(zooRealizadoRc.rendA):0;
+    var rcExpectativaVal=rcExpectativaRaw?fmtNum(rcExpectativaRaw,2)+'%':'—';
+    var rcRealizadoVal=rcRealizadoRaw?fmtNum(rcRealizadoRaw,2)+'%':'—';
     var modalidadeVal=o?calcModeloLabel(o.modeloConta||'msop'):'—';
     var racaVal=l.tipoCustom||labelRaca(l.tipoAnimal)||(o&&(o.tipoCustom||labelRaca(o.tipoAnimal)))||'A definir';
     var gmdOrigemVal=o&&techStatus.gmdOrigem?fmtNum(techStatus.gmdOrigem,2)+' kg/dia':'—';
@@ -10127,7 +10168,8 @@ function renderLotes(){
       +' data-filter-lucro="'+escHtml(lucroVal)+'"'
       +' data-filter-rent="'+escHtml(rentVal)+'"'
       +' data-filter-rentmes="'+escHtml(rentMesVal)+'"'
-      +' data-filter-rc="'+escHtml(rcVal)+'"'
+      +' data-filter-rcExpectativa="'+escHtml(rcExpectativaVal)+'"'
+      +' data-filter-rcRealizado="'+escHtml(rcRealizadoVal)+'"'
       +' data-filter-gmdOrigem="'+escHtml(gmdOrigemVal)+'"'
       +' data-filter-gmdChegada="'+escHtml(gmdChegadaVal)+'"'
       +' data-filter-gmcOrigem="'+escHtml(gmcOrigemVal)+'"'
@@ -10152,7 +10194,8 @@ function renderLotes(){
       +' data-sort-lucro="'+(o?lucro:0)+'"'
       +' data-sort-rent="'+(o?metric.rent:0)+'"'
       +' data-sort-rentmes="'+(o?metric.rentMes:0)+'"'
-      +' data-sort-rc="'+rcRaw+'"'
+      +' data-sort-rcExpectativa="'+rcExpectativaRaw+'"'
+      +' data-sort-rcRealizado="'+rcRealizadoRaw+'"'
       +' data-sort-gmdOrigem="'+techStatus.gmdOrigem+'"'
       +' data-sort-gmdChegada="'+techStatus.gmdChegada+'"'
       +' data-sort-gmcOrigem="'+techStatus.gmcOrigem+'"'
@@ -10186,7 +10229,8 @@ function renderLotes(){
       +'<span class="profit" data-status-mobile-field="lucro"><em>Lucro</em>'+escHtml(fmtCompactMoney(lucro))+'</span>'
       +'<span class="rate" data-status-mobile-field="rent"><em>% oper.</em>'+escHtml(rentVal)+'</span>'
       +'<span class="rate" data-status-mobile-field="rentmes"><em>% mês</em>'+escHtml(rentMesVal)+'</span>'
-      +'<span class="rate" data-status-mobile-field="rc"><em>RC</em>'+escHtml(rcVal)+'</span>'
+      +'<span class="rate" data-status-mobile-field="rcExpectativa"><em>RC expectativa</em>'+escHtml(rcExpectativaVal)+'</span>'
+      +'<span class="rate" data-status-mobile-field="rcRealizado"><em>RC realizado</em>'+escHtml(rcRealizadoVal)+'</span>'
       +'<span data-status-mobile-field="raca"><em>Raça</em>'+escHtml(racaVal)+'</span>'
       +'<span data-status-mobile-field="gmdOrigem"><em>GMD origem</em>'+escHtml(gmdOrigemVal)+'</span>'
       +'<span data-status-mobile-field="gmdChegada"><em>GMD chegada</em>'+escHtml(gmdChegadaVal)+'</span>'
@@ -10216,7 +10260,8 @@ function renderLotes(){
       +statusCell('lucro',lucroVal,'money '+lucroCls)
       +statusCell('rent',rentVal,'rate')
       +statusCell('rentmes',rentMesVal,'rate')
-      +statusCell('rc',rcVal,'rate')
+      +statusCell('rcExpectativa',rcExpectativaVal,'rate')
+      +statusCell('rcRealizado',rcRealizadoVal,'rate')
       +statusCell('gmdOrigem',gmdOrigemVal,'rate')
       +statusCell('gmdChegada',gmdChegadaVal,'rate')
       +statusCell('gmcOrigem',gmcOrigemVal,'rate')
@@ -10288,8 +10333,10 @@ function renderLotes(){
       addStatusFilterOption('lucro',fmt(metric.lucro));
       addStatusFilterOption('rent',fmtPct(metric.rent));
       addStatusFilterOption('rentmes',fmtPct(metric.rentMes));
-      var rcFiltro=finNum(zooStatus.rendA)||finNum(o&&o.rendA_pct);
-      if(rcFiltro)addStatusFilterOption('rc',fmtNum(rcFiltro,2)+'%');
+      var rcExpectativaFiltro=finNum(o&&o.rendA_pct);
+      var rcRealizadoFiltro=['abatido','recebido'].indexOf(l.status)>=0?finNum(zootecRealCalc(l,o,l.ajusteReal||l.apuracao||{}).rendA):0;
+      if(rcExpectativaFiltro)addStatusFilterOption('rcExpectativa',fmtNum(rcExpectativaFiltro,2)+'%');
+      if(rcRealizadoFiltro)addStatusFilterOption('rcRealizado',fmtNum(rcRealizadoFiltro,2)+'%');
       if(techStatus.gmdOrigem)addStatusFilterOption('gmdOrigem',fmtNum(techStatus.gmdOrigem,2)+' kg/dia');
       if(techStatus.gmdChegada)addStatusFilterOption('gmdChegada',fmtNum(techStatus.gmdChegada,2)+' kg/dia');
       if(techStatus.gmcOrigem)addStatusFilterOption('gmcOrigem',fmtNum(techStatus.gmcOrigem,3)+' kg/dia');
@@ -13250,13 +13297,13 @@ function buildConfigExportData(){
   return {tab:'Configurações',title:'Relatório de Configurações',file:'VM_Agro_Configuracoes_'+exportDateFile(),filters:[],sheets:sheets};
 }
 function buildStatusLotRows(){
-  var rows=[['Status','Ano','Confinamento','Modalidade','Raça','Origem','Vendedor','Lote','B3','Qtd','Entrada','Abate','Recebimento','Faturamento','Capital','Lucro','% operação','% ao mês','RC','Efic. origem','Efic. chegada']];
+  var rows=[['Status','Ano','Confinamento','Modalidade','Raça','Origem','Vendedor','Lote','B3','Qtd','Entrada','Abate','Recebimento','Faturamento','Capital','Lucro','% operação','% ao mês','RC expectativa','RC realizado','Efic. origem','Efic. chegada']];
   [].forEach.call(document.querySelectorAll('#lote-list .status-row[data-lid]'),function(row){
     if(!exportVisible(row)||row.style.display==='none')return;
     rows.push([
       row.dataset.filterStatus||'',row.dataset.filterAno||'',row.dataset.filterConfinamento||'',row.dataset.filterModalidade||'',row.dataset.filterRaca||'',row.dataset.filterOrigem||'',row.dataset.filterVendedor||'',row.dataset.filterLote||'',row.dataset.filterB3||'',
       row.dataset.filterQtd||'',row.dataset.filterEntrada||'',row.dataset.filterAbate||'',row.dataset.filterRecebimento||'',
-      row.dataset.filterFaturamento||'',row.dataset.filterCapital||'',row.dataset.filterLucro||'',row.dataset.filterRent||'',row.dataset.filterRentmes||'',row.dataset.filterRc||'',
+      row.dataset.filterFaturamento||'',row.dataset.filterCapital||'',row.dataset.filterLucro||'',row.dataset.filterRent||'',row.dataset.filterRentmes||'',row.dataset.filterRcExpectativa||'',row.dataset.filterRcRealizado||'',
       row.dataset.filterEficiencia||'',row.dataset.filterEficienciachegada||row.dataset.filterEficienciaChegada||''
     ]);
   });
@@ -14182,7 +14229,8 @@ restoreBasicSession();
     { key: 'lucro', label: 'Lucro', group: 'Financeiro' },
     { key: 'rent', label: '% operacao', group: 'Financeiro' },
     { key: 'rentmes', label: '% mes', group: 'Financeiro' },
-    { key: 'rc', label: 'RC', group: 'Tecnico' },
+    { key: 'rcExpectativa', label: 'RC expectativa', group: 'Tecnico' },
+    { key: 'rcRealizado', label: 'RC realizado', group: 'Tecnico' },
     { key: 'gmdOrigem', label: 'GMD origem', group: 'Tecnico' },
     { key: 'gmdChegada', label: 'GMD chegada', group: 'Tecnico' },
     { key: 'gmcOrigem', label: 'GMC origem', group: 'Tecnico' },
