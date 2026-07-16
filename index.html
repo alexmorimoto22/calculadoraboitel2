@@ -8442,6 +8442,7 @@ function openEditPanel(loteId, cardEl){
     var simFat=simCapital+simLucro;
     var simConfinamento=(o.precificacaoSnapshot&&o.precificacaoSnapshot.boitelNome)||(o.boitelSnapshot&&(o.boitelSnapshot.boitelNome||o.boitelSnapshot.nome))||o.boitelNome||'Manual / sem boitel';
     var simBio=biometriaSimuladaOrc(o);
+    var simTech=indicadoresTecnicosStatus(simBio);
     var simBonusMode=o.bonusMode||'val';
     var simDescontoMode=o.descontoMode||'val';
     var simBonus=finNum(o.bonus);
@@ -8467,15 +8468,20 @@ function openEditPanel(loteId, cardEl){
         +'<section class="ep-sim-block"><h4 class="ep-sim-title">Zootécnico</h4><div class="ep-sim-grid">'
           +simItem('Confinamento',simConfinamento)
           +simItem('Dias',(o.dias||'—')+' dias')
-          +simItem('GMD',fmtGmd(o.gmd))
           +simItem('Rend. entrada',o.rendE_pct?brNum(o.rendE_pct,2)+'%':'—')
-          +simItem('Rend. abate',o.rendA_pct?brNum(o.rendA_pct,2)+'%':'—')
+          +simItem('Rendimento de carcaça',o.rendA_pct?brNum(o.rendA_pct,2)+'%':'—')
           +simItem('Peso final',simBio.pesoAbate?brNum(simBio.pesoAbate,1)+' kg':'—')
           +simItem('@ abate / animal',simBio.atAbate?brNum(simBio.atAbate,2)+' @':'—')
           +simItem('Consumo MS',o.consPC_pct?brNum(o.consPC_pct,2)+'% PV/dia':'—')
+          +simItem('@ produzida / animal chegada',simBio.atProd?brNum(simBio.atProd,3)+' @':'—')
+          +simItem('@ produzida / animal origem',simBio.atProdOrigem?brNum(simBio.atProdOrigem,3)+' @':'—')
+          +simItem('GMD chegada',simTech.gmdChegada?brNum(simTech.gmdChegada,3)+' kg/dia':'—')
+          +simItem('GMD origem',simTech.gmdOrigem?brNum(simTech.gmdOrigem,3)+' kg/dia':'—')
+          +simItem('GMC chegada',simTech.gmcChegada?brNum(simTech.gmcChegada,4)+' kg/dia':'—')
+          +simItem('GMC origem',simTech.gmcOrigem?brNum(simTech.gmcOrigem,4)+' kg/dia':'—')
           +simItem('Consumo total',simBio.consumoTotal?brNum(simBio.consumoTotal,1)+' kg MS':'—')
-          +simItem('Eficiência origem',simBio.eficOrigem?brNum(simBio.eficOrigem,2)+' kg MS/@':'—')
           +simItem('Eficiência chegada',simBio.efic?brNum(simBio.efic,2)+' kg MS/@':'—')
+          +simItem('Eficiência origem',simBio.eficOrigem?brNum(simBio.eficOrigem,2)+' kg MS/@':'—')
         +'</div></section>'
         +'<section class="ep-sim-block"><h4 class="ep-sim-title">Venda e Financeiro</h4><div class="ep-sim-grid">'
           +simItem('Abate previsto',simAbate)
