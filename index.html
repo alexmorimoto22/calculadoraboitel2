@@ -8443,6 +8443,10 @@ function openEditPanel(loteId, cardEl){
     var simConfinamento=(o.precificacaoSnapshot&&o.precificacaoSnapshot.boitelNome)||(o.boitelSnapshot&&(o.boitelSnapshot.boitelNome||o.boitelSnapshot.nome))||o.boitelNome||'Manual / sem boitel';
     var simBio=biometriaSimuladaOrc(o);
     var simTech=indicadoresTecnicosStatus(simBio);
+    var simModelo=o.modeloConta||'msop';
+    var simModalidadeItens=simModelo==='atprod'
+      ?simItem('@ produzida',fmt(finNum(o.custoArrobaProd))+'/@')
+      :simItem('Matéria seca',fmt(finNum(o.msKG))+'/kg')+simItem('Operacional',fmt(finNum(o.opDia))+'/animal/dia');
     var simBonusMode=o.bonusMode||'val';
     var simDescontoMode=o.descontoMode||'val';
     var simBonus=finNum(o.bonus);
@@ -8468,6 +8472,7 @@ function openEditPanel(loteId, cardEl){
         +'<section class="ep-sim-block"><h4 class="ep-sim-title">Zootécnico</h4><div class="ep-sim-grid">'
           +simItem('Confinamento',simConfinamento)
           +simItem('Dias',(o.dias||'—')+' dias')
+          +simModalidadeItens
           +simItem('Rend. entrada',o.rendE_pct?brNum(o.rendE_pct,2)+'%':'—')
           +simItem('Rendimento de carcaça',o.rendA_pct?brNum(o.rendA_pct,2)+'%':'—')
           +simItem('Peso final',simBio.pesoAbate?brNum(simBio.pesoAbate,1)+' kg':'—')
