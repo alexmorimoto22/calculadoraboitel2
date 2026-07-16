@@ -6897,7 +6897,7 @@ function renderHomeDashboardNovo(lotes){
       lucro:metric.lucro||0,
       rent:metric.rent||0,
       rentMes:metric.rentMes||0,
-      rc:metric.rendA||0,
+      rc:finNum(zoo.rendA)||finNum(o.rendA_pct),
       prazo:prazoDiasResultadoLote(l,o)||0,
       gmd:tech.gmdChegada||0,
       gmdOrigem:tech.gmdOrigem||0,
@@ -10016,7 +10016,8 @@ function renderLotes(){
     var lucroVal=o?fmt(lucro):'—';
     var rentVal=o?fmtPct(metric.rent):'—';
     var rentMesVal=o?fmtPct(metric.rentMes):'—';
-    var rcVal=o&&metric.rendA?fmtNum(metric.rendA,2)+'%':'—';
+    var rcRaw=finNum(zooStatus.rendA)||finNum(o&&o.rendA_pct);
+    var rcVal=rcRaw?fmtNum(rcRaw,2)+'%':'—';
     var modalidadeVal=o?calcModeloLabel(o.modeloConta||'msop'):'—';
     var gmdOrigemVal=o&&techStatus.gmdOrigem?fmtNum(techStatus.gmdOrigem,2)+' kg/dia':'—';
     var gmdChegadaVal=o&&techStatus.gmdChegada?fmtNum(techStatus.gmdChegada,2)+' kg/dia':'—';
@@ -10078,7 +10079,7 @@ function renderLotes(){
       +' data-sort-lucro="'+(o?lucro:0)+'"'
       +' data-sort-rent="'+(o?metric.rent:0)+'"'
       +' data-sort-rentmes="'+(o?metric.rentMes:0)+'"'
-      +' data-sort-rc="'+(o&&metric.rendA?metric.rendA:0)+'"'
+      +' data-sort-rc="'+rcRaw+'"'
       +' data-sort-gmdOrigem="'+techStatus.gmdOrigem+'"'
       +' data-sort-gmdChegada="'+techStatus.gmdChegada+'"'
       +' data-sort-gmcOrigem="'+techStatus.gmcOrigem+'"'
@@ -10211,7 +10212,8 @@ function renderLotes(){
       addStatusFilterOption('lucro',fmt(metric.lucro));
       addStatusFilterOption('rent',fmtPct(metric.rent));
       addStatusFilterOption('rentmes',fmtPct(metric.rentMes));
-      if(metric.rendA)addStatusFilterOption('rc',fmtNum(metric.rendA,2)+'%');
+      var rcFiltro=finNum(zooStatus.rendA)||finNum(o&&o.rendA_pct);
+      if(rcFiltro)addStatusFilterOption('rc',fmtNum(rcFiltro,2)+'%');
       if(techStatus.gmdOrigem)addStatusFilterOption('gmdOrigem',fmtNum(techStatus.gmdOrigem,2)+' kg/dia');
       if(techStatus.gmdChegada)addStatusFilterOption('gmdChegada',fmtNum(techStatus.gmdChegada,2)+' kg/dia');
       if(techStatus.gmcOrigem)addStatusFilterOption('gmcOrigem',fmtNum(techStatus.gmcOrigem,3)+' kg/dia');
