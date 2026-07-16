@@ -3257,6 +3257,16 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
     background: var(--accent) !important;
     color: #fff !important;
   }
+
+  #cfg-params .next-lot-action {
+    margin-bottom: 0;
+  }
+
+  #cfg-params .next-lot-action .btn-save {
+    width: 100%;
+    min-height: 36px;
+    padding: 9px 14px;
+  }
 </style>
 <style id="status-mobile-compact-cards-final-20260713">
 /* Compactacao final da lista de lotes no Status. Somente mobile. */
@@ -4576,7 +4586,8 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
               <input type="text" inputmode="numeric" pattern="[0-9]*" id="p-nextLotNumber" value="1">
               <div class="hint">Número que será usado no próximo lote. Após o cadastro, avança automaticamente.</div>
             </div>
-            <div class="form-btns" style="align-self:end;margin:0;">
+            <div class="field next-lot-action">
+              <label aria-hidden="true">&nbsp;</label>
               <button class="btn-save" onclick="salvarProximoNumeroLote()">Salvar próximo lote</button>
             </div>
           </div>
@@ -9052,6 +9063,7 @@ function excluirLotePainel(){
   var nome=getLoteNomeReferencia(lote,o)||('Lote '+((lote.qtd||'')+' cab.'));
   if(!confirm('Excluir definitivamente este lote?\n\n'+nome+'\n\nEssa ação não pode ser desfeita.'))return;
   var id=_editLoteId;
+  preservarSequenciaAoExcluirLote(lote,arr);
   saveLotes(arr.filter(function(l){return l.id!==id;}));
   if(activeLoteDetailId===id)activeLoteDetailId=null;
   closeEditPanel();
@@ -10748,7 +10760,15 @@ function moverLoteParaStatus(loteId,newStatus,focusStatus){
 
 /* ── LOTE FORM ─────────────────────────────────── */
 function hideLoteForm(){document.getElementById('lote-form').style.display='none';}
-function deletarLote(id){if(!requirePermission('lots.delete'))return;if(!confirm('Excluir este lote?'))return;saveLotes(getLotes().filter(l=>l.id!==id));renderLotes();renderDashboard();}
+function deletarLote(id){
+  if(!requirePermission('lots.delete'))return;
+  if(!confirm('Excluir este lote?'))return;
+  var arr=getLotes();
+  var lote=arr.find(function(item){return item.id===id;});
+  if(lote)preservarSequenciaAoExcluirLote(lote,arr);
+  saveLotes(arr.filter(function(item){return item.id!==id;}));
+  renderLotes();renderDashboard();
+}
 
 /* ── LOTE DETAIL ───────────────────────────────── */
 function openLoteOrcs(id){
@@ -11043,6 +11063,15 @@ function nextAvailableLotNumber(numero,lotes){
   var candidato=Math.max(1,parseInt(numero,10)||1);
   while(!isLotNumberAvailable(String(candidato),lotes))candidato++;
   return String(candidato);
+}
+function preservarSequenciaAoExcluirLote(lote,lotes){
+  var excluido=parseInt(getNumeroLote(lote),10);
+  if(!isFinite(excluido)||excluido<1)return;
+  updateGlobalLotSequence(excluido);
+  var configurado=parseInt(getConfiguredNextLotNumber(),10);
+  if(isFinite(configurado)&&configurado>excluido)return;
+  var restantes=(lotes||[]).filter(function(item){return String(item.id)!==String(lote.id);});
+  setConfiguredNextLotNumber(nextAvailableLotNumber(excluido+1,restantes));
 }
 function proximoNumeroLote(lotes){
   var configurado=getConfiguredNextLotNumber();
