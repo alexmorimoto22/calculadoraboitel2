@@ -496,7 +496,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-metric{background:#fff;border:1px solid var(--border);border-radius:13px;padding:13px 14px;box-shadow:0 2px 12px rgba(13,27,42,.05);min-width:0;}
   .home-metric,.status-total-card{position:relative;}
   .dashboard-card-remove{position:absolute;top:7px;right:7px;width:20px;height:20px;display:grid;place-items:center;border:0;border-radius:5px;background:transparent;color:var(--text-3);font-size:15px;line-height:1;cursor:pointer;opacity:0;}
-  .home-metric:hover .dashboard-card-remove,.status-total-card:hover .dashboard-card-remove{opacity:1;background:var(--surface2);}
+  .home-metric:hover .dashboard-card-remove,.status-total-card:hover .dashboard-card-remove,.fut-card:hover .dashboard-card-remove{opacity:1;background:var(--surface2);}
   .dashboard-card-add-wrap{position:relative;min-width:0;}
   .dashboard-card-add{width:100%;min-height:100%;height:100%;display:grid;place-items:center;border:1px dashed var(--border2);border-radius:13px;background:rgba(255,255,255,.52);color:var(--accent);font-family:'Inter',sans-serif;font-size:24px;font-weight:500;cursor:pointer;}
   .dashboard-card-add:hover{border-color:var(--accent);background:#fff;}
@@ -699,7 +699,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .fut-new-btn{background:var(--olive);border:1px solid rgba(13,27,42,.08);color:#fff;border-radius:12px;padding:12px 18px;font-family:'Inter',sans-serif;font-size:12px;font-weight:850;letter-spacing:.2px;cursor:pointer;box-shadow:0 8px 18px rgba(107,112,86,.22);transition:all .16s;}
   .fut-new-btn:hover{background:#5C6149;transform:translateY(-1px);}
   .fut-summary{display:grid;grid-template-columns:1.1fr .8fr .9fr .8fr;gap:10px;margin-bottom:12px;}
-  .fut-card{background:rgba(255,253,247,.86);border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:0 3px 14px rgba(13,27,42,.05);min-width:0;}
+  .fut-card{position:relative;background:rgba(255,253,247,.86);border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:0 3px 14px rgba(13,27,42,.05);min-width:0;}
   .fut-card.primary{background:linear-gradient(135deg,var(--navy),#14283B);border-color:var(--navy);color:#fff;}
   .fut-card-label{font-size:8.5px;font-weight:850;letter-spacing:1px;text-transform:uppercase;color:var(--taupe);margin-bottom:7px;}
   .fut-card.primary .fut-card-label{color:rgba(242,237,227,.68);}
@@ -4366,7 +4366,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
         </div>
         <button class="fut-new-btn" onclick="limparFormFuturo()">+ Novo contrato</button>
       </div>
-      <div id="fut-summary" class="fut-summary"></div>
+      <div id="fut-summary"></div>
       <div class="fut-layout">
         <div class="fut-form is-collapsed" id="fut-form-card">
           <div class="fut-form-head">
@@ -4945,13 +4945,18 @@ var DASHBOARD_CARD_DEFS={
     {key:'rcExpectativa',label:'RC expectativa'},{key:'rcRealizado',label:'RC realizado'},{key:'consumoMedioExpectativa',label:'Consumo médio expectativa'},{key:'consumoMedioRealizado',label:'Consumo médio realizado'},
     {key:'gmdOrigem',label:'GMD origem'},{key:'gmdChegada',label:'GMD chegada'},{key:'gmcOrigem',label:'GMC origem'},{key:'gmcChegada',label:'GMC chegada'},
     {key:'eficiencia',label:'Eficiência biológica origem'},{key:'eficienciaChegada',label:'Eficiência biológica chegada'}
+  ],
+  futuros:[
+    {key:'resultado',label:'Resultado B3'},{key:'lancamentos',label:'Lançamentos'},{key:'abertos',label:'Contratos em aberto'},
+    {key:'liquidados',label:'Contratos liquidados'},{key:'filtro',label:'Filtro atual'}
   ]
 };
 var DASHBOARD_CARD_DEFAULTS={
   home:['qtd','faturamento','capital','lucro','rent','rentmes','gmdOrigem','gmdChegada','gmcOrigem','gmcChegada','eficiencia'],
-  status:['qtd','faturamento','capital','lucro','rent','rentmes']
+  status:['qtd','faturamento','capital','lucro','rent','rentmes'],
+  futuros:['resultado','lancamentos','abertos','liquidados','filtro']
 };
-var dashboardCardPickerOpen={home:false,status:false};
+var dashboardCardPickerOpen={home:false,status:false,futuros:false};
 function dashboardCardsStorageKey(tab){return 'vm_dashboard_cards_'+tab+'_v1';}
 function getDashboardCards(tab){
   var defs=DASHBOARD_CARD_DEFS[tab]||[];
@@ -4965,6 +4970,7 @@ function saveDashboardCards(tab,keys){try{localStorage.setItem(dashboardCardsSto
 function refreshDashboardCards(tab){
   if(tab==='home')renderHome();
   else if(tab==='status')renderLotes();
+  else if(tab==='futuros')renderFuturos();
 }
 function toggleDashboardCardPicker(tab){dashboardCardPickerOpen[tab]=!dashboardCardPickerOpen[tab];refreshDashboardCards(tab);}
 function addDashboardCard(tab,key){
@@ -8334,11 +8340,18 @@ function renderFuturos(){
   });
   var sum=document.getElementById('fut-summary');
   if(sum){
-    sum.innerHTML='<div class="fut-card primary"><div class="fut-card-label">Resultado B3</div><div class="fut-card-value">'+fmt(total.resultado)+'</div><div class="fut-card-sub">'+fmtContratosB3(total.liquidados)+' contrato(s) liquidado(s)</div></div>'
-      +'<div class="fut-card"><div class="fut-card-label">Lançamentos</div><div class="fut-card-value">'+total.registros+'</div><div class="fut-card-sub">'+fmtContratosB3(total.contratos)+' contrato(s) cadastrados</div></div>'
-      +'<div class="fut-card"><div class="fut-card-label">Contratos em aberto</div><div class="fut-card-value">'+fmtContratosB3(total.abertos)+' ctr</div><div class="fut-card-sub">Saldo ainda não liquidado</div></div>'
-      +'<div class="fut-card"><div class="fut-card-label">Contratos liquidados</div><div class="fut-card-value">'+fmtContratosB3(total.liquidados)+' ctr</div><div class="fut-card-sub">'+total.arrobas.toLocaleString('pt-BR',{maximumFractionDigits:0})+' @ totais cadastradas</div></div>'
-      +'<div class="fut-card"><div class="fut-card-label">Filtro atual</div><div class="fut-card-value">'+filtrados.length+'</div><div class="fut-card-sub">lançamento(s) na lista</div></div>';
+    function futCard(key,label,value,sub,primary){
+      return '<div class="fut-card'+(primary?' primary':'')+'"><button type="button" class="dashboard-card-remove" title="Ocultar quadro" onclick="removeDashboardCard(\'futuros\',\''+key+'\')">×</button><div class="fut-card-label">'+escHtml(label)+'</div><div class="fut-card-value">'+value+'</div><div class="fut-card-sub">'+sub+'</div></div>';
+    }
+    var futCards={
+      resultado:futCard('resultado','Resultado B3',fmt(total.resultado),fmtContratosB3(total.liquidados)+' contrato(s) liquidado(s)',true),
+      lancamentos:futCard('lancamentos','Lançamentos',total.registros,fmtContratosB3(total.contratos)+' contrato(s) cadastrados'),
+      abertos:futCard('abertos','Contratos em aberto',fmtContratosB3(total.abertos)+' ctr','Saldo ainda não liquidado'),
+      liquidados:futCard('liquidados','Contratos liquidados',fmtContratosB3(total.liquidados)+' ctr',total.arrobas.toLocaleString('pt-BR',{maximumFractionDigits:0})+' @ totais cadastradas'),
+      filtro:futCard('filtro','Filtro atual',filtrados.length,'lançamento(s) na lista')
+    };
+    var futCardKeys=getDashboardCards('futuros');
+    sum.innerHTML=dashboardCardsShellHtml('futuros','fut-summary',futCardKeys.map(function(key){return futCards[key]||'';}).join('')+dashboardAddCardHtml('futuros'));
   }
   var note=document.getElementById('fut-list-note');
   if(note)note.textContent=filtrados.length+' de '+arr.length+' lançamento(s)';
@@ -9066,7 +9079,7 @@ function openEditPanel(loteId, cardEl){
     +'</div>'
     +'<div class="ep-section">Identificação do lote</div>'
     +'<div class="ep-partial-grid" style="margin-bottom:10px;">'
-      +'<div class="field" style="margin:0"><label>Número do lote</label><input type="text" inputmode="numeric" pattern="[0-9]*" id="ep-lot-number" value="'+escHtml(numeroLote)+'" placeholder="Ex: 1"></div>'
+      +'<div class="field" style="margin:0"><label>Número do lote</label><input type="text" inputmode="text" pattern="[0-9]+(?:-[0-9]+)?" id="ep-lot-number" value="'+escHtml(numeroLote)+'" placeholder="Ex: 105 ou 105-1"></div>'
       +'<div class="field" style="margin:0"><label>Nome / Referência <span style="font-size:9px;color:var(--text-3);font-weight:400;">(opcional)</span></label><input type="text" id="ep-lot-name" value="'+escHtml(nomeLote)+'" placeholder="Ex: Murilo Duque"></div>'
     +'</div>'
     +contratosPrecoHtml
@@ -9113,6 +9126,7 @@ function openEditPanel(loteId, cardEl){
     +'<div class="ep-partial-box">'
       +'<div class="ep-partial-grid">'
         +'<div class="field" style="margin:0"><label style="font-size:10px">Qtd parcial (cab.)</label><input type="number" id="ep-parcial-qtd" min="1" max="'+(parseFloat(lote.qtd)||'')+'" step="1" placeholder="Ex: 20"></div>'
+        +'<div class="field" style="margin:0"><label style="font-size:10px">Número da parcial</label><input type="text" inputmode="text" pattern="[0-9]+-[0-9]+" id="ep-parcial-numero" value="'+escHtml(proximoNumeroParcial(lote,getLotes()))+'" placeholder="Ex: 105-1"></div>'
         +'<div class="field" style="margin:0"><label style="font-size:10px">Status da parcial</label><select id="ep-parcial-status">'
           +'<option value="'+(lote.status||'embarque')+'">Mesmo status</option>'
           +'<option value="embarque">Embarque</option>'
@@ -9269,6 +9283,15 @@ function gerarParcialLote(){
   var lote=arr[i];
   applyEditPanelDraft(lote);
   fixarFreteUnitarioLote(lote);
+  var numeroParcial=normalizarNumeroLote((document.getElementById('ep-parcial-numero')||{value:''}).value);
+  if(!numeroParcial||numeroParcial.indexOf('-')<0){
+    toast('⚠ Informe o número da parcial no formato 105-1');
+    return;
+  }
+  if(!isLotNumberAvailable(numeroParcial,arr)){
+    toast('⚠ Este número de parcial já está sendo utilizado');
+    return;
+  }
   var qtdTotal=parseFloat(lote.qtd)||0;
   if(!qtdParcial||qtdParcial<=0){
     toast('⚠ Informe a quantidade da parcial');
@@ -9283,6 +9306,7 @@ function gerarParcialLote(){
   var ratioRestante=restante/qtdTotal;
   var parcial=clonarLoteObj(lote);
   parcial.id='lote_'+Date.now();
+  parcial.lot_number=numeroParcial;
   parcial.status=STATUS_CFG[statusParcial]?statusParcial:(lote.status||'embarque');
   parcial.parcialDe=lote.id;
   parcial.dataParcial=new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
@@ -11303,13 +11327,31 @@ function setLoteNomeReferencia(lote,nome){
   lote.label=limpo||null;
 }
 function normalizarNumeroLote(valor){
-  var limpo=String(valor===undefined||valor===null?'':valor).trim().replace(/^lote\s*/i,'');
-  if(!/^\d+$/.test(limpo))return '';
-  var numero=parseInt(limpo,10);
-  return numero>0?String(numero):'';
+  var limpo=String(valor===undefined||valor===null?'':valor).trim().replace(/^lote\s*/i,'').replace(/\s+/g,'').replace('/', '-');
+  var match=limpo.match(/^(\d+)(?:-(\d+))?$/);
+  if(!match)return '';
+  var numero=parseInt(match[1],10);
+  if(numero<1)return '';
+  if(match[2]!==undefined){
+    var sufixo=parseInt(match[2],10);
+    if(sufixo<1)return '';
+    return String(numero)+'-'+String(sufixo);
+  }
+  return String(numero);
 }
 function getNumeroLote(lote){
   return normalizarNumeroLote(lote&&(lote.lot_number||lote.lotNumber||lote.numeroLote||lote.loteNumber));
+}
+function proximoNumeroParcial(lote,lotes){
+  var atual=getNumeroLote(lote)||'1';
+  var base=atual.split('-')[0];
+  var maior=0;
+  (lotes||[]).forEach(function(item){
+    var numero=getNumeroLote(item);
+    var match=numero.match(new RegExp('^'+base+'-(\\d+)$'));
+    if(match)maior=Math.max(maior,parseInt(match[1],10)||0);
+  });
+  return base+'-'+(maior+1);
 }
 function getConfinamentoLote(lote){
   var o=lote&&lote.orcamentos&&lote.orcamentos[0];
@@ -11528,8 +11570,10 @@ function editarOrcamento(loteId,idx){
   }
 
   recalcularQuebra();
-  var quebraEdit=_prefer(o.quebra_pct,o.quebra);
-  if(quebraEdit!==undefined&&quebraEdit!==null&&quebraEdit!==''&&finNum(quebraEdit)<=1)quebraEdit=finNum(quebraEdit)*100;
+  var temQuebraPct=o.quebra_pct!==undefined&&o.quebra_pct!==null&&o.quebra_pct!=='';
+  var quebraEdit=temQuebraPct?o.quebra_pct:o.quebra;
+  // quebra_pct já está em percentual; apenas o campo legado quebra pode estar em fração.
+  if(!temQuebraPct&&quebraEdit!==undefined&&quebraEdit!==null&&quebraEdit!==''&&finNum(quebraEdit)<=1)quebraEdit=finNum(quebraEdit)*100;
   _setCalcValue('quebra',quebraEdit);
 
   var vendId=_prefer(o.vendedorId_orc,lote.vendedorId,'');
