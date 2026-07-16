@@ -6943,7 +6943,7 @@ function renderHomeDashboardNovo(lotes){
       capital:metric.capital||0,
       lucro:metric.lucro||0,
       rent:metric.rent||0,
-      rentMes:(prazo>0?(metric.rent||0)/(prazo/30):(metric.rentMes||0)),
+      rentMes:metric.rentMes||(prazo>0?(metric.rent||0)/(prazo/30):0),
       rc:finNum(zoo.rendA)||finNum(o.rendA_pct),
       prazo:prazo,
       gmd:tech.gmdChegada||0,
@@ -7221,7 +7221,8 @@ function renderHomeDashboardNovo(lotes){
     if(key==='entrada'||key==='abate'||key==='recebimento')return dateBR(row[key]);
     if(key==='faturamento'||key==='capital')return '<span class="money">'+fmt(row[key])+'</span>';
     if(key==='lucro')return '<span class="money '+(row.lucro>=0?'pos':'neg')+'">'+fmt(row.lucro)+'</span>';
-    if(key==='rent'||key==='rentmes')return fmtPct(row[key]);
+    if(key==='rent')return fmtPct(row.rent);
+    if(key==='rentmes')return fmtPct(row.rentMes);
     if(key==='rc')return row.rc?fmtNum(row.rc,2)+'%':'—';
     if(key==='gmdOrigem'||key==='gmdChegada')return row[key]?fmtNum(row[key],2)+' kg/dia':'—';
     if(key==='gmcOrigem'||key==='gmcChegada')return row[key]?fmtNum(row[key],3)+' kg/dia':'—';
