@@ -524,7 +524,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-section-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(360px,.9fr);gap:12px;align-items:start;}
   .home-panel{background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 4px 18px rgba(13,27,42,.05);min-width:0;}
   .home-panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
-  .home-column-actions-wrap{display:flex;align-items:center;justify-content:flex-end;gap:10px;min-width:0;}
+  .home-column-actions-wrap{display:flex;align-items:center;justify-content:flex-end;gap:10px;min-width:0;flex-wrap:wrap;}
   .home-panel-title{font-size:10px;font-weight:850;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);}
   .home-panel-note{font-size:10px;color:var(--text-3);}
   .home-status-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;}
@@ -568,6 +568,10 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-charts-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px;}
   .home-chart-panel{container-type:inline-size;background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:0 4px 18px rgba(13,27,42,.05);min-width:0;}
   .home-chart-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;}
+  .home-chart-panel.collapsed{padding:11px 14px;}
+  .home-chart-panel.collapsed .home-chart-head{align-items:center;margin-bottom:0;}
+  .home-chart-collapse{height:32px;padding:0 11px;border:1px solid var(--accent);border-radius:8px;background:#fff;color:var(--accent);font-family:'Inter',sans-serif;font-size:10px;font-weight:800;white-space:nowrap;cursor:pointer;}
+  .home-chart-collapse:hover{background:var(--accent);color:#fff;}
   .home-pie-head-actions{display:flex;align-items:flex-end;gap:8px;}
   .home-chart-title{font-size:10px;font-weight:850;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);}
   .home-chart-note{font-size:10px;color:var(--text-3);margin-top:3px;}
@@ -639,6 +643,44 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-pie-option{display:flex;align-items:center;gap:6px;padding:6px;border-radius:6px;color:var(--text-2);font-size:10px;font-weight:700;cursor:pointer;}
   .home-pie-option:hover{background:var(--surface2);}
   .home-pie-option input{width:15px;height:15px;accent-color:var(--accent);}
+  .home-ops-grid{display:grid;grid-template-columns:minmax(220px,.85fr) minmax(420px,1.55fr) minmax(240px,.9fr);gap:10px;margin-bottom:12px;align-items:stretch;}
+  .home-ops-panel{min-width:0;background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px;box-shadow:0 3px 14px rgba(13,27,42,.05);}
+  .home-ops-title{margin-bottom:9px;color:var(--accent);font-size:9px;font-weight:850;letter-spacing:1px;text-transform:uppercase;}
+  .home-event-list,.home-alert-list{display:grid;gap:6px;}
+  .home-event-row,.home-attention-row{width:100%;min-height:44px;display:grid;align-items:center;border:1px solid var(--border);border-radius:7px;background:#fff;color:var(--text);font-family:'Inter',sans-serif;text-align:left;cursor:pointer;}
+  .home-event-row{grid-template-columns:minmax(0,1fr) auto;gap:9px;padding:8px 9px;}
+  .home-event-row:hover,.home-attention-row:hover{border-color:var(--gold);background:var(--surface2);}
+  .home-event-main strong,.home-attention-copy strong{display:block;font-size:10px;font-weight:850;line-height:1.25;}
+  .home-event-main span,.home-attention-copy span{display:block;margin-top:3px;color:var(--text-3);font-size:8.5px;line-height:1.25;}
+  .home-event-date{text-align:right;color:var(--taupe);font-size:8px;font-weight:800;line-height:1.3;white-space:nowrap;}
+  .home-event-date strong{display:block;margin-top:2px;color:var(--text);font-size:11px;}
+  .home-top-table-wrap{overflow-x:auto;}
+  .home-top-table{width:100%;min-width:620px;border-collapse:collapse;table-layout:auto;}
+  .home-top-table th{padding:6px 7px;border-bottom:1px solid var(--border);color:var(--text-3);font-size:7px;font-weight:850;letter-spacing:.7px;text-align:left;text-transform:uppercase;white-space:nowrap;}
+  .home-top-table td{padding:8px 7px;border-bottom:1px solid rgba(216,203,181,.62);color:var(--text);font-size:9px;font-weight:650;white-space:nowrap;}
+  .home-top-table tbody tr{cursor:pointer;}
+  .home-top-table tbody tr:hover td{background:var(--surface2);}
+  .home-top-table tbody tr:last-child td{border-bottom:0;}
+  .home-top-rank{width:20px;height:20px;display:grid;place-items:center;border-radius:50%;background:var(--surface2);color:var(--taupe);font-size:8px;font-weight:900;}
+  .home-top-positive{color:var(--green);font-weight:850;}
+  .home-top-negative{color:var(--red);font-weight:850;}
+  .home-attention-row{grid-template-columns:minmax(0,1fr) auto;padding:8px 9px;gap:8px;}
+  .home-attention-count{min-width:28px;text-align:right;color:var(--accent);font-size:14px;font-weight:850;}
+  .home-attention-row.danger .home-attention-count{color:var(--red);}
+  .home-attention-row.warning .home-attention-count{color:#9A6818;}
+  .home-ops-empty{padding:14px 6px;color:var(--text-3);font-size:10px;text-align:center;}
+  .home-line-chart{width:100%;height:260px;display:block;overflow:visible;}
+  .home-line-chart .grid{stroke:rgba(216,203,181,.72);stroke-width:1;}
+  .home-line-chart .axis-label{fill:var(--text-3);font:700 9px 'Inter',sans-serif;}
+  .home-line-chart .month-label{fill:var(--text-2);font:750 9px 'Inter',sans-serif;text-anchor:middle;}
+  .home-line-chart .series-line{fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+  .home-line-chart .series-dot{stroke:#fff;stroke-width:2;}
+  .home-line-legend{display:flex;justify-content:flex-end;gap:14px;flex-wrap:wrap;margin:-2px 0 9px;}
+  .home-line-legend span{display:flex;align-items:center;gap:5px;color:var(--text-3);font-size:9px;font-weight:750;}
+  .home-line-legend i{width:16px;height:3px;border-radius:3px;display:block;}
+  .home-panels-toolbar{display:flex;justify-content:flex-end;margin:0 0 7px;}
+  @media(max-width:1050px){.home-ops-grid{grid-template-columns:1fr 1fr;}.home-ops-panel.top{grid-column:1/-1;grid-row:1;}}
+  @media(max-width:620px){.home-ops-grid{grid-template-columns:1fr;}.home-ops-panel.top{grid-column:auto;grid-row:auto;}.home-ops-panel{padding:10px;}}
   .home-pie.multi::after{display:none;}
   .home-pie.multi .home-pie-center{inset:56px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(13,27,42,.08);}
   .home-pie.multi .home-pie-center strong{font-size:12px;}
@@ -4780,13 +4822,13 @@ let activeLoteDetailId=null;
 let activeOrcEditIndex=null;
 let activeLoteReturnStatus=null;
 let pillFilter='';
-var statusColumnFilters={status:'',ano:'',confinamento:'',modalidade:'',raca:'',origem:'',vendedor:'',lote:'',b3:'',qtd:'',quebraPct:'',quebraKg:'',entrada:'',abate:'',recebimento:'',faturamento:'',capital:'',lucro:'',rent:'',rentmes:'',rcExpectativa:'',rcRealizado:'',gmdOrigem:'',gmdChegada:'',gmcOrigem:'',gmcChegada:'',eficiencia:'',eficienciaChegada:''};
+var statusColumnFilters={status:'',ano:'',confinamento:'',modalidade:'',raca:'',origem:'',vendedor:'',lote:'',b3:'',qtd:'',quebraPct:'',quebraKg:'',entrada:'',abate:'',recebimento:'',faturamento:'',capital:'',lucro:'',rent:'',rentmes:'',rcExpectativa:'',rcRealizado:'',consumoMedioExpectativa:'',consumoMedioRealizado:'',gmdOrigem:'',gmdChegada:'',gmcOrigem:'',gmcChegada:'',eficiencia:'',eficienciaChegada:''};
 var STATUS_COLS=[
   {key:'status',label:'Status',w:88},{key:'ano',label:'Ano',w:52},{key:'confinamento',label:'Confinamento',w:112},
   {key:'modalidade',label:'Modalidade',w:128},{key:'raca',label:'Raça',w:118},{key:'origem',label:'Origem',w:118},{key:'vendedor',label:'Vendedor',w:112},{key:'lote',label:'Lote',w:230},{key:'b3',label:'B3',w:136},{key:'qtd',label:'Qtd',w:62},{key:'quebraPct',label:'Quebra %',w:86},{key:'quebraKg',label:'Quebra kg',w:96},
   {key:'entrada',label:'Entrada',w:92},{key:'abate',label:'Abate',w:92},{key:'recebimento',label:'Recebimento',w:104},
   {key:'faturamento',label:'Fat. lote',w:126},{key:'capital',label:'Capital',w:126},{key:'lucro',label:'Lucro',w:116},
-  {key:'rent',label:'% Oper.',w:76},{key:'rentmes',label:'% Mês',w:76},{key:'rcExpectativa',label:'RC expectativa',w:108},{key:'rcRealizado',label:'RC realizado',w:100},{key:'gmdOrigem',label:'GMD Origem',w:108},{key:'gmdChegada',label:'GMD Chegada',w:108},{key:'gmcOrigem',label:'GMC Origem',w:116},{key:'gmcChegada',label:'GMC Chegada',w:116},{key:'eficiencia',label:'Efic. Origem',w:116},{key:'eficienciaChegada',label:'Efic. Cheg.',w:116}
+  {key:'rent',label:'% Oper.',w:76},{key:'rentmes',label:'% Mês',w:76},{key:'rcExpectativa',label:'RC expectativa',w:108},{key:'rcRealizado',label:'RC realizado',w:100},{key:'consumoMedioExpectativa',label:'Consumo méd. expectativa',w:138},{key:'consumoMedioRealizado',label:'Consumo méd. realizado',w:130},{key:'gmdOrigem',label:'GMD Origem',w:108},{key:'gmdChegada',label:'GMD Chegada',w:108},{key:'gmcOrigem',label:'GMC Origem',w:116},{key:'gmcChegada',label:'GMC Chegada',w:116},{key:'eficiencia',label:'Efic. Origem',w:116},{key:'eficienciaChegada',label:'Efic. Cheg.',w:116}
 ];
 var STATUS_COL_VISIBLE_KEY='vm_status_cols_visible_v1';
 var STATUS_COL_WIDTH_KEY='vm_status_cols_width_v1';
@@ -4800,13 +4842,13 @@ var HOME_TABLE_COLS=[
   {key:'origem',label:'Origem'},{key:'vendedor',label:'Vendedor'},{key:'lote',label:'Lote'},{key:'b3',label:'B3'},
   {key:'qtd',label:'Qtd'},{key:'entrada',label:'Entrada'},{key:'abate',label:'Abate'},{key:'recebimento',label:'Recebimento'},
   {key:'quebraPct',label:'Quebra %'},{key:'quebraKg',label:'Quebra kg'},
-  {key:'faturamento',label:'Fat. lote'},{key:'capital',label:'Capital'},{key:'lucro',label:'Lucro'},{key:'rent',label:'% Oper.'},{key:'rentmes',label:'% Mês'},{key:'rcExpectativa',label:'RC expectativa'},{key:'rcRealizado',label:'RC realizado'},
+  {key:'faturamento',label:'Fat. lote'},{key:'capital',label:'Capital'},{key:'lucro',label:'Lucro'},{key:'rent',label:'% Oper.'},{key:'rentmes',label:'% Mês'},{key:'rcExpectativa',label:'RC expectativa'},{key:'rcRealizado',label:'RC realizado'},{key:'consumoMedioExpectativa',label:'Consumo méd. expectativa'},{key:'consumoMedioRealizado',label:'Consumo méd. realizado'},
   {key:'gmdOrigem',label:'GMD origem'},{key:'gmdChegada',label:'GMD chegada'},{key:'gmcOrigem',label:'GMC origem'},{key:'gmcChegada',label:'GMC chegada'},
   {key:'eficiencia',label:'Efic. origem'},{key:'eficienciaChegada',label:'Efic. chegada'}
 ];
 var HOME_COL_VISIBLE_KEY='vm_home_cols_visible_v1';
 var HOME_COL_WIDTH_KEY='vm_home_cols_width_v1';
-var HOME_COL_DEFAULT_WIDTHS={status:92,ano:58,confinamento:120,modalidade:126,raca:118,origem:112,vendedor:118,lote:220,b3:130,qtd:72,quebraPct:86,quebraKg:96,entrada:96,abate:96,recebimento:106,faturamento:126,capital:126,lucro:116,rent:78,rentmes:78,rcExpectativa:108,rcRealizado:100,gmdOrigem:108,gmdChegada:108,gmcOrigem:112,gmcChegada:112,eficiencia:118,eficienciaChegada:118};
+var HOME_COL_DEFAULT_WIDTHS={status:92,ano:58,confinamento:120,modalidade:126,raca:118,origem:112,vendedor:118,lote:220,b3:130,qtd:72,quebraPct:86,quebraKg:96,entrada:96,abate:96,recebimento:106,faturamento:126,capital:126,lucro:116,rent:78,rentmes:78,rcExpectativa:108,rcRealizado:100,consumoMedioExpectativa:138,consumoMedioRealizado:130,gmdOrigem:108,gmdChegada:108,gmcOrigem:112,gmcChegada:112,eficiencia:118,eficienciaChegada:118};
 var homeColumnResizeState=null;
 var homeColumnsPanelOpen=false;
 function getHomeColumnsVisible(){
@@ -4891,13 +4933,15 @@ function homeColumnsPanelHtml(){
 var DASHBOARD_CARD_DEFS={
   home:[
     {key:'lotes',label:'Lotes'},{key:'qtd',label:'Quantidade total'},{key:'faturamento',label:'Faturamento total'},{key:'capital',label:'Capital total'},{key:'lucro',label:'Lucro total'},
-    {key:'rent',label:'% lucro operação'},{key:'rentmes',label:'% lucro ao mês'},{key:'prazo',label:'Prazo médio'},
+    {key:'rent',label:'% lucro operação'},{key:'rentmes',label:'% lucro ao mês'},{key:'prazo',label:'Prazo médio'},{key:'quebraPct',label:'Quebra média %'},{key:'quebraKg',label:'Quebra média kg'},
+    {key:'rcExpectativa',label:'RC expectativa'},{key:'rcRealizado',label:'RC realizado'},{key:'consumoMedioExpectativa',label:'Consumo médio expectativa'},{key:'consumoMedioRealizado',label:'Consumo médio realizado'},
     {key:'gmdOrigem',label:'GMD origem'},{key:'gmdChegada',label:'GMD chegada'},{key:'gmcOrigem',label:'GMC origem'},{key:'gmcChegada',label:'GMC chegada'},
     {key:'eficiencia',label:'Eficiência biológica origem'},{key:'eficienciaChegada',label:'Eficiência biológica chegada'}
   ],
   status:[
     {key:'lotes',label:'Lotes'},{key:'qtd',label:'Quantidade total'},{key:'faturamento',label:'Faturamento lote'},{key:'capital',label:'Capital total'},
-    {key:'lucro',label:'Lucro total'},{key:'rent',label:'% lucro operação'},{key:'rentmes',label:'% lucro ao mês'},{key:'prazo',label:'Prazo médio'},
+    {key:'lucro',label:'Lucro total'},{key:'rent',label:'% lucro operação'},{key:'rentmes',label:'% lucro ao mês'},{key:'prazo',label:'Prazo médio'},{key:'quebraPct',label:'Quebra média %'},{key:'quebraKg',label:'Quebra média kg'},
+    {key:'rcExpectativa',label:'RC expectativa'},{key:'rcRealizado',label:'RC realizado'},{key:'consumoMedioExpectativa',label:'Consumo médio expectativa'},{key:'consumoMedioRealizado',label:'Consumo médio realizado'},
     {key:'gmdOrigem',label:'GMD origem'},{key:'gmdChegada',label:'GMD chegada'},{key:'gmcOrigem',label:'GMC origem'},{key:'gmcChegada',label:'GMC chegada'},
     {key:'eficiencia',label:'Eficiência biológica origem'},{key:'eficienciaChegada',label:'Eficiência biológica chegada'}
   ]
@@ -4947,6 +4991,12 @@ function statusSummaryCardsHtml(){
     rent:'<div class="status-total-card"><button type="button" class="dashboard-card-remove" title="Ocultar quadro" onclick="removeDashboardCard(\'status\',\'rent\')">×</button><div class="status-total-label">% lucro operação</div><div class="status-total-value" id="status-total-rent">—</div></div>',
     rentmes:'<div class="status-total-card"><button type="button" class="dashboard-card-remove" title="Ocultar quadro" onclick="removeDashboardCard(\'status\',\'rentmes\')">×</button><div class="status-total-label">% lucro ao mês</div><div class="status-total-value" id="status-total-rentmes">—</div><div class="status-total-sub" id="status-total-prazo">Prazo médio: —</div></div>',
     prazo:'<div class="status-total-card"><button type="button" class="dashboard-card-remove" title="Ocultar quadro" onclick="removeDashboardCard(\'status\',\'prazo\')">×</button><div class="status-total-label">Prazo médio</div><div class="status-total-value" id="status-total-prazo-card">—</div><div class="status-total-sub">Baseado no capital investido</div></div>',
+    quebraPct:'<div class="status-total-card"><button type="button" class="dashboard-card-remove" title="Ocultar quadro" onclick="removeDashboardCard(\'status\',\'quebraPct\')">×</button><div class="status-total-label">Quebra média %</div><div class="status-total-value" id="status-total-quebra-pct">—</div><div class="status-total-sub">Média ponderada por qtd</div></div>',
+    quebraKg:'<div class="status-total-card"><button type="button" class="dashboard-card-remove" title="Ocultar quadro" onclick="removeDashboardCard(\'status\',\'quebraKg\')">×</button><div class="status-total-label">Quebra média kg</div><div class="status-total-value" id="status-total-quebra-kg">—</div><div class="status-total-sub">Média ponderada por qtd</div></div>',
+    rcExpectativa:'<div class="status-total-card"><button type="button" class="dashboard-card-remove" title="Ocultar quadro" onclick="removeDashboardCard(\'status\',\'rcExpectativa\')">×</button><div class="status-total-label">RC expectativa</div><div class="status-total-value" id="status-total-rc-expectativa">—</div><div class="status-total-sub">Média ponderada por qtd</div></div>',
+    rcRealizado:'<div class="status-total-card"><button type="button" class="dashboard-card-remove" title="Ocultar quadro" onclick="removeDashboardCard(\'status\',\'rcRealizado\')">×</button><div class="status-total-label">RC realizado</div><div class="status-total-value" id="status-total-rc-realizado">—</div><div class="status-total-sub">Somente lotes com realizado</div></div>',
+    consumoMedioExpectativa:'<div class="status-total-card"><button type="button" class="dashboard-card-remove" title="Ocultar quadro" onclick="removeDashboardCard(\'status\',\'consumoMedioExpectativa\')">×</button><div class="status-total-label">Consumo médio expectativa</div><div class="status-total-value" id="status-total-consumo-expectativa">—</div><div class="status-total-sub">% PV/dia · média ponderada</div></div>',
+    consumoMedioRealizado:'<div class="status-total-card"><button type="button" class="dashboard-card-remove" title="Ocultar quadro" onclick="removeDashboardCard(\'status\',\'consumoMedioRealizado\')">×</button><div class="status-total-label">Consumo médio realizado</div><div class="status-total-value" id="status-total-consumo-realizado">—</div><div class="status-total-sub">Somente lotes com realizado</div></div>',
     gmdOrigem:'<div class="status-total-card"><button type="button" class="dashboard-card-remove" title="Ocultar quadro" onclick="removeDashboardCard(\'status\',\'gmdOrigem\')">×</button><div class="status-total-label">GMD origem</div><div class="status-total-value" id="status-total-gmd-origem">—</div><div class="status-total-sub">Média ponderada por qtd</div></div>',
     gmdChegada:'<div class="status-total-card"><button type="button" class="dashboard-card-remove" title="Ocultar quadro" onclick="removeDashboardCard(\'status\',\'gmdChegada\')">×</button><div class="status-total-label">GMD chegada</div><div class="status-total-value" id="status-total-gmd-chegada">—</div><div class="status-total-sub">Média ponderada por qtd</div></div>',
     gmcOrigem:'<div class="status-total-card"><button type="button" class="dashboard-card-remove" title="Ocultar quadro" onclick="removeDashboardCard(\'status\',\'gmcOrigem\')">×</button><div class="status-total-label">GMC origem</div><div class="status-total-value" id="status-total-gmc-origem">—</div><div class="status-total-sub">Média ponderada por qtd</div></div>',
@@ -6599,6 +6649,7 @@ var HOME_PIE_GROUPS=[
   {key:'recebimento',label:'Recebimento'}
 ];
 var homeChartState={inicio:'',fim:'',modo:'periodo',metricas:{faturamento:true,capital:true,lucro:true},barOptionsOpen:false,pieMetrics:['qtd'],pieOptionsOpen:false,pieGroup:'status'};
+var homeOverviewState={inicio:'',fim:'',modo:'periodo',metricas:{faturamento:true,capital:true,lucro:true},optionsOpen:false};
 var homeOpenFilter='';
 function homeFilterSelected(type){return Array.isArray(homeFilterState[type])?homeFilterState[type]:[];}
 function homeFilterMatches(type,value){var selected=homeFilterSelected(type);return !selected.length||selected.indexOf(String(value))>=0;}
@@ -6712,6 +6763,26 @@ function homeChartResetControls(){
   homeChartState.inicio='';homeChartState.fim='';homeChartState.modo='periodo';homeChartState.metricas={faturamento:true,capital:true,lucro:true};homeChartState.barOptionsOpen=false;homeChartState.pieMetrics=['qtd'];homeChartState.pieOptionsOpen=false;homeChartState.pieGroup='status';
   renderHome();
 }
+function homeOverviewSetPeriod(campo,valor){
+  homeOverviewState[campo]=valor||'';
+  if(homeOverviewState.inicio&&homeOverviewState.fim&&homeOverviewState.inicio>homeOverviewState.fim){
+    var troca=homeOverviewState.inicio;homeOverviewState.inicio=homeOverviewState.fim;homeOverviewState.fim=troca;
+  }
+  renderHome();
+}
+function homeOverviewSetMode(modo){homeOverviewState.modo=modo==='total'?'total':'periodo';renderHome();}
+function homeOverviewToggleMetric(metrica){
+  if(['faturamento','capital','lucro'].indexOf(metrica)<0)return;
+  var ativas=Object.keys(homeOverviewState.metricas).filter(function(key){return homeOverviewState.metricas[key];});
+  if(homeOverviewState.metricas[metrica]){
+    if(ativas.length===1){toast('Mantenha ao menos um indicador no gráfico.');return;}
+    homeOverviewState.metricas[metrica]=false;
+  }else homeOverviewState.metricas[metrica]=true;
+  homeOverviewState.optionsOpen=true;
+  renderHome();
+}
+function homeOverviewToggleOptions(event){if(event)event.stopPropagation();homeOverviewState.optionsOpen=!homeOverviewState.optionsOpen;renderHome();}
+function homeOverviewResetControls(){homeOverviewState={inicio:'',fim:'',modo:'periodo',metricas:{faturamento:true,capital:true,lucro:true},optionsOpen:false};renderHome();}
 document.addEventListener('click',function(event){
   if(event.target&&event.target.closest&&event.target.closest('.home-multi'))return;
   homeOpenFilter='';document.querySelectorAll('.home-multi.open').forEach(function(el){el.classList.remove('open');var btn=el.querySelector('.home-multi-button');if(btn)btn.setAttribute('aria-expanded','false');});
@@ -7014,6 +7085,23 @@ function toggleHomeFilters(){
   homeOpenFilter='';
   renderHome();
 }
+function homePanelsCollapsed(){
+  try{return localStorage.getItem('vm_home_panels_collapsed_v1')==='1';}catch(e){return false;}
+}
+function toggleHomePanels(){
+  var next=!homePanelsCollapsed();
+  try{localStorage.setItem('vm_home_panels_collapsed_v1',next?'1':'0');}catch(e){}
+  homeOpenFilter='';
+  renderHome();
+}
+function homeChartPanelCollapsed(key){
+  try{return localStorage.getItem('vm_home_chart_collapsed_'+key+'_v1')==='1';}catch(e){return false;}
+}
+function toggleHomeChartPanel(key){
+  var next=!homeChartPanelCollapsed(key);
+  try{localStorage.setItem('vm_home_chart_collapsed_'+key+'_v1',next?'1':'0');}catch(e){}
+  renderHome();
+}
 function renderHomeDashboardNovo(lotes){
   var live=document.getElementById('home-dashboard-live');
   if(!live)return;
@@ -7086,8 +7174,12 @@ function renderHomeDashboardNovo(lotes){
     if(!receb&&abate)receb=isoFromDate(_addDias(abate,parseInt(o.prazoPag)||0));
     if(!receb&&entrada)receb=isoFromDate(_addDias(entrada,(parseInt(o.dias)||0)+(parseInt(o.prazoPag)||0)));
     var useRealizedTechnical=statusRealizadoLote(l).key==='complete';
-    var zoo=useRealizedTechnical?zootecRealCalc(l,o,aj):biometriaSimuladaOrc(o);
+    var zooSimulado=biometriaSimuladaOrc(o);
+    var zoo=useRealizedTechnical?zootecRealCalc(l,o,aj):zooSimulado;
     var zooRealizado=zootecRealCalc(l,o,aj);
+    var temConsumoReal=aj.consumoMSPctReal!==undefined&&aj.consumoMSPctReal!==null&&String(aj.consumoMSPctReal)!==''
+      ||aj.consumoMSDiarioReal!==undefined&&aj.consumoMSDiarioReal!==null&&String(aj.consumoMSDiarioReal)!==''
+      ||aj.consumoMSTotalReal!==undefined&&aj.consumoMSTotalReal!==null&&String(aj.consumoMSTotalReal)!=='';
     var tech=indicadoresTecnicosLote(zoo);
     var qtd=parseFloat(o.qtd||l.qtd)||0;
     var origemCompra=l.origemCompra||l.origem||o.origemCompra_orc||o.origemCompra||'A definir';
@@ -7127,6 +7219,8 @@ function renderHomeDashboardNovo(lotes){
       rentMes:metric.rentMes||(prazo>0?(metric.rent||0)/(prazo/30):0),
       rcExpectativa:finNum(o.rendA_pct),
       rcRealizado:['abatido','recebido'].indexOf(status)>=0?finNum(zooRealizado.rendA):0,
+      consumoMedioExpectativa:finNum(o.consPC_pct),
+      consumoMedioRealizado:temConsumoReal?finNum(zooRealizado.consumoPct):0,
       prazo:prazo,
       gmd:tech.gmdChegada||0,
       gmdOrigem:tech.gmdOrigem||0,
@@ -7139,8 +7233,8 @@ function renderHomeDashboardNovo(lotes){
     };
   }
   function sumRows(rows){
-    var out={lotes:rows.length,qtd:0,quebraPct:0,quebraKg:0,faturamento:0,capital:0,lucro:0,rent:0,rentMes:0,rcExpectativa:0,rcRealizado:0,prazoMedio:0,gmd:0,gmdOrigem:0,gmdChegada:0,gmcOrigem:0,gmcChegada:0,eficiencia:0,eficienciaChegada:0};
-    var prazoPeso=0,prazoBase=0,quebraPctPeso=0,quebraKgPeso=0,rcExpectativaPeso=0,rcRealizadoPeso=0,rcRealizadoQtd=0,gmdPeso=0,gmdOrigemPeso=0,gmdChegadaPeso=0,gmcOrigemPeso=0,gmcChegadaPeso=0,eficPeso=0,eficChegadaPeso=0;
+    var out={lotes:rows.length,qtd:0,quebraPct:0,quebraKg:0,faturamento:0,capital:0,lucro:0,rent:0,rentMes:0,rcExpectativa:0,rcRealizado:0,consumoMedioExpectativa:0,consumoMedioRealizado:0,prazoMedio:0,gmd:0,gmdOrigem:0,gmdChegada:0,gmcOrigem:0,gmcChegada:0,eficiencia:0,eficienciaChegada:0};
+    var prazoPeso=0,prazoBase=0,quebraPctPeso=0,quebraKgPeso=0,rcExpectativaPeso=0,rcRealizadoPeso=0,rcRealizadoQtd=0,consumoExpectativaPeso=0,consumoExpectativaQtd=0,consumoRealizadoPeso=0,consumoRealizadoQtd=0,gmdPeso=0,gmdOrigemPeso=0,gmdChegadaPeso=0,gmcOrigemPeso=0,gmcChegadaPeso=0,eficPeso=0,eficChegadaPeso=0;
     rows.forEach(function(r){
       out.qtd+=r.qtd;
       out.faturamento+=r.faturamento;
@@ -7152,6 +7246,8 @@ function renderHomeDashboardNovo(lotes){
         quebraKgPeso+=r.quebraKg*r.qtd;
         if(r.rcExpectativa>0){rcExpectativaPeso+=r.rcExpectativa*r.qtd;}
         if(r.rcRealizado>0){rcRealizadoPeso+=r.rcRealizado*r.qtd;rcRealizadoQtd+=r.qtd;}
+        if(r.consumoMedioExpectativa>0){consumoExpectativaPeso+=r.consumoMedioExpectativa*r.qtd;consumoExpectativaQtd+=r.qtd;}
+        if(r.consumoMedioRealizado>0){consumoRealizadoPeso+=r.consumoMedioRealizado*r.qtd;consumoRealizadoQtd+=r.qtd;}
         if(r.gmd>0){gmdPeso+=r.gmd*r.qtd;}
         if(r.gmdOrigem>0){gmdOrigemPeso+=r.gmdOrigem*r.qtd;}
         if(r.gmdChegada>0){gmdChegadaPeso+=r.gmdChegada*r.qtd;}
@@ -7168,6 +7264,8 @@ function renderHomeDashboardNovo(lotes){
     out.rentMes=out.prazoMedio>0?out.rent/(out.prazoMedio/30):0;
     out.rcExpectativa=out.qtd>0?rcExpectativaPeso/out.qtd:0;
     out.rcRealizado=rcRealizadoQtd>0?rcRealizadoPeso/rcRealizadoQtd:0;
+    out.consumoMedioExpectativa=consumoExpectativaQtd>0?consumoExpectativaPeso/consumoExpectativaQtd:0;
+    out.consumoMedioRealizado=consumoRealizadoQtd>0?consumoRealizadoPeso/consumoRealizadoQtd:0;
     out.gmd=out.qtd>0?gmdPeso/out.qtd:0;
     out.gmdOrigem=out.qtd>0?gmdOrigemPeso/out.qtd:0;
     out.gmdChegada=out.qtd>0?gmdChegadaPeso/out.qtd:0;
@@ -7273,7 +7371,8 @@ function renderHomeDashboardNovo(lotes){
     var groupOptions=HOME_PIE_GROUPS.map(function(item){return '<option value="'+item.key+'"'+(item.key===grouping.key?' selected':'')+'>'+escHtml(item.label)+'</option>';}).join('');
     var chartTitle='Distribuição por '+grouping.label.toLowerCase();
     var chartNote=isStatusGroup?'Toque em uma fatia para filtrar os lotes':'Compare os indicadores por '+grouping.label.toLowerCase()+'.';
-    return '<div class="home-chart-panel"><div class="home-chart-head"><div><div class="home-chart-title">'+escHtml(chartTitle)+'</div><div class="home-chart-note">'+escHtml(chartNote)+'</div></div><div class="home-pie-head-actions"><div class="home-chart-control" style="min-width:142px"><label for="home-pie-group">Agrupar por</label><select id="home-pie-group" onchange="homePieSetGroup(this.value)">'+groupOptions+'</select></div><div class="home-pie-options"><button type="button" class="home-pie-options-btn'+(homeChartState.pieOptionsOpen?' active':'')+'" onclick="homePieToggleOptions(event)">Dados visíveis · '+selected.length+'/3</button><div class="home-pie-options-panel'+(homeChartState.pieOptionsOpen?' open':'')+'" onclick="event.stopPropagation()"><div class="home-pie-options-title">Dados visíveis</div><div class="home-pie-options-sub">Escolha até três indicadores para comparar.</div><div class="home-pie-options-grid">'+options+'</div></div></div></div></div>'
+    if(homeChartPanelCollapsed('pie'))return '<div class="home-chart-panel collapsed"><div class="home-chart-head"><div><div class="home-chart-title">'+escHtml(chartTitle)+'</div><div class="home-chart-note">'+escHtml(chartNote)+'</div></div><button type="button" class="home-chart-collapse" onclick="toggleHomeChartPanel(\'pie\')">Mostrar quadro</button></div></div>';
+    return '<div class="home-chart-panel"><div class="home-chart-head"><div><div class="home-chart-title">'+escHtml(chartTitle)+'</div><div class="home-chart-note">'+escHtml(chartNote)+'</div></div><div class="home-pie-head-actions"><div class="home-chart-control" style="min-width:142px"><label for="home-pie-group">Agrupar por</label><select id="home-pie-group" onchange="homePieSetGroup(this.value)">'+groupOptions+'</select></div><div class="home-pie-options"><button type="button" class="home-pie-options-btn'+(homeChartState.pieOptionsOpen?' active':'')+'" onclick="homePieToggleOptions(event)">Dados visíveis · '+selected.length+'/3</button><div class="home-pie-options-panel'+(homeChartState.pieOptionsOpen?' open':'')+'" onclick="event.stopPropagation()"><div class="home-pie-options-title">Dados visíveis</div><div class="home-pie-options-sub">Escolha até três indicadores para comparar.</div><div class="home-pie-options-grid">'+options+'</div></div></div><button type="button" class="home-chart-collapse" onclick="toggleHomeChartPanel(\'pie\')">Minimizar quadro</button></div></div>'
       +'<div class="home-chart-note" style="margin:-4px 0 10px">'+escHtml(metricHint)+'</div>'
       +'<div class="home-pie-layout"><div class="home-pie'+(selected.length>1?' multi':'')+'"><svg viewBox="0 0 100 100" role="img" aria-label="Distribuição por status">'+slices.join('')+'</svg><div class="home-pie-center"><strong>'+escHtml(centerValue(firstMetric,firstTotal))+'</strong><span>'+escHtml(firstMetric.label)+'</span></div></div><div class="home-chart-legend">'+legend+'</div></div></div>';
   }
@@ -7351,7 +7450,8 @@ function renderHomeDashboardNovo(lotes){
     +'</div>';
     var note=modo==='total'?'Valores somados no período selecionado.':'Valores agrupados pela data de entrada.';
     var title=modo==='total'?'Resultado total':'Resultado mês a mês';
-    return '<div class="home-chart-panel"><div class="home-chart-head"><div><div class="home-chart-title">'+title+'</div><div class="home-chart-note">'+note+'</div></div></div>'
+    if(homeChartPanelCollapsed('monthly'))return '<div class="home-chart-panel collapsed"><div class="home-chart-head"><div><div class="home-chart-title">'+title+'</div><div class="home-chart-note">'+note+'</div></div><button type="button" class="home-chart-collapse" onclick="toggleHomeChartPanel(\'monthly\')">Mostrar quadro</button></div></div>';
+    return '<div class="home-chart-panel"><div class="home-chart-head"><div><div class="home-chart-title">'+title+'</div><div class="home-chart-note">'+note+'</div></div><button type="button" class="home-chart-collapse" onclick="toggleHomeChartPanel(\'monthly\')">Minimizar quadro</button></div>'
       +controls+'<div class="home-bars-wrap"><div class="home-bars">'+bars+'</div></div>'
       +'<div class="home-bars-legend">'+selected.map(function(metric){return '<span><i style="background:'+metric.color+'"></i>'+escHtml(metric.label)+'</span>';}).join('')+'</div></div>';
   }
@@ -7438,6 +7538,7 @@ function renderHomeDashboardNovo(lotes){
     if(key==='rent')return fmtPct(row.rent);
     if(key==='rentmes')return fmtPct(row.rentMes);
     if(key==='rcExpectativa'||key==='rcRealizado')return row[key]?fmtNum(row[key],2)+'%':'—';
+    if(key==='consumoMedioExpectativa'||key==='consumoMedioRealizado')return row[key]?fmtNum(row[key],2)+'%':'—';
     if(key==='gmdOrigem'||key==='gmdChegada')return row[key]?fmtNum(row[key],2)+' kg/dia':'—';
     if(key==='gmcOrigem'||key==='gmcChegada')return row[key]?fmtNum(row[key],3)+' kg/dia':'—';
     if(key==='eficiencia'||key==='eficienciaChegada')return row[key]?fmtNum(row[key],2)+' kg MS/@':'—';
@@ -7461,6 +7562,104 @@ function renderHomeDashboardNovo(lotes){
   ].join(' · ');
   var optionObjects=function(values){return values.map(function(value){return {value:value,label:value};});};
 
+  function homeOverviewLineChartHtml(rows){
+    if(homeChartPanelCollapsed('overview'))return '<div class="home-chart-panel collapsed"><div class="home-chart-head"><div><div class="home-chart-title">Visão geral</div><div class="home-chart-note">Resultado mensal (R$)</div></div><button type="button" class="home-chart-collapse" onclick="toggleHomeChartPanel(\'overview\')">Mostrar quadro</button></div></div>';
+    var todasSeries=[
+      {key:'faturamento',label:'Faturamento',color:'#0D1B2A'},
+      {key:'capital',label:'Capital',color:'#C9A24E'},
+      {key:'lucro',label:'Lucro',color:'#6B7056'}
+    ];
+    var todosMeses=Array.from(new Set(rows.map(chartMonthKey).filter(Boolean))).sort();
+    if(homeOverviewState.inicio&&todosMeses.indexOf(homeOverviewState.inicio)<0)homeOverviewState.inicio='';
+    if(homeOverviewState.fim&&todosMeses.indexOf(homeOverviewState.fim)<0)homeOverviewState.fim='';
+    var optionMes='<option value="">Todos os meses</option>'+todosMeses.map(function(key){return '<option value="'+escHtml(key)+'">'+escHtml(chartMonthLabel(key))+'</option>';}).join('');
+    var optionInicio=optionMes.replace('value="'+homeOverviewState.inicio+'"','value="'+homeOverviewState.inicio+'" selected');
+    var optionFim=optionMes.replace('value="'+homeOverviewState.fim+'"','value="'+homeOverviewState.fim+'" selected');
+    var series=todasSeries.filter(function(s){return homeOverviewState.metricas[s.key];});
+    var metricOptions=todasSeries.map(function(s){return '<label class="home-bar-option"><input type="checkbox"'+(homeOverviewState.metricas[s.key]?' checked':'')+' onchange="homeOverviewToggleMetric(\''+s.key+'\')"><span>'+escHtml(s.label)+'</span></label>';}).join('');
+    var controls='<div class="home-chart-inline-controls">'
+      +'<div class="home-chart-control"><label>Exibição</label><div class="home-chart-period-mode"><button type="button" class="home-chart-period-btn'+(homeOverviewState.modo==='periodo'?' active':'')+'" onclick="homeOverviewSetMode(\'periodo\')">Por período</button><button type="button" class="home-chart-period-btn'+(homeOverviewState.modo==='total'?' active':'')+'" onclick="homeOverviewSetMode(\'total\')">Total</button></div></div>'
+      +'<div class="home-chart-control"><label for="home-overview-inicio">De</label><select id="home-overview-inicio" onchange="homeOverviewSetPeriod(\'inicio\',this.value)">'+optionInicio+'</select></div>'
+      +'<div class="home-chart-control"><label for="home-overview-fim">Até</label><select id="home-overview-fim" onchange="homeOverviewSetPeriod(\'fim\',this.value)">'+optionFim+'</select></div>'
+      +'<div class="home-chart-control metrics"><label>Dados visíveis</label><div class="home-bar-options home-overview-options"><button type="button" class="home-bar-options-btn'+(homeOverviewState.optionsOpen?' active':'')+'" onclick="homeOverviewToggleOptions(event)">Dados visíveis · '+series.length+'/3</button><div class="home-bar-options-panel'+(homeOverviewState.optionsOpen?' open':'')+'" onclick="event.stopPropagation()"><div class="home-bar-options-title">Dados visíveis</div><div class="home-bar-options-sub">Escolha os indicadores do gráfico.</div><div class="home-bar-options-grid">'+metricOptions+'</div></div></div></div>'
+      +'<button type="button" class="home-chart-clear" onclick="homeOverviewResetControls()">Limpar</button>'
+    +'</div>';
+    var rowsPeriodo=rows.filter(function(row){var key=chartMonthKey(row);return key&&(!homeOverviewState.inicio||key>=homeOverviewState.inicio)&&(!homeOverviewState.fim||key<=homeOverviewState.fim);});
+    var grupos={};
+    rowsPeriodo.forEach(function(row){
+      var key=chartMonthKey(row);
+      if(!key)return;
+      if(!grupos[key])grupos[key]=[];
+      grupos[key].push(row);
+    });
+    var meses=Object.keys(grupos).sort();
+    var pontos=meses.map(function(key){var totalMes=sumRows(grupos[key]);return {key:key,label:chartMonthLabel(key),faturamento:totalMes.faturamento,capital:totalMes.capital,lucro:totalMes.lucro};});
+    if(homeOverviewState.modo==='total'&&rowsPeriodo.length){var totalPeriodo=sumRows(rowsPeriodo);pontos=[{key:'total',label:'Total do período',faturamento:totalPeriodo.faturamento,capital:totalPeriodo.capital,lucro:totalPeriodo.lucro}];}
+    if(!pontos.length)return '<div class="home-chart-panel"><div class="home-chart-head"><div><div class="home-chart-title">Visão geral</div><div class="home-chart-note">Resultado mensal (R$)</div></div><button type="button" class="home-chart-collapse" onclick="toggleHomeChartPanel(\'overview\')">Minimizar quadro</button></div>'+controls+'<div class="home-ops-empty">Sem datas para montar o gráfico.</div></div>';
+    var valores=[];pontos.forEach(function(p){series.forEach(function(s){valores.push(finNum(p[s.key]));});});
+    var minimo=Math.min.apply(Math,[0].concat(valores)),maximo=Math.max.apply(Math,[0].concat(valores));
+    if(maximo===minimo)maximo=minimo+1;
+    var left=74,right=744,top=18,bottom=220,plotW=right-left,plotH=bottom-top;
+    function x(index){return pontos.length===1?left+plotW/2:left+(plotW*index/(pontos.length-1));}
+    function y(value){return top+(maximo-finNum(value))/(maximo-minimo)*plotH;}
+    var grid='';
+    for(var i=0;i<=4;i++){
+      var gy=top+(plotH*i/4),gv=maximo-((maximo-minimo)*i/4);
+      grid+='<line class="grid" x1="'+left+'" y1="'+gy+'" x2="'+right+'" y2="'+gy+'"></line><text class="axis-label" x="'+(left-8)+'" y="'+(gy+3)+'" text-anchor="end">'+escHtml(moneyShort(gv))+'</text>';
+    }
+    var monthLabels=pontos.map(function(p,index){return '<text class="month-label" x="'+x(index)+'" y="244">'+escHtml(p.label)+'</text>';}).join('');
+    var lines=series.map(function(s){
+      var coords=pontos.map(function(p,index){return x(index)+','+y(p[s.key]);}).join(' ');
+      var dots=pontos.map(function(p,index){return '<circle class="series-dot" cx="'+x(index)+'" cy="'+y(p[s.key])+'" r="4" fill="'+s.color+'"><title>'+escHtml(p.label+' · '+s.label+': '+fmt(p[s.key]))+'</title></circle>';}).join('');
+      return '<polyline class="series-line" stroke="'+s.color+'" points="'+coords+'"></polyline>'+dots;
+    }).join('');
+    var legend=series.map(function(s){return '<span><i style="background:'+s.color+'"></i>'+escHtml(s.label)+'</span>';}).join('');
+    return '<div class="home-chart-panel"><div class="home-chart-head"><div><div class="home-chart-title">Visão geral</div><div class="home-chart-note">Resultado mensal (R$)</div></div><button type="button" class="home-chart-collapse" onclick="toggleHomeChartPanel(\'overview\')">Minimizar quadro</button></div>'+controls+'<div class="home-line-legend">'+legend+'</div><div class="home-bars-wrap"><svg class="home-line-chart" viewBox="0 0 760 260" role="img" aria-label="Comparativo mensal de faturamento, capital e lucro">'+grid+lines+monthLabels+'</svg></div></div>';
+  }
+
+  function homeOperationalPanelsHtml(){
+    var hoje=new Date();hoje.setHours(0,0,0,0);
+    function eventoData(row,key){
+      var data=parseISODate(row[key]);
+      if(!data)return null;
+      data.setHours(0,0,0,0);
+      return data>=hoje?data:null;
+    }
+    function diasAte(data){return data?Math.max(0,Math.ceil((data-hoje)/86400000)):null;}
+    function resumoEvento(label,items,key){
+      var datas=items.map(function(row){return eventoData(row,key);}).filter(Boolean).sort(function(a,b){return a-b;});
+      var proxima=datas[0]||null;
+      return '<button type="button" class="home-event-row" onclick="switchTab(\'lotes\')"><span class="home-event-main"><strong>'+escHtml(label)+'</strong><span>'+items.length+' lote(s)</span></span><span class="home-event-date">'+(proxima?'Próximo':'Sem data')+'<strong>'+(proxima?escHtml(dateBR(proxima.toISOString().slice(0,10))):'—')+'</strong>'+(proxima?escHtml(diasAte(proxima)+' dia(s)'):'')+'</span></button>';
+    }
+    var embarques=filtrados.filter(function(row){return row.status==='embarque'&&eventoData(row,'entrada');});
+    var abates=filtrados.filter(function(row){return ['recebido','abatido'].indexOf(row.status)<0&&eventoData(row,'abate');});
+    var recebimentos=filtrados.filter(function(row){return row.status!=='recebido'&&eventoData(row,'recebimento');});
+    var eventos=resumoEvento('Próximos embarques',embarques,'entrada')+resumoEvento('Próximos abates',abates,'abate')+resumoEvento('Próximos recebimentos',recebimentos,'recebimento');
+
+    var top=filtrados.slice().filter(function(row){return isFinite(row.rentMes);}).sort(function(a,b){return b.rentMes-a.rentMes;}).slice(0,5);
+    var topRows=top.map(function(row,index){
+      return '<tr data-home-lid="'+escHtml(row.id)+'"><td><span class="home-top-rank">'+(index+1)+'</span></td><td><strong>'+escHtml(row.lote)+'</strong></td><td>'+escHtml(row.origem)+'</td><td>'+escHtml(numCab(row.qtd))+'</td><td>'+escHtml(moneyShort(row.capital))+'</td><td class="'+(row.lucro>=0?'home-top-positive':'home-top-negative')+'">'+escHtml(moneyShort(row.lucro))+'</td><td class="'+(row.rentMes>=0?'home-top-positive':'home-top-negative')+'">'+escHtml(fmtPct(row.rentMes))+'</td><td>'+escHtml(row.b3)+'</td></tr>';
+    }).join('');
+    if(!topRows)topRows='<tr><td colspan="8"><div class="home-ops-empty">Nenhum lote nos filtros atuais.</div></td></tr>';
+
+    var negativos=filtrados.filter(function(row){return row.lucro<0;}).length;
+    var b3Aberto=filtrados.filter(function(row){return String(row.b3||'').indexOf('Aberto')===0;}).length;
+    var recebSete=recebimentos.filter(function(row){var d=eventoData(row,'recebimento');return d&&diasAte(d)<=7;}).length;
+    var realizadoPendente=filtrados.filter(function(row){return ['abatido','recebido'].indexOf(row.status)>=0&&row.resultado!=='Realizado';}).length;
+    function alerta(label,sub,count,tone){
+      return '<button type="button" class="home-attention-row '+(tone||'')+'" onclick="switchTab(\'lotes\')"><span class="home-attention-copy"><strong>'+escHtml(label)+'</strong><span>'+escHtml(sub)+'</span></span><span class="home-attention-count">'+count+'</span></button>';
+    }
+    var alertas=alerta('Lotes com margem negativa','Atenção necessária',negativos,'danger')
+      +alerta('B3 sem trava/proteção','Risco de mercado',b3Aberto,'warning')
+      +alerta('Recebimentos próximos','Nos próximos 7 dias',recebSete,'')
+      +alerta('Lotes com realizado pendente','Aguardando registro',realizadoPendente,'warning');
+    return '<div class="home-ops-grid">'
+      +'<section class="home-ops-panel"><div class="home-ops-title">Próximos eventos</div><div class="home-event-list">'+eventos+'</div></section>'
+      +'<section class="home-ops-panel top"><div class="home-ops-title">Top lotes (maior % ao mês)</div><div class="home-top-table-wrap"><table class="home-top-table"><thead><tr><th>#</th><th>Lote</th><th>Origem</th><th>Qtd</th><th>Capital</th><th>Lucro</th><th>% ao mês</th><th>B3</th></tr></thead><tbody>'+topRows+'</tbody></table></div></section>'
+      +'<section class="home-ops-panel"><div class="home-ops-title">Alertas e atenção</div><div class="home-alert-list">'+alertas+'</div></section>'
+    +'</div>';
+  }
+
   var homeCards={
     lotes:metricCard('lotes','Lotes',total.lotes+' lote(s)',numCab(total.qtd)),
     qtd:metricCard('qtd','Qtd total',numCab(total.qtd),total.lotes+' lote(s)','primary'),
@@ -7470,6 +7669,12 @@ function renderHomeDashboardNovo(lotes){
     rent:metricCard('rent','% lucro operação',fmtPct(total.rent),moneyShort(total.capital)+' de capital'),
     rentmes:metricCard('rentmes','% lucro ao mês',fmtPct(total.rentMes),'Prazo médio: '+(total.prazoMedio?Math.round(total.prazoMedio):0)+' dias'),
     prazo:metricCard('prazo','Prazo médio',total.prazoMedio?Math.round(total.prazoMedio)+' dias':'—','Baseado no capital investido'),
+    quebraPct:metricCard('quebraPct','Quebra média %',total.quebraPct?fmtNum(total.quebraPct,2)+'%':'—','Média ponderada por qtd'),
+    quebraKg:metricCard('quebraKg','Quebra média kg',total.quebraKg?fmtNum(total.quebraKg,1)+' kg':'—','Média ponderada por qtd'),
+    rcExpectativa:metricCard('rcExpectativa','RC expectativa',total.rcExpectativa?fmtNum(total.rcExpectativa,2)+'%':'—','Média ponderada por qtd'),
+    rcRealizado:metricCard('rcRealizado','RC realizado',total.rcRealizado?fmtNum(total.rcRealizado,2)+'%':'—','Somente lotes com realizado'),
+    consumoMedioExpectativa:metricCard('consumoMedioExpectativa','Consumo médio expectativa',total.consumoMedioExpectativa?fmtNum(total.consumoMedioExpectativa,2)+'%':'—','% PV/dia · média ponderada'),
+    consumoMedioRealizado:metricCard('consumoMedioRealizado','Consumo médio realizado',total.consumoMedioRealizado?fmtNum(total.consumoMedioRealizado,2)+'%':'—','Somente lotes com realizado'),
     gmdOrigem:metricCard('gmdOrigem','GMD origem',total.gmdOrigem?brNum(total.gmdOrigem,2)+' kg/dia':'—','Média ponderada por qtd'),
     gmdChegada:metricCard('gmdChegada','GMD chegada',total.gmdChegada?brNum(total.gmdChegada,2)+' kg/dia':'—','Média ponderada por qtd'),
     gmcOrigem:metricCard('gmcOrigem','GMC origem',total.gmcOrigem?brNum(total.gmcOrigem,3)+' kg/dia':'—','Média ponderada por qtd'),
@@ -7479,8 +7684,10 @@ function renderHomeDashboardNovo(lotes){
   };
   var homeCardKeys=getDashboardCards('home');
   var filtrosMinimizados=homeFiltersCollapsed();
+  var quadrosMinimizados=homePanelsCollapsed();
   live.innerHTML=''
-    +'<div class="home-filter-card'+(filtrosMinimizados?' collapsed':'')+'">'
+    +'<div class="home-panels-toolbar"><button type="button" class="home-column-btn" onclick="toggleHomePanels()">'+(quadrosMinimizados?'Mostrar quadros':'Minimizar quadros')+'</button></div>'
+    +(quadrosMinimizados?'':'<div class="home-filter-card'+(filtrosMinimizados?' collapsed':'')+'">'
       +'<div class="home-filter-head">'
         +'<div><div class="home-filter-title">Dashboard dos lotes</div><div class="home-filter-sub">'+escHtml(filtroResumo)+'</div></div>'
         +'<div class="home-filter-head-actions">'
@@ -7495,8 +7702,7 @@ function renderHomeDashboardNovo(lotes){
         +homeMultiFilterHtml('origem','Origem',optionObjects(origens),'Todas as origens')
         +homeMultiFilterHtml('vendedor','Vendedor',optionObjects(vendedores),'Todos os vendedores')
       +'</div>')
-    +'</div>'
-    +dashboardCardsShellHtml('home','home-dashboard-grid',homeCardKeys.map(function(key){return homeCards[key]||'';}).join('')+dashboardAddCardHtml('home'))
+    +'</div>')
     +'<div class="home-panel home-list-only">'
       +'<div class="home-panel-head">'
         +'<div><div class="home-panel-title">Lotes filtrados</div><div class="home-panel-note">'+escHtml(filtroResumo)+'</div></div>'
@@ -7504,7 +7710,8 @@ function renderHomeDashboardNovo(lotes){
       +'</div>'
       +homeTableHtml(loteRows)
     +'</div>'
-    +'<div class="home-charts-grid">'+homePieChartHtml(pieGroups,total.qtd,pieGroupDef)+homeMonthlyBarsHtml(chartRows,homeChartState.metricas,chartPeriodOptions)+'</div>';
+    +(quadrosMinimizados?'':dashboardCardsShellHtml('home','home-dashboard-grid',homeCardKeys.map(function(key){return homeCards[key]||'';}).join('')+dashboardAddCardHtml('home')))
+    +(quadrosMinimizados?'':'<div class="home-charts-grid">'+homePieChartHtml(pieGroups,total.qtd,pieGroupDef)+homeMonthlyBarsHtml(chartRows,homeChartState.metricas,chartPeriodOptions)+homeOverviewLineChartHtml(filtrados)+'</div>'+homeOperationalPanelsHtml());
 
   applyHomeColumnWidths();
   live.querySelectorAll('[data-home-lid]').forEach(function(el){
@@ -9953,6 +10160,7 @@ function setStatusSub(id,value){
 function applyStatusColumnFilters(){
   var rows=document.querySelectorAll('#lote-list .status-row[data-lid]');
   var qtd=0,faturamento=0,capital=0,lucro=0,visiveis=0,prazoPeso=0,capitalPrazo=0,prazoSoma=0,prazoQtd=0;
+  var quebraPctPeso=0,quebraKgPeso=0,rcExpectativaPeso=0,rcExpectativaQtd=0,rcRealizadoPeso=0,rcRealizadoQtd=0,consumoExpectativaPeso=0,consumoExpectativaQtd=0,consumoRealizadoPeso=0,consumoRealizadoQtd=0;
   var gmdOrigemPeso=0,gmdChegadaPeso=0,gmcOrigemPeso=0,gmcChegadaPeso=0,eficienciaPeso=0,eficienciaChegadaPeso=0;
   rows.forEach(function(row){
     var show=statusRowPassaFiltros(row);
@@ -9975,6 +10183,18 @@ function applyStatusColumnFilters(){
       }
     }
     if(qtdRow>0){
+      var quebraPctRow=parseFloat(row.getAttribute('data-sort-quebraPct'))||0;
+      var quebraKgRow=parseFloat(row.getAttribute('data-sort-quebraKg'))||0;
+      var rcExpectativaRow=parseFloat(row.getAttribute('data-sort-rcExpectativa'))||0;
+      var rcRealizadoRow=parseFloat(row.getAttribute('data-sort-rcRealizado'))||0;
+      var consumoExpectativaRow=parseFloat(row.getAttribute('data-sort-consumoMedioExpectativa'))||0;
+      var consumoRealizadoRow=parseFloat(row.getAttribute('data-sort-consumoMedioRealizado'))||0;
+      quebraPctPeso+=quebraPctRow*qtdRow;
+      quebraKgPeso+=quebraKgRow*qtdRow;
+      if(rcExpectativaRow>0){rcExpectativaPeso+=rcExpectativaRow*qtdRow;rcExpectativaQtd+=qtdRow;}
+      if(rcRealizadoRow>0){rcRealizadoPeso+=rcRealizadoRow*qtdRow;rcRealizadoQtd+=qtdRow;}
+      if(consumoExpectativaRow>0){consumoExpectativaPeso+=consumoExpectativaRow*qtdRow;consumoExpectativaQtd+=qtdRow;}
+      if(consumoRealizadoRow>0){consumoRealizadoPeso+=consumoRealizadoRow*qtdRow;consumoRealizadoQtd+=qtdRow;}
       gmdOrigemPeso+=(parseFloat(row.getAttribute('data-sort-gmdOrigem'))||0)*qtdRow;
       gmdChegadaPeso+=(parseFloat(row.getAttribute('data-sort-gmdChegada'))||0)*qtdRow;
       gmcOrigemPeso+=(parseFloat(row.getAttribute('data-sort-gmcOrigem'))||0)*qtdRow;
@@ -9994,6 +10214,12 @@ function applyStatusColumnFilters(){
   setStatusTotal('status-total-rentmes',fmtPct(rentMes),rentMes>=0?'pos':'neg');
   setStatusTotal('status-total-lotes',visiveis+' lote(s)');
   setStatusTotal('status-total-prazo-card',prazoMedio>0?Math.round(prazoMedio)+' dias':'—');
+  setStatusTotal('status-total-quebra-pct',qtd>0?fmtNum(quebraPctPeso/qtd,2)+'%':'—');
+  setStatusTotal('status-total-quebra-kg',qtd>0?fmtNum(quebraKgPeso/qtd,1)+' kg':'—');
+  setStatusTotal('status-total-rc-expectativa',rcExpectativaQtd>0?fmtNum(rcExpectativaPeso/rcExpectativaQtd,2)+'%':'—');
+  setStatusTotal('status-total-rc-realizado',rcRealizadoQtd>0?fmtNum(rcRealizadoPeso/rcRealizadoQtd,2)+'%':'—');
+  setStatusTotal('status-total-consumo-expectativa',consumoExpectativaQtd>0?fmtNum(consumoExpectativaPeso/consumoExpectativaQtd,2)+'%':'—');
+  setStatusTotal('status-total-consumo-realizado',consumoRealizadoQtd>0?fmtNum(consumoRealizadoPeso/consumoRealizadoQtd,2)+'%':'—');
   setStatusTotal('status-total-gmd-origem',qtd>0?fmtNum(gmdOrigemPeso/qtd,2)+' kg/dia':'—');
   setStatusTotal('status-total-gmd-chegada',qtd>0?fmtNum(gmdChegadaPeso/qtd,2)+' kg/dia':'—');
   setStatusTotal('status-total-gmc-origem',qtd>0?fmtNum(gmcOrigemPeso/qtd,3)+' kg/dia':'—');
@@ -10091,7 +10317,7 @@ function statusSortValue(row,key){
   var v=row.getAttribute('data-sort-'+key);
   if(v===null||v===undefined)v=row.getAttribute('data-filter-'+key)||row.textContent||'';
   var n=parseFloat(String(v).replace(/\./g,'').replace(',','.'));
-  if(['ano','qtd','quebraPct','quebraKg','faturamento','capital','lucro','rent','rentmes','rcExpectativa','rcRealizado','eficiencia','eficienciaChegada','status'].indexOf(key)>=0&&!isNaN(n))return n;
+  if(['ano','qtd','quebraPct','quebraKg','faturamento','capital','lucro','rent','rentmes','rcExpectativa','rcRealizado','consumoMedioExpectativa','consumoMedioRealizado','eficiencia','eficienciaChegada','status'].indexOf(key)>=0&&!isNaN(n))return n;
   return _statusNorm(v);
 }
 function sortStatusRows(){
@@ -10236,7 +10462,7 @@ function renderLotes(){
     var placeholders={
       status:'Todos',ano:'Ano',confinamento:'Confinamento',modalidade:'Modalidade',raca:'Raça',origem:'Origem',vendedor:'Vendedor',lote:'Lote',b3:'B3',qtd:'Qtd',quebraPct:'%',quebraKg:'kg',
       entrada:'Entrada',abate:'Abate',recebimento:'Receb.',faturamento:'R$',capital:'R$',
-      lucro:'R$',rent:'%',rentmes:'%',rcExpectativa:'%',rcRealizado:'%',gmdOrigem:'kg/dia',gmdChegada:'kg/dia',gmcOrigem:'kg/dia',gmcChegada:'kg/dia',eficiencia:'kg MS/@ origem',eficienciaChegada:'kg MS/@ cheg.'
+      lucro:'R$',rent:'%',rentmes:'%',rcExpectativa:'%',rcRealizado:'%',consumoMedioExpectativa:'%',consumoMedioRealizado:'%',gmdOrigem:'kg/dia',gmdChegada:'kg/dia',gmcOrigem:'kg/dia',gmcChegada:'kg/dia',eficiencia:'kg MS/@ origem',eficienciaChegada:'kg MS/@ cheg.'
     };
     return STATUS_COLS.map(function(c){
       return c.key==='status'?filterStatus(c):filterInput(c,placeholders[c.key]||c.label);
@@ -10309,10 +10535,17 @@ function renderLotes(){
     var rcExpectativaRaw=finNum(o&&o.rendA_pct);
     var rcRealizadoRaw=['abatido','recebido'].indexOf(l.status)>=0?finNum(zooRealizadoRc.rendA):0;
     var zooSimuladoQuebra=biometriaSimuladaOrc(o);
+    var temConsumoReal=realDates.consumoMSPctReal!==undefined&&realDates.consumoMSPctReal!==null&&String(realDates.consumoMSPctReal)!==''
+      ||realDates.consumoMSDiarioReal!==undefined&&realDates.consumoMSDiarioReal!==null&&String(realDates.consumoMSDiarioReal)!==''
+      ||realDates.consumoMSTotalReal!==undefined&&realDates.consumoMSTotalReal!==null&&String(realDates.consumoMSTotalReal)!=='';
+    var consumoMedioExpectativaRaw=finNum(o&&o.consPC_pct);
+    var consumoMedioRealizadoRaw=temConsumoReal?finNum(zooRealizadoRc.consumoPct):0;
     var quebraPctRaw=finNum(o&&o.quebra_pct);
     var quebraKgRaw=Math.max(0,finNum(zooSimuladoQuebra.pesoCompra)-finNum(zooSimuladoQuebra.pesoEntrada));
     var rcExpectativaVal=rcExpectativaRaw?fmtNum(rcExpectativaRaw,2)+'%':'—';
     var rcRealizadoVal=rcRealizadoRaw?fmtNum(rcRealizadoRaw,2)+'%':'—';
+    var consumoMedioExpectativaVal=consumoMedioExpectativaRaw?fmtNum(consumoMedioExpectativaRaw,2)+'%':'—';
+    var consumoMedioRealizadoVal=consumoMedioRealizadoRaw?fmtNum(consumoMedioRealizadoRaw,2)+'%':'—';
     var quebraPctVal=quebraPctRaw?fmtNum(quebraPctRaw,2)+'%':'—';
     var quebraKgVal=quebraKgRaw?fmtNum(quebraKgRaw,1)+' kg':'—';
     var modalidadeVal=o?calcModeloLabel(o.modeloConta||'msop'):'—';
@@ -10358,6 +10591,8 @@ function renderLotes(){
       +' data-filter-rentmes="'+escHtml(rentMesVal)+'"'
       +' data-filter-rcExpectativa="'+escHtml(rcExpectativaVal)+'"'
       +' data-filter-rcRealizado="'+escHtml(rcRealizadoVal)+'"'
+      +' data-filter-consumoMedioExpectativa="'+escHtml(consumoMedioExpectativaVal)+'"'
+      +' data-filter-consumoMedioRealizado="'+escHtml(consumoMedioRealizadoVal)+'"'
       +' data-filter-gmdOrigem="'+escHtml(gmdOrigemVal)+'"'
       +' data-filter-gmdChegada="'+escHtml(gmdChegadaVal)+'"'
       +' data-filter-gmcOrigem="'+escHtml(gmcOrigemVal)+'"'
@@ -10386,6 +10621,8 @@ function renderLotes(){
       +' data-sort-rentmes="'+(o?metric.rentMes:0)+'"'
       +' data-sort-rcExpectativa="'+rcExpectativaRaw+'"'
       +' data-sort-rcRealizado="'+rcRealizadoRaw+'"'
+      +' data-sort-consumoMedioExpectativa="'+consumoMedioExpectativaRaw+'"'
+      +' data-sort-consumoMedioRealizado="'+consumoMedioRealizadoRaw+'"'
       +' data-sort-gmdOrigem="'+techStatus.gmdOrigem+'"'
       +' data-sort-gmdChegada="'+techStatus.gmdChegada+'"'
       +' data-sort-gmcOrigem="'+techStatus.gmcOrigem+'"'
@@ -10423,6 +10660,8 @@ function renderLotes(){
       +'<span class="rate" data-status-mobile-field="rentmes"><em>% mês</em>'+escHtml(rentMesVal)+'</span>'
       +'<span class="rate" data-status-mobile-field="rcExpectativa"><em>RC expectativa</em>'+escHtml(rcExpectativaVal)+'</span>'
       +'<span class="rate" data-status-mobile-field="rcRealizado"><em>RC realizado</em>'+escHtml(rcRealizadoVal)+'</span>'
+      +'<span data-status-mobile-field="consumoMedioExpectativa"><em>Cons. méd. expectativa</em>'+escHtml(consumoMedioExpectativaVal)+'</span>'
+      +'<span data-status-mobile-field="consumoMedioRealizado"><em>Cons. méd. realizado</em>'+escHtml(consumoMedioRealizadoVal)+'</span>'
       +'<span data-status-mobile-field="raca"><em>Raça</em>'+escHtml(racaVal)+'</span>'
       +'<span data-status-mobile-field="gmdOrigem"><em>GMD origem</em>'+escHtml(gmdOrigemVal)+'</span>'
       +'<span data-status-mobile-field="gmdChegada"><em>GMD chegada</em>'+escHtml(gmdChegadaVal)+'</span>'
@@ -10456,6 +10695,8 @@ function renderLotes(){
       +statusCell('rentmes',rentMesVal,'rate')
       +statusCell('rcExpectativa',rcExpectativaVal,'rate')
       +statusCell('rcRealizado',rcRealizadoVal,'rate')
+      +statusCell('consumoMedioExpectativa',consumoMedioExpectativaVal,'rate')
+      +statusCell('consumoMedioRealizado',consumoMedioRealizadoVal,'rate')
       +statusCell('gmdOrigem',gmdOrigemVal,'rate')
       +statusCell('gmdChegada',gmdChegadaVal,'rate')
       +statusCell('gmcOrigem',gmcOrigemVal,'rate')
@@ -10533,9 +10774,17 @@ function renderLotes(){
       addStatusFilterOption('rent',fmtPct(metric.rent));
       addStatusFilterOption('rentmes',fmtPct(metric.rentMes));
       var rcExpectativaFiltro=finNum(o&&o.rendA_pct);
-      var rcRealizadoFiltro=['abatido','recebido'].indexOf(l.status)>=0?finNum(zootecRealCalc(l,o,l.ajusteReal||l.apuracao||{}).rendA):0;
+      var zooRealFiltro=zootecRealCalc(l,o,l.ajusteReal||l.apuracao||{});
+      var rcRealizadoFiltro=['abatido','recebido'].indexOf(l.status)>=0?finNum(zooRealFiltro.rendA):0;
+      var consumoMedioExpectativaFiltro=finNum(o&&o.consPC_pct);
+      var temConsumoRealFiltro=realDates.consumoMSPctReal!==undefined&&realDates.consumoMSPctReal!==null&&String(realDates.consumoMSPctReal)!==''
+        ||realDates.consumoMSDiarioReal!==undefined&&realDates.consumoMSDiarioReal!==null&&String(realDates.consumoMSDiarioReal)!==''
+        ||realDates.consumoMSTotalReal!==undefined&&realDates.consumoMSTotalReal!==null&&String(realDates.consumoMSTotalReal)!=='';
+      var consumoMedioRealizadoFiltro=temConsumoRealFiltro?finNum(zooRealFiltro.consumoPct):0;
       if(rcExpectativaFiltro)addStatusFilterOption('rcExpectativa',fmtNum(rcExpectativaFiltro,2)+'%');
       if(rcRealizadoFiltro)addStatusFilterOption('rcRealizado',fmtNum(rcRealizadoFiltro,2)+'%');
+      if(consumoMedioExpectativaFiltro)addStatusFilterOption('consumoMedioExpectativa',fmtNum(consumoMedioExpectativaFiltro,2)+'%');
+      if(consumoMedioRealizadoFiltro)addStatusFilterOption('consumoMedioRealizado',fmtNum(consumoMedioRealizadoFiltro,2)+'%');
       if(techStatus.gmdOrigem)addStatusFilterOption('gmdOrigem',fmtNum(techStatus.gmdOrigem,2)+' kg/dia');
       if(techStatus.gmdChegada)addStatusFilterOption('gmdChegada',fmtNum(techStatus.gmdChegada,2)+' kg/dia');
       if(techStatus.gmcOrigem)addStatusFilterOption('gmcOrigem',fmtNum(techStatus.gmcOrigem,3)+' kg/dia');
@@ -13572,13 +13821,14 @@ function buildConfigExportData(){
   return {tab:'Configurações',title:'Relatório de Configurações',file:'VM_Agro_Configuracoes_'+exportDateFile(),filters:[],sheets:sheets};
 }
 function buildStatusLotRows(){
-  var rows=[['Status','Ano','Confinamento','Modalidade','Raça','Origem','Vendedor','Lote','B3','Qtd','Quebra %','Quebra kg','Entrada','Abate','Recebimento','Faturamento','Capital','Lucro','% operação','% ao mês','RC expectativa','RC realizado','Efic. origem','Efic. chegada']];
+  var rows=[['Status','Ano','Confinamento','Modalidade','Raça','Origem','Vendedor','Lote','B3','Qtd','Quebra %','Quebra kg','Entrada','Abate','Recebimento','Faturamento','Capital','Lucro','% operação','% ao mês','RC expectativa','RC realizado','Consumo médio expectativa','Consumo médio realizado','Efic. origem','Efic. chegada']];
   [].forEach.call(document.querySelectorAll('#lote-list .status-row[data-lid]'),function(row){
     if(!exportVisible(row)||row.style.display==='none')return;
     rows.push([
       row.dataset.filterStatus||'',row.dataset.filterAno||'',row.dataset.filterConfinamento||'',row.dataset.filterModalidade||'',row.dataset.filterRaca||'',row.dataset.filterOrigem||'',row.dataset.filterVendedor||'',row.dataset.filterLote||'',row.dataset.filterB3||'',
       row.dataset.filterQtd||'',row.dataset.filterQuebraPct||'',row.dataset.filterQuebraKg||'',row.dataset.filterEntrada||'',row.dataset.filterAbate||'',row.dataset.filterRecebimento||'',
       row.dataset.filterFaturamento||'',row.dataset.filterCapital||'',row.dataset.filterLucro||'',row.dataset.filterRent||'',row.dataset.filterRentmes||'',row.dataset.filterRcExpectativa||'',row.dataset.filterRcRealizado||'',
+      row.getAttribute('data-filter-consumoMedioExpectativa')||'',row.getAttribute('data-filter-consumoMedioRealizado')||'',
       row.dataset.filterEficiencia||'',row.dataset.filterEficienciachegada||row.dataset.filterEficienciaChegada||''
     ]);
   });
@@ -14508,6 +14758,8 @@ restoreBasicSession();
     { key: 'rentmes', label: '% mes', group: 'Financeiro' },
     { key: 'rcExpectativa', label: 'RC expectativa', group: 'Tecnico' },
     { key: 'rcRealizado', label: 'RC realizado', group: 'Tecnico' },
+    { key: 'consumoMedioExpectativa', label: 'Consumo medio expectativa', group: 'Tecnico' },
+    { key: 'consumoMedioRealizado', label: 'Consumo medio realizado', group: 'Tecnico' },
     { key: 'gmdOrigem', label: 'GMD origem', group: 'Tecnico' },
     { key: 'gmdChegada', label: 'GMD chegada', group: 'Tecnico' },
     { key: 'gmcOrigem', label: 'GMC origem', group: 'Tecnico' },
