@@ -3163,6 +3163,100 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
       color: #9a3b30 !important;
     }
   }
+
+  /* Padrao visual dos botoes de acao e dos controles dos dashboards. */
+  :is(
+    #home-calc-btn,
+    .home-filter-toggle,
+    .home-reset-btn,
+    .dashboard-cards-toggle,
+    .dashboard-cards-collapsed button,
+    .home-column-btn,
+    .status-view-btn,
+    .home-chart-clear,
+    .home-bar-options-btn,
+    .home-pie-options-btn
+  ) {
+    min-height: 36px !important;
+    height: 36px !important;
+    padding: 0 12px !important;
+    border: 1px solid var(--accent) !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+    color: var(--accent) !important;
+    box-shadow: none !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color .15s, border-color .15s, color .15s, box-shadow .15s;
+  }
+
+  #home-calc-btn,
+  :is(.home-bar-options-btn, .home-pie-options-btn).active {
+    background: var(--accent) !important;
+    color: #fff !important;
+    box-shadow: 0 3px 9px rgba(13, 27, 42, .16) !important;
+  }
+
+  :is(
+    #home-calc-btn,
+    .home-filter-toggle,
+    .home-reset-btn,
+    .dashboard-cards-toggle,
+    .dashboard-cards-collapsed button,
+    .home-column-btn,
+    .status-view-btn,
+    .home-chart-clear,
+    .home-bar-options-btn,
+    .home-pie-options-btn
+  ):hover {
+    background: var(--accent) !important;
+    border-color: var(--accent) !important;
+    color: #fff !important;
+    box-shadow: 0 3px 9px rgba(13, 27, 42, .14) !important;
+  }
+
+  :is(
+    #home-calc-btn,
+    .home-filter-toggle,
+    .home-reset-btn,
+    .dashboard-cards-toggle,
+    .dashboard-cards-collapsed button,
+    .home-column-btn,
+    .status-view-btn,
+    .home-chart-clear,
+    .home-bar-options-btn,
+    .home-pie-options-btn
+  ):focus-visible {
+    outline: 3px solid rgba(201, 162, 78, .32);
+    outline-offset: 2px;
+  }
+
+  .home-chart-period-mode {
+    height: 36px !important;
+    padding: 3px !important;
+    border: 1px solid var(--accent) !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+  }
+
+  .home-chart-period-btn {
+    min-height: 28px !important;
+    padding: 0 10px !important;
+    border-radius: 5px !important;
+    color: var(--accent) !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+  }
+
+  .home-chart-period-btn.active {
+    background: var(--accent) !important;
+    color: #fff !important;
+  }
 </style>
 <style id="status-mobile-compact-cards-final-20260713">
 /* Compactacao final da lista de lotes no Status. Somente mobile. */
