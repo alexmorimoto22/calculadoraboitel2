@@ -4568,6 +4568,19 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
           <div><h2>Parâmetros Padrão</h2><p>Valores pré-carregados em toda nova simulação</p></div>
         </div>
         <div class="params-admin-note">Apenas administradores podem alterar os parâmetros padrão. Quando salvos, toda nova calculadora abre com estes valores.</div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="cfg-row-lbl">Numeração dos lotes</div>
+          <div class="g2">
+            <div class="field" style="margin-bottom:0;">
+              <label>Próximo lote</label>
+              <input type="text" inputmode="numeric" pattern="[0-9]*" id="p-nextLotNumber" value="1">
+              <div class="hint">Número que será usado no próximo lote. Após o cadastro, avança automaticamente.</div>
+            </div>
+            <div class="form-btns" style="align-self:end;margin:0;">
+              <button class="btn-save" onclick="salvarProximoNumeroLote()">Salvar próximo lote</button>
+            </div>
+          </div>
+        </div>
         <div class="card">
           <div class="cfg-row-lbl">Compra e lote</div>
           <div class="g2">
@@ -11014,10 +11027,36 @@ function updateGlobalLotSequence(numero){
   if(numero>atual)localStorage.setItem(LOT_SEQUENCE_KEY,String(numero));
   return Math.max(atual,numero);
 }
+function getConfiguredNextLotNumber(){
+  var cfg=loadConfig();
+  return normalizarNumeroLote(cfg&&cfg.params&&cfg.params.nextLotNumber);
+}
+function setConfiguredNextLotNumber(numero){
+  numero=normalizarNumeroLote(numero);
+  if(!numero)return;
+  var cfg=loadConfig();
+  if(!cfg.params)cfg.params={};
+  cfg.params.nextLotNumber=parseInt(numero,10);
+  saveConfig(cfg);
+}
+function nextAvailableLotNumber(numero,lotes){
+  var candidato=Math.max(1,parseInt(numero,10)||1);
+  while(!isLotNumberAvailable(String(candidato),lotes))candidato++;
+  return String(candidato);
+}
 function proximoNumeroLote(lotes){
+  var configurado=getConfiguredNextLotNumber();
+  if(configurado)return nextAvailableLotNumber(configurado,lotes);
   return String(Math.max(getHighestExistingLotNumber(lotes),getLastIssuedLotNumber())+1);
 }
 async function reserveGlobalLotNumber(lotes){
+  var configurado=getConfiguredNextLotNumber();
+  if(configurado){
+    var reservado=nextAvailableLotNumber(configurado,lotes);
+    updateGlobalLotSequence(reservado);
+    setConfiguredNextLotNumber(parseInt(reservado,10)+1);
+    return reservado;
+  }
   var minimo=Math.max(getHighestExistingLotNumber(lotes),getLastIssuedLotNumber());
   if(supabaseIsConfigured()){
     try{
@@ -12693,8 +12732,28 @@ function loadParamsForm(){
     var el=document.getElementById('p-'+k);
     if(el&&p[k]!==undefined&&p[k]!==null)el.value=brNum(p[k],String(p[k]).indexOf('.')>=0?2:0);
   });
+  var nextLotEl=document.getElementById('p-nextLotNumber');
+  if(nextLotEl)nextLotEl.value=proximoNumeroLote(getLotes());
   setParamPrecoMode(p.precoCompraMode==='at'?'at':'kg');
   setParamComissaoMode(p.comissaoMode==='val'?'val':'pct');
+}
+function salvarProximoNumeroLote(){
+  if(!requirePermission('settings.parameters','Apenas usuários autorizados podem alterar a numeração dos lotes.'))return;
+  var nextLotEl=document.getElementById('p-nextLotNumber');
+  var nextLotNumber=normalizarNumeroLote(nextLotEl&&nextLotEl.value);
+  if(!nextLotNumber){
+    toast('⚠ Informe um número válido para o próximo lote.');
+    if(nextLotEl)nextLotEl.focus();
+    return;
+  }
+  if(!isLotNumberAvailable(nextLotNumber,getLotes())){
+    toast('⚠ O número informado já pertence a outro lote.');
+    if(nextLotEl)nextLotEl.focus();
+    return;
+  }
+  setConfiguredNextLotNumber(nextLotNumber);
+  loadParamsForm();
+  toast('✓ Próximo lote definido como '+nextLotNumber);
 }
 function salvarParams(){
   if(!requirePermission('settings.parameters','Apenas usuários autorizados podem alterar os parâmetros padrão.'))return;
@@ -12704,6 +12763,19 @@ function salvarParams(){
     var el=document.getElementById('p-'+k);
     if(el&&el.value!=='')cfg.params[k]=finNum(el.value);
   });
+  var nextLotEl=document.getElementById('p-nextLotNumber');
+  var nextLotNumber=normalizarNumeroLote(nextLotEl&&nextLotEl.value);
+  if(!nextLotNumber){
+    toast('⚠ Informe um número válido para o próximo lote.');
+    if(nextLotEl)nextLotEl.focus();
+    return;
+  }
+  if(!isLotNumberAvailable(nextLotNumber,getLotes())){
+    toast('⚠ O número informado já pertence a outro lote.');
+    if(nextLotEl)nextLotEl.focus();
+    return;
+  }
+  cfg.params.nextLotNumber=parseInt(nextLotNumber,10);
   cfg.params.precoCompraMode=getParamPrecoMode();
   cfg.params.comissaoMode=getParamComissaoMode();
   saveConfig(cfg);
