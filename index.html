@@ -1049,7 +1049,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 .status-head,.status-filter-row,.status-row{display:grid;grid-template-columns:88px 48px 92px 112px 112px minmax(220px,1.35fr) 136px 58px 82px 82px 92px minmax(104px,.95fr) minmax(104px,.95fr) minmax(94px,.85fr) 68px 68px 96px 96px;align-items:center;}
   .status-head{background:#f6f9fb;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:2;}
   .status-head-cell{position:relative;padding:10px 9px;font-size:8.5px;font-weight:850;letter-spacing:.9px;text-transform:uppercase;color:var(--text-3);white-space:nowrap;cursor:pointer;user-select:none;}
-  .status-head-cell:first-child{text-align:center;}
+  .status-head-cell:first-child{text-align:left;}
   .status-head-cell:hover{color:var(--accent);}
   .status-sort-mark{margin-left:4px;font-size:9px;color:var(--accent);}
   .status-col-resizer{position:absolute;right:-4px;top:0;width:9px;height:100%;cursor:col-resize;z-index:4;border-radius:99px;}
@@ -1073,8 +1073,9 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .status-filter-label{position:relative;display:flex;align-items:center;gap:4px;min-height:16px;margin:0 0 4px;border:0;background:transparent;color:var(--taupe);font-family:'Inter',sans-serif;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;line-height:1;cursor:pointer;padding:0;text-align:left;}
   .status-filter-label:hover{color:var(--accent);}
   .status-filter-control{position:relative;width:100%;}
-  .status-filter-control input{width:100%;height:30px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);padding:0 22px 0 8px;font-family:'Inter',sans-serif;font-size:11px;color:var(--text);outline:none;font-weight:650;}
-  .status-filter-control input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 2px rgba(201,162,78,.12);}
+  .status-filter-control input,.status-filter-control select{width:100%;height:30px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);padding:0 22px 0 8px;font-family:'Inter',sans-serif;font-size:11px;color:var(--text);outline:none;font-weight:650;}
+  .status-filter-control select{-webkit-appearance:none;appearance:none;cursor:pointer;}
+  .status-filter-control input:focus,.status-filter-control select:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 2px rgba(201,162,78,.12);}
   .status-filter-control::after{content:'⌄';position:absolute;right:7px;top:50%;transform:translateY(-54%);font-size:13px;font-weight:900;color:var(--taupe);pointer-events:none;line-height:1;}
   .status-row{min-height:42px;border-bottom:1px solid var(--border);cursor:pointer;background:#fff;transition:background .15s,box-shadow .15s,transform .15s;}
   .status-row:last-child{border-bottom:none;}
@@ -1099,7 +1100,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .status-row>.status-cell:nth-child(5){display:flex;align-items:center;gap:8px;}
   .status-row>.status-cell:nth-child(5) .status-cell-sub{display:inline;margin:0;font-size:11px;line-height:1.1;}
   .status-row>.status-cell:nth-child(5) .b3-coverage-main{font-weight:850;color:var(--text);}
-  .status-badge-cell{display:flex;align-items:center;justify-content:center;gap:6px;min-width:0;}
+  .status-badge-cell{display:flex;align-items:center;justify-content:flex-start;gap:6px;min-width:0;text-align:left;}
   .status-drag-dot{width:7px;height:26px;border-radius:99px;flex-shrink:0;background:var(--border);}
   .status-table-note{font-size:10px;color:var(--text-3);margin:8px 2px 0;}
   .status-row.dragging{opacity:.45;transform:scale(.995);}
@@ -1341,7 +1342,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	    .status-head,.status-filter-row,.status-row{grid-template-columns:86px 56px 132px 118px 112px 170px 118px 54px 86px 86px 98px 116px 116px 106px 72px 72px 106px 106px;}
 	    .status-head-cell{padding:9px 7px;font-size:8px;}
 	    .status-filter-cell{padding:5px;}
-	    .status-filter-control input{height:28px;font-size:10px;}
+	    .status-filter-control input,.status-filter-control select{height:28px;font-size:10px;}
 	    .status-cell{padding:8px 7px;font-size:11px;}
 	    .sc-body{padding:10px;}
 	    .sc-top{flex-direction:row;align-items:flex-start;gap:8px;}
@@ -2679,7 +2680,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   #panel-lotes .status-filter-row{position:sticky;top:0;z-index:5;background:#fffdf7;}
   #panel-lotes .status-head-cell{padding:8px 9px;font-size:8px;}
   #panel-lotes .status-filter-cell{padding:5px 6px;}
-  #panel-lotes .status-filter-control input{height:28px;font-size:10px;border-radius:8px;}
+  #panel-lotes .status-filter-control input,#panel-lotes .status-filter-control select{height:28px;font-size:10px;border-radius:8px;}
   #panel-lotes .status-row{min-height:38px;}
   #panel-lotes .status-cell{padding:5px 8px;font-size:11px;}
   #panel-lotes .status-cell-title{font-size:11.5px;}
@@ -10513,6 +10514,14 @@ function renderLotes(){
     var cur=statusColumnFilters.status||'';
     return '<div class="status-filter-cell '+statusColClass('status')+'">'+statusFilterLabel(c)+'<div class="status-filter-control"><input type="text" list="status-dl-status" value="'+escHtml(cur)+'" placeholder="Todos" onfocus="abrirSugestoesFiltroStatus(this)" oninput="updateStatusColumnFilter(\'status\',this.value)" onclick="event.stopPropagation();abrirSugestoesFiltroStatus(this)" onpointerdown="event.stopPropagation()">'+filterOptionsHtml('status')+'</div></div>';
   }
+  function filterB3(c){
+    var estados=['Aberto','Parcial','Travado'];
+    var cur=statusColumnFilters.b3||'';
+    if(cur&&estados.indexOf(cur)<0){cur='';statusColumnFilters.b3='';}
+    return '<div class="status-filter-cell '+statusColClass('b3')+'">'+statusFilterLabel(c)+'<div class="status-filter-control"><select aria-label="Filtrar situação B3" onchange="updateStatusColumnFilter(\'b3\',this.value)" onclick="event.stopPropagation()" onpointerdown="event.stopPropagation()"><option value=""'+(!cur?' selected':'')+'>Todos</option>'
+      +estados.map(function(estado){return '<option value="'+estado+'"'+(cur===estado?' selected':'')+'>'+estado+'</option>';}).join('')
+    +'</select></div></div>';
+  }
   function statusHeaderHtml(){
     return STATUS_COLS.map(function(c){
       var mark=statusSortState.key===c.key?(statusSortState.dir==='asc'?'↑':'↓'):'';
@@ -10530,7 +10539,9 @@ function renderLotes(){
       lucro:'R$',rent:'%',rentmes:'%',rcExpectativa:'%',rcRealizado:'%',consumoMedioExpectativa:'%',consumoMedioRealizado:'%',gmdOrigem:'kg/dia',gmdChegada:'kg/dia',gmcOrigem:'kg/dia',gmcChegada:'kg/dia',eficiencia:'kg MS/@ origem',eficienciaChegada:'kg MS/@ cheg.'
     };
     return STATUS_COLS.map(function(c){
-      return c.key==='status'?filterStatus(c):filterInput(c,placeholders[c.key]||c.label);
+      if(c.key==='status')return filterStatus(c);
+      if(c.key==='b3')return filterB3(c);
+      return filterInput(c,placeholders[c.key]||c.label);
     }).join('');
   }
   function statusColumnPanelHtml(){
@@ -10642,7 +10653,7 @@ function renderLotes(){
       +' data-filter-origem="'+escHtml(origemVal)+'"'
       +' data-filter-vendedor="'+escHtml(vendedorVal)+'"'
       +' data-filter-lote="'+escHtml(filtroLote)+'"'
-      +' data-filter-b3="'+escHtml(b3Val)+'"'
+      +' data-filter-b3="'+escHtml(b3Estado)+'"'
       +' data-filter-qtd="'+escHtml(qtdVal)+'"'
       +' data-filter-quebraPct="'+escHtml(quebraPctVal)+'"'
       +' data-filter-quebraKg="'+escHtml(quebraKgVal)+'"'
@@ -10697,7 +10708,6 @@ function renderLotes(){
     var statusLabel='<div class="status-cell status-badge-cell '+statusColClass('status')+'">'
       +'<span class="status-drag-dot" style="background:'+(barColor||'var(--border)')+'"></span>'
       +'<span class="badge '+sc.cls+'">'+escHtml(sc.label)+'</span>'
-      +'<button type="button" class="status-row-edit-btn" data-action="status-edit" title="Editar lote">Editar</button>'
     +'</div>';
     var realizadoStatus=statusRealizadoLote(l);
     var loteCell='<div class="status-cell '+statusColClass('lote')+'"><span class="status-seq-pc">Lote '+escHtml(numeroLote)+'</span>'+(cardTitle?'<span class="status-cell-title">'+escHtml(cardTitle)+'</span>':'')
@@ -10822,7 +10832,7 @@ function renderLotes(){
     addStatusFilterOption('vendedor',(vend&&vend.nome)?vend.nome:'A definir');
     addStatusFilterOption('lote','Lote '+numeroLote+(cardTitle?' '+cardTitle:''));
     var b3Status=coberturaStatusB3(l,o,metric);
-    addStatusFilterOption('b3',(b3Status.estado||'Aberto')+' · '+b3Status.cobertura);
+    addStatusFilterOption('b3',b3Status.estado||'Aberto');
     addStatusFilterOption('qtd',statusQtd(l.qtd||(o&&o.qtd)));
     var zooQuebraFiltro=biometriaSimuladaOrc(o);
     var quebraPctFiltro=finNum(o&&o.quebra_pct);
@@ -10862,6 +10872,7 @@ function renderLotes(){
     statusFilterOptions[key].sort(function(a,b){return String(a).localeCompare(String(b),'pt-BR',{numeric:true});});
   });
   var mobileConfinamentoAtual=statusColumnFilters.confinamento||'';
+  var mobileB3Atual=['Aberto','Parcial','Travado'].indexOf(statusColumnFilters.b3)>=0?statusColumnFilters.b3:'';
   var mobileConfinamentoOptions='<option value="">Todos os confinamentos</option>'+(statusFilterOptions.confinamento||[]).map(function(value){
     return '<option value="'+escHtml(value)+'"'+(value===mobileConfinamentoAtual?' selected':'')+'>'+escHtml(value)+'</option>';
   }).join('');
@@ -10876,7 +10887,8 @@ function renderLotes(){
     +'</div>'
     +'<div class="status-mobile-filter-panel">'
       +'<div class="status-mobile-filter-field"><label for="status-mobile-confinamento">Confinamento</label><select id="status-mobile-confinamento" onchange="updateStatusColumnFilter(\'confinamento\',this.value)">'+mobileConfinamentoOptions+'</select></div>'
-      +'<button type="button" class="status-mobile-filter-clear" onclick="document.getElementById(\'status-mobile-confinamento\').value=\'\';updateStatusColumnFilter(\'confinamento\',\'\')">Limpar</button>'
+      +'<div class="status-mobile-filter-field"><label for="status-mobile-b3">B3</label><select id="status-mobile-b3" onchange="updateStatusColumnFilter(\'b3\',this.value)"><option value=""'+(!mobileB3Atual?' selected':'')+'>Todos</option><option value="Aberto"'+(mobileB3Atual==='Aberto'?' selected':'')+'>Aberto</option><option value="Parcial"'+(mobileB3Atual==='Parcial'?' selected':'')+'>Parcial</option><option value="Travado"'+(mobileB3Atual==='Travado'?' selected':'')+'>Travado</option></select></div>'
+      +'<button type="button" class="status-mobile-filter-clear" onclick="document.getElementById(\'status-mobile-confinamento\').value=\'\';document.getElementById(\'status-mobile-b3\').value=\'\';statusColumnFilters.confinamento=\'\';updateStatusColumnFilter(\'b3\',\'\')">Limpar</button>'
     +'</div>'
     +'<div class="status-mobile-head">'
       +'<div class="status-mobile-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4c2.8 0 5.2 1.5 6.5 3.8"></path><path d="M5.5 7.8C6.8 5.5 9.2 4 12 4"></path><path d="M8 9h8"></path><path d="M9 9v4a3 3 0 0 0 6 0V9"></path><path d="M7 14h10"></path></svg></div>'
@@ -10899,13 +10911,6 @@ function renderLotes(){
   container.onclick=function(evt){
     var row=evt.target&&evt.target.closest?evt.target.closest('.status-row[data-lid]'):null;
     if(!row||!container.contains(row))return;
-    var editBtn=evt.target&&evt.target.closest?evt.target.closest('[data-action="status-edit"]'):null;
-    if(editBtn){
-      evt.preventDefault();
-      evt.stopPropagation();
-      openEditPanel(row.dataset.lid,row);
-      return;
-    }
     if(Date.now()<_statusDragSuppressUntil)return;
     if(evt.target&&evt.target.closest&&evt.target.closest('button,input,select,textarea,a,.status-col-resizer,.status-filter-control'))return;
     if(!row.dataset.lid)return;
@@ -14006,7 +14011,7 @@ function buildFinalResultExportRows(lotes){
 }
 function buildStatusExportData(){
   var filters=[['Status',document.querySelector('.status-pills .pill.active')?exportText(document.querySelector('.status-pills .pill.active')):'Todos']];
-  document.querySelectorAll('#panel-lotes .status-filter-control input').forEach(function(i){if(i.value)filters.push([i.getAttribute('placeholder')||'Filtro',i.value]);});
+  document.querySelectorAll('#panel-lotes .status-filter-control input,#panel-lotes .status-filter-control select').forEach(function(i){if(i.value)filters.push([i.getAttribute('placeholder')||i.getAttribute('aria-label')||'Filtro',i.value]);});
   var lotes=statusExportLotesFiltrados();
   return {tab:'Status',title:'Relatório por Status',file:'VM_Agro_Status_'+exportDateFile(),filters:filters,sheets:[
     {name:'Resumo por Status',rows:buildStatusSummaryRows()},
