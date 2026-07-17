@@ -4957,7 +4957,10 @@ var DASHBOARD_CARD_DEFAULTS={
   futuros:['resultado','lancamentos','abertos','liquidados','filtro']
 };
 var dashboardCardPickerOpen={home:false,status:false,futuros:false};
-function dashboardCardsStorageKey(tab){return 'vm_dashboard_cards_'+tab+'_v1';}
+function dashboardViewportStorageSuffix(){
+  try{return window.matchMedia&&window.matchMedia('(max-width: 768px)').matches?'_mobile':'';}catch(e){return '';}
+}
+function dashboardCardsStorageKey(tab){return 'vm_dashboard_cards_'+tab+dashboardViewportStorageSuffix()+'_v1';}
 function getDashboardCards(tab){
   var defs=DASHBOARD_CARD_DEFS[tab]||[];
   try{
@@ -5013,7 +5016,7 @@ function statusSummaryCardsHtml(){
   };
   return getDashboardCards('status').map(function(key){return cards[key]||'';}).join('')+dashboardAddCardHtml('status');
 }
-function dashboardCardsCollapsedKey(tab){return 'vm_dashboard_cards_collapsed_'+tab+'_v1';}
+function dashboardCardsCollapsedKey(tab){return 'vm_dashboard_cards_collapsed_'+tab+dashboardViewportStorageSuffix()+'_v1';}
 function dashboardCardsCollapsed(tab){try{return localStorage.getItem(dashboardCardsCollapsedKey(tab))==='1';}catch(e){return false;}}
 function toggleDashboardCardsCollapsed(tab){
   var next=!dashboardCardsCollapsed(tab);
@@ -7105,20 +7108,20 @@ function toggleHomeFilters(){
   renderHome();
 }
 function homePanelsCollapsed(){
-  try{return localStorage.getItem('vm_home_panels_collapsed_v1')==='1';}catch(e){return false;}
+  try{return localStorage.getItem('vm_home_panels_collapsed'+dashboardViewportStorageSuffix()+'_v1')==='1';}catch(e){return false;}
 }
 function toggleHomePanels(){
   var next=!homePanelsCollapsed();
-  try{localStorage.setItem('vm_home_panels_collapsed_v1',next?'1':'0');}catch(e){}
+  try{localStorage.setItem('vm_home_panels_collapsed'+dashboardViewportStorageSuffix()+'_v1',next?'1':'0');}catch(e){}
   homeOpenFilter='';
   renderHome();
 }
 function homeChartPanelCollapsed(key){
-  try{return localStorage.getItem('vm_home_chart_collapsed_'+key+'_v1')==='1';}catch(e){return false;}
+  try{return localStorage.getItem('vm_home_chart_collapsed_'+key+dashboardViewportStorageSuffix()+'_v1')==='1';}catch(e){return false;}
 }
 function toggleHomeChartPanel(key){
   var next=!homeChartPanelCollapsed(key);
-  try{localStorage.setItem('vm_home_chart_collapsed_'+key+'_v1',next?'1':'0');}catch(e){}
+  try{localStorage.setItem('vm_home_chart_collapsed_'+key+dashboardViewportStorageSuffix()+'_v1',next?'1':'0');}catch(e){}
   renderHome();
 }
 var homeMoneyFitObserver=null;
@@ -7417,7 +7420,7 @@ function renderHomeDashboardNovo(lotes){
     if(homeChartPanelCollapsed('pie'))return '<div class="home-chart-panel collapsed"><div class="home-chart-head"><div><div class="home-chart-title">'+escHtml(chartTitle)+'</div><div class="home-chart-note">'+escHtml(chartNote)+'</div></div><button type="button" class="home-chart-collapse" onclick="toggleHomeChartPanel(\'pie\')">Mostrar quadro</button></div></div>';
     return '<div class="home-chart-panel"><div class="home-chart-head"><div><div class="home-chart-title">'+escHtml(chartTitle)+'</div><div class="home-chart-note">'+escHtml(chartNote)+'</div></div><div class="home-pie-head-actions"><div class="home-chart-control" style="min-width:142px"><label for="home-pie-group">Agrupar por</label><select id="home-pie-group" onchange="homePieSetGroup(this.value)">'+groupOptions+'</select></div><div class="home-pie-options"><button type="button" class="home-pie-options-btn'+(homeChartState.pieOptionsOpen?' active':'')+'" onclick="homePieToggleOptions(event)">Dados visíveis · '+selected.length+'/3</button><div class="home-pie-options-panel'+(homeChartState.pieOptionsOpen?' open':'')+'" onclick="event.stopPropagation()"><div class="home-pie-options-title">Dados visíveis</div><div class="home-pie-options-sub">Escolha até três indicadores para comparar.</div><div class="home-pie-options-grid">'+options+'</div></div></div><button type="button" class="home-chart-collapse" onclick="toggleHomeChartPanel(\'pie\')">Minimizar quadro</button></div></div>'
       +'<div class="home-chart-note" style="margin:-4px 0 10px">'+escHtml(metricHint)+'</div>'
-      +'<div class="home-pie-layout"><div class="home-pie'+(selected.length>1?' multi':'')+'"><svg viewBox="0 0 100 100" role="img" aria-label="Distribuição por status">'+slices.join('')+'</svg><div class="home-pie-center"><strong>'+escHtml(centerValue(firstMetric,firstTotal))+'</strong><span>'+escHtml(firstMetric.label)+'</span></div></div><div class="home-chart-legend">'+legend+'</div></div></div>';
+      +'<div class="home-pie-layout"><div class="home-pie'+(selected.length>1?' multi':'')+'"><svg width="160" height="160" viewBox="0 0 100 100" role="img" aria-label="Distribuição por status">'+slices.join('')+'</svg><div class="home-pie-center"><strong>'+escHtml(centerValue(firstMetric,firstTotal))+'</strong><span>'+escHtml(firstMetric.label)+'</span></div></div><div class="home-chart-legend">'+legend+'</div></div></div>';
   }
   function homeMonthlyBarsHtml(rows,metricas,chartOptions){
     metricas=metricas||homeChartState.metricas;
@@ -7657,7 +7660,7 @@ function renderHomeDashboardNovo(lotes){
       return '<polyline class="series-line" stroke="'+s.color+'" points="'+coords+'"></polyline>'+dots;
     }).join('');
     var legend=series.map(function(s){return '<span><i style="background:'+s.color+'"></i>'+escHtml(s.label)+'</span>';}).join('');
-    return '<div class="home-chart-panel"><div class="home-chart-head"><div><div class="home-chart-title">Visão geral</div><div class="home-chart-note">Resultado mensal (R$)</div></div><button type="button" class="home-chart-collapse" onclick="toggleHomeChartPanel(\'overview\')">Minimizar quadro</button></div>'+controls+'<div class="home-line-legend">'+legend+'</div><div class="home-bars-wrap"><svg class="home-line-chart" viewBox="0 0 760 260" role="img" aria-label="Comparativo mensal de faturamento, capital e lucro">'+grid+lines+monthLabels+'</svg></div></div>';
+    return '<div class="home-chart-panel"><div class="home-chart-head"><div><div class="home-chart-title">Visão geral</div><div class="home-chart-note">Resultado mensal (R$)</div></div><button type="button" class="home-chart-collapse" onclick="toggleHomeChartPanel(\'overview\')">Minimizar quadro</button></div>'+controls+'<div class="home-line-legend">'+legend+'</div><div class="home-bars-wrap"><svg class="home-line-chart" width="760" height="260" viewBox="0 0 760 260" role="img" aria-label="Comparativo mensal de faturamento, capital e lucro">'+grid+lines+monthLabels+'</svg></div></div>';
   }
 
   function homeOperationalPanelsHtml(){
