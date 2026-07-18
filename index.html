@@ -1267,6 +1267,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	  .realizado-action{display:flex;align-items:end;justify-content:stretch;}
 	  .realizado-action .btn-ep-detail{width:100%;min-height:42px;padding:8px 10px;font-size:10px;font-weight:800;}
 	  .realizado-result-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;width:100%;max-width:100%;min-width:0;}
+	  .realizado-result-summary{grid-template-columns:repeat(4,minmax(0,1fr));}
 	  .realizado-metric-card{min-width:0;background:#fff;border:1px solid var(--border);border-radius:10px;padding:9px 10px;}
 	  .realizado-metric-card .metric-label{display:block;min-height:20px;color:var(--taupe);font-size:8px;font-weight:850;letter-spacing:.65px;line-height:1.15;text-transform:uppercase;overflow-wrap:anywhere;}
 	  .realizado-metric-card .metric-value{display:block;margin-top:5px;color:var(--navy);font-size:15px;font-weight:850;line-height:1.12;overflow-wrap:anywhere;}
@@ -1311,6 +1312,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	    .realizado-mobile-2{grid-column:span 2;}
 	    .realizado-mobile-4{grid-column:span 4;}
 	    .realizado-result-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;}
+	    .realizado-result-summary{grid-template-columns:repeat(2,minmax(0,1fr));}
 	    .realizado-metric-card{padding:8px;}
 	    .realizado-metric-card .metric-label{min-height:19px;font-size:7px;letter-spacing:.45px;}
 	    .realizado-metric-card .metric-value,.realizado-metric-card input{font-size:13px!important;}
@@ -1331,6 +1333,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	    .realizado-mobile-4,.realizado-mobile-2{grid-column:span 2;}
 	    .realizado-mobile-1{grid-column:span 1;}
 	    .realizado-result-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+	    .realizado-result-summary{grid-template-columns:1fr;}
 	    .realizado-indicators{grid-template-columns:repeat(2,minmax(0,1fr));}
 	  }
 	  .status-realized-chip{margin-top:3px;width:max-content;max-width:100%;white-space:nowrap;}
@@ -9593,10 +9596,11 @@ function openEditPanel(loteId, cardEl){
           +'<div class="field realizado-calculated realizado-mobile-2"><label>% lucro operação</label><input type="text" id="ep-real-rent" value="'+fmtPct(realRentVal)+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realRentVal+'"></div>'
           +'<div class="field realizado-calculated realizado-mobile-2"><label>% lucro ao mês</label><input type="text" id="ep-real-rentmes" value="'+fmtPct(realRentMesVal)+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realRentMesVal+'"></div>'
         +'</div>'
-        +'<div class="realizado-result-grid" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-top:10px;">'
+        +'<div class="realizado-result-grid realizado-result-summary" style="margin-top:10px;">'
+          +'<div class="realizado-metric-card"><span class="metric-label">Resultado operação</span><input type="text" id="ep-real-resultado-operacao" value="'+fmt(realLucroVal)+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+realLucroVal+'"></div>'
           +'<div class="realizado-metric-card"><span class="metric-label">Resultado contratos Bolsa B3</span><input type="text" id="ep-real-b3-resultado" value="'+fmt(resultadoB3Real)+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+resultadoB3Real+'"></div>'
-          +'<div class="realizado-metric-card"><span class="metric-label">Lucro da operação + B3</span><div class="realizado-inline-value"><input type="text" id="ep-real-lucro-com-b3" value="'+fmt(lucroComB3Real)+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+lucroComB3Real+'"><span class="realizado-inline-percent" id="ep-real-rent-com-b3" data-raw="'+rentComB3Real+'">'+fmtPct(rentComB3Real)+'</span></div></div>'
-          +'<div class="realizado-metric-card"><span class="metric-label">Lucro ao mês + B3</span><div class="realizado-inline-value"><input type="text" id="ep-real-lucro-mes-com-b3" value="'+fmt(lucroMesComB3Real)+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+lucroMesComB3Real+'"><span class="realizado-inline-percent" id="ep-real-rentmes-com-b3" data-raw="'+rentMesComB3Real+'">'+fmtPct(rentMesComB3Real)+'</span></div></div>'
+          +'<div class="realizado-metric-card"><span class="metric-label">Resultado da operação + B3</span><div class="realizado-inline-value"><input type="text" id="ep-real-lucro-com-b3" value="'+fmt(lucroComB3Real)+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+lucroComB3Real+'"><span class="realizado-inline-percent" id="ep-real-rent-com-b3" data-raw="'+rentComB3Real+'">'+fmtPct(rentComB3Real)+'</span></div></div>'
+          +'<div class="realizado-metric-card"><span class="metric-label">Resultado ao mês + B3</span><div class="realizado-inline-value"><input type="text" id="ep-real-lucro-mes-com-b3" value="'+fmt(lucroMesComB3Real)+'" readonly disabled tabindex="-1" aria-readonly="true" data-raw="'+lucroMesComB3Real+'"><span class="realizado-inline-percent" id="ep-real-rentmes-com-b3" data-raw="'+rentMesComB3Real+'">'+fmtPct(rentMesComB3Real)+'</span></div></div>'
         +'</div>'
         +'<div class="realizado-clear-actions">'+(lote.ajusteReal?'<button type="button" class="btn-ep-danger" data-action="clear-real">Limpar realizado</button>':'')+'</div>'
       +'</section>'
@@ -10079,6 +10083,7 @@ function atualizarRealizadoPainel(){
     setCompacto('ep-real-custo-at-origem',zooCompacto.custoAtOrigem,function(v){return fmt(v)+'/@';});
     setCompacto('ep-real-rent',rentCompacto,function(v){return fmtPct(v);});
     setCompacto('ep-real-rentmes',rentMesCompacto,function(v){return fmtPct(v);});
+    setCompacto('ep-real-resultado-operacao',lucroCompacto,function(v){return fmt(v);},true);
     setCompacto('ep-real-b3-resultado',resultadoB3Compacto,function(v){return fmt(v);},true);
     setCompacto('ep-real-lucro-com-b3',lucroComB3Compacto,function(v){return fmt(v);},true);
     setCompacto('ep-real-lucro-mes-com-b3',lucroMesComB3Compacto,function(v){return fmt(v);},true);
