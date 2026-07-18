@@ -5668,6 +5668,10 @@ function statusRealizadoLote(lote){
   var complete=required.every(function(k){return aj[k]!==undefined&&aj[k]!==null&&String(aj[k]).trim()!=='';});
   return complete?{key:'complete',label:'Realizado completo'}:{key:'partial',label:'Realizado parcial'};
 }
+function usarZootecnicoRealizado(lote){
+  var status=statusRealizadoLote(lote).key;
+  return status==='partial'||status==='complete';
+}
 function labelRaca(key){if(!key)return null;var r=getRacas()[key];return r?r.nome:({nelore:'Nelore',anelorado:'Anelorado',cruzadof1:'Cruzado F1',leiteiro:'Leiteiro',misto:'Variado'}[key]||key);}
 const TIPO_LABEL=new Proxy({},{get:function(t,k){return labelRaca(k);},has:function(){return true;}});
 
@@ -7649,7 +7653,7 @@ function renderHomeDashboardNovo(lotes){
     var receb=aj.dataRecebimentoReal||'';
     if(!receb&&abate)receb=isoFromDate(_addDias(abate,parseInt(o.prazoPag)||0));
     if(!receb&&entrada)receb=isoFromDate(_addDias(entrada,(parseInt(o.dias)||0)+(parseInt(o.prazoPag)||0)));
-    var useRealizedTechnical=statusRealizadoLote(l).key==='complete';
+    var useRealizedTechnical=usarZootecnicoRealizado(l);
     var zooSimulado=biometriaSimuladaOrc(o);
     var zoo=useRealizedTechnical?zootecRealCalc(l,o,aj):zooSimulado;
     var zooRealizado=zootecRealCalc(l,o,aj);
@@ -11198,7 +11202,7 @@ function renderLotes(){
     var dataRecebimento=recebDate?_fmtDataBR(recebDate):'—';
     var prazoDias=(entradaDate&&recebDate)?Math.max(0,Math.round((recebDate-entradaDate)/86400000)):0;
     var metric=resultadoStatusLote(l,o);
-    var useRealizedTechnical=statusRealizadoLote(l).key==='complete';
+    var useRealizedTechnical=usarZootecnicoRealizado(l);
     var zooStatus=useRealizedTechnical?zootecRealCalc(l,o,l.ajusteReal||l.apuracao||{}):biometriaSimuladaOrc(o);
     var zooRealizadoRc=zootecRealCalc(l,o,l.ajusteReal||l.apuracao||{});
     var techStatus=indicadoresTecnicosStatus(zooStatus);
@@ -11240,8 +11244,10 @@ function renderLotes(){
     var dataEntradaCurta=dataEntrada&&dataEntrada!=='—'?dataEntrada.slice(0,5):'—';
     var dataAbateCurta=dataAbate&&dataAbate!=='—'?dataAbate.slice(0,5):'—';
     var dataRecebimentoCurta=dataRecebimento&&dataRecebimento!=='—'?dataRecebimento.slice(0,5):'—';
-    var eficienciaVal=o&&metric.eficienciaBio?(fmtNum(metric.eficienciaBio,2)+' kg MS/@'):'—';
-    var eficienciaChegadaVal=o&&metric.eficienciaBioChegada?(fmtNum(metric.eficienciaBioChegada,2)+' kg MS/@'):'—';
+    var eficienciaOrigemRaw=finNum(zooStatus&&zooStatus.eficOrigem);
+    var eficienciaChegadaRaw=finNum(zooStatus&&zooStatus.efic);
+    var eficienciaVal=o&&eficienciaOrigemRaw?(fmtNum(eficienciaOrigemRaw,2)+' kg MS/@'):'—';
+    var eficienciaChegadaVal=o&&eficienciaChegadaRaw?(fmtNum(eficienciaChegadaRaw,2)+' kg MS/@'):'—';
     var abateSortDate=saidaIso||(entradaIso&&dias&&_addDias(entradaIso,dias)?_addDias(entradaIso,dias).toISOString().slice(0,10):'');
     var recebSortDate=recebDate?recebDate.toISOString().slice(0,10):'';
     var b3Nec=necessidadeContratosB3(l,o);
@@ -11312,8 +11318,8 @@ function renderLotes(){
       +' data-sort-gmdChegada="'+techStatus.gmdChegada+'"'
       +' data-sort-gmcOrigem="'+techStatus.gmcOrigem+'"'
       +' data-sort-gmcChegada="'+techStatus.gmcChegada+'"'
-      +' data-sort-eficiencia="'+(o&&metric.eficienciaBio?metric.eficienciaBio:0)+'"'
-      +' data-sort-eficienciaChegada="'+(o&&metric.eficienciaBioChegada?metric.eficienciaBioChegada:0)+'"';
+      +' data-sort-eficiencia="'+(o?eficienciaOrigemRaw:0)+'"'
+      +' data-sort-eficienciaChegada="'+(o?eficienciaChegadaRaw:0)+'"';
     var statusLabel='<div class="status-cell status-badge-cell '+statusColClass('status')+'" data-status-col="status">'
       +'<span class="status-drag-dot" style="background:'+(barColor||'var(--border)')+'"></span>'
       +'<span class="badge '+sc.cls+'">'+escHtml(sc.label)+'</span>'
@@ -11436,7 +11442,7 @@ function renderLotes(){
     var recebDate=realDates.dataRecebimentoReal?_addDias(realDates.dataRecebimentoReal,0):(saidaIso?_addDias(saidaIso,prazo):(entradaIso&&(dias||prazo)?_addDias(entradaIso,dias+prazo):null));
     var dataRecebimento=recebDate?_fmtDataBR(recebDate):'—';
     var metric=resultadoStatusLote(l,o);
-    var useRealizedTechnical=statusRealizadoLote(l).key==='complete';
+    var useRealizedTechnical=usarZootecnicoRealizado(l);
     var zooStatus=useRealizedTechnical?zootecRealCalc(l,o,l.ajusteReal||l.apuracao||{}):biometriaSimuladaOrc(o);
     var techStatus=indicadoresTecnicosStatus(zooStatus);
     addStatusFilterOption('status',sc.label);
@@ -11482,8 +11488,8 @@ function renderLotes(){
       if(techStatus.gmdChegada)addStatusFilterOption('gmdChegada',fmtNum(techStatus.gmdChegada,2)+' kg/dia');
       if(techStatus.gmcOrigem)addStatusFilterOption('gmcOrigem',fmtNum(techStatus.gmcOrigem,3)+' kg/dia');
       if(techStatus.gmcChegada)addStatusFilterOption('gmcChegada',fmtNum(techStatus.gmcChegada,3)+' kg/dia');
-      if(metric.eficienciaBio)addStatusFilterOption('eficiencia',fmtNum(metric.eficienciaBio,2)+' kg MS/@');
-      if(metric.eficienciaBioChegada)addStatusFilterOption('eficienciaChegada',fmtNum(metric.eficienciaBioChegada,2)+' kg MS/@');
+      if(zooStatus.eficOrigem)addStatusFilterOption('eficiencia',fmtNum(zooStatus.eficOrigem,2)+' kg MS/@');
+      if(zooStatus.efic)addStatusFilterOption('eficienciaChegada',fmtNum(zooStatus.efic,2)+' kg MS/@');
     }
   });
   Object.keys(statusFilterOptions).forEach(function(key){
