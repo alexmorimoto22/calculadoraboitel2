@@ -10810,6 +10810,8 @@ function applyStatusColumnFilters(){
   setStatusSub('status-total-prazo',prazoMedio>0?'Prazo médio: '+prazoMedio.toLocaleString('pt-BR',{maximumFractionDigits:0})+' dias':'Prazo médio: —');
   var note=document.getElementById('status-filter-count');
   if(note)note.textContent=visiveis+' lote(s) exibido(s)';
+  var sheetCount=document.getElementById('status-sheet-count');
+  if(sheetCount)sheetCount.textContent=visiveis+' de '+rows.length+' lançamento(s)';
   var mobileCount=document.getElementById('status-mobile-count');
   if(mobileCount)mobileCount.textContent=visiveis+' lotes exibidos';
 }
@@ -11469,7 +11471,7 @@ function renderLotes(){
       +'<div><div class="status-mobile-title">Status dos lotes</div><div class="status-mobile-sub">Acompanhe o desempenho de cada lote.</div></div>'
     +'</div>'
     +dashboardCardsShellHtml('status','status-summary',statusSummaryCardsHtml())
-    +'<div class="status-sheet-card"><div class="status-sheet-heading"><div class="status-sheet-title">Todos os lotes</div><div class="status-sheet-sub">'+lotes.length+' lote(s) exibido(s)</div></div>'
+    +'<div class="status-sheet-card"><div class="status-sheet-heading"><div class="status-sheet-title">Todos os lotes</div><div class="status-sheet-sub" id="status-sheet-count">'+lotes.length+' de '+lotes.length+' lançamento(s)</div></div>'
     +statusViewbarHtml()
     +'<div class="status-table-wrap"><div class="status-table">'
     +'<div class="status-filter-row" style="grid-template-columns:'+statusGridTemplate()+'">'
