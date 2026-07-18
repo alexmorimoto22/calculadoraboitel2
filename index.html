@@ -469,6 +469,13 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-filter-head-actions{display:flex;align-items:center;gap:7px;}
   .home-filter-card.collapsed{padding:11px 16px;}
   .home-filter-card.collapsed .home-filter-head{align-items:center;margin-bottom:0;}
+  .home-list-filters{padding:11px 14px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:#fbfaf6;}
+  .home-list-filters.collapsed{padding:8px 14px;}
+  .home-list-filters .home-filter-head{margin-bottom:9px;align-items:center;}
+  .home-list-filters.collapsed .home-filter-head{margin-bottom:0;}
+  .home-list-filters .home-filter-grid{grid-template-columns:repeat(5,minmax(145px,1fr)) auto;align-items:end;}
+  .home-filter-clear-inline{min-height:38px;padding:0 12px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--text-2);font-family:'Inter',sans-serif;font-size:10px;font-weight:800;white-space:nowrap;cursor:pointer;}
+  .home-filter-clear-inline:hover{border-color:var(--accent);color:var(--accent);}
   .home-filter-title{font-size:15px;font-weight:800;color:var(--accent);}
   .home-filter-sub{font-size:11px;color:var(--text-3);margin-top:2px;}
   .home-filter-grid{display:grid;grid-template-columns:repeat(5,minmax(145px,1fr));gap:10px;}
@@ -487,7 +494,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-multi-check{width:18px;height:18px;display:grid;place-items:center;border:1.5px solid var(--border2);border-radius:5px;background:#fff;color:#fff;font-size:12px;font-weight:900;}
   .home-multi-option.selected .home-multi-check{background:var(--accent);border-color:var(--accent);}
   .home-multi-option.selected .home-multi-check::after{content:'✓';}
-  @media (min-width:769px) and (max-width:1180px){.home-filter-grid{grid-template-columns:repeat(3,minmax(145px,1fr));}}
+  @media (min-width:769px) and (max-width:1180px){.home-filter-grid,.home-list-filters .home-filter-grid{grid-template-columns:repeat(3,minmax(145px,1fr));}}
   .home-reset-btn{background:#fff;border:1px solid var(--border);border-radius:8px;color:var(--text-2);font-family:'Inter',sans-serif;font-size:11px;font-weight:750;padding:8px 12px;cursor:pointer;white-space:nowrap;}
   .home-reset-btn:hover{border-color:var(--accent);color:var(--accent);}
   .home-filter-toggle{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--accent);font-family:'Inter',sans-serif;font-size:11px;font-weight:800;padding:8px 12px;cursor:pointer;white-space:nowrap;}
@@ -574,6 +581,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .columns-clear-btn{border:0;background:transparent;color:var(--text-3);font-family:'Inter',sans-serif;font-size:10px;font-weight:800;cursor:pointer;padding:3px 0;}
   .columns-clear-btn:hover{color:var(--accent);}
   .home-charts-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px;}
+  .home-pie-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch;}
   .home-chart-panel{container-type:inline-size;background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:0 4px 18px rgba(13,27,42,.05);min-width:0;}
   .home-chart-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;}
   .home-chart-panel.collapsed{padding:11px 14px;}
@@ -583,13 +591,16 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-pie-head-actions{display:flex;align-items:flex-end;gap:8px;}
   .home-chart-title{font-size:10px;font-weight:850;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);}
   .home-chart-note{font-size:10px;color:var(--text-3);margin-top:3px;}
-  .home-pie-layout{display:grid;grid-template-columns:170px minmax(0,1fr);gap:18px;align-items:center;}
-  .home-pie{position:relative;width:160px;height:160px;border-radius:50%;margin:auto;box-shadow:inset 0 0 0 1px rgba(13,27,42,.08);}
+  .home-pie-layout{display:grid;grid-template-columns:204px minmax(0,1fr);gap:18px;align-items:center;}
+  .home-pie{position:relative;width:192px;height:192px;border-radius:50%;margin:auto;box-shadow:inset 0 0 0 1px rgba(13,27,42,.08);}
   .home-pie svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
   .home-pie::after{content:'';position:absolute;inset:33px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(13,27,42,.05);}
   .home-pie-center{position:absolute;z-index:1;inset:42px;display:grid;place-content:center;text-align:center;pointer-events:none;}
   .home-pie-center strong{display:block;font-size:20px;color:var(--text);line-height:1;}
   .home-pie-center span{display:block;margin-top:4px;font-size:8px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--text-3);}
+  .home-pie-subtotal{min-height:31px;margin-top:4px;padding-top:3px;border-top:1px solid rgba(216,203,181,.75);font-size:7px;font-weight:800;line-height:1.1;color:var(--accent);text-transform:none;letter-spacing:0;opacity:0;transition:opacity .12s;}
+  .home-pie-subtotal.visible{opacity:1;}
+  .home-pie-subtotal strong{display:block;margin-top:2px;font-size:20px;line-height:1;color:var(--accent);white-space:nowrap;}
   .home-chart-legend{display:grid;gap:7px;}
   .home-chart-legend-item{display:grid;grid-template-columns:9px minmax(0,1fr) auto;gap:7px;align-items:center;font-size:10px;color:var(--text-2);}
   .home-chart-legend-dot{width:9px;height:9px;border-radius:3px;}
@@ -648,6 +659,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-pie-options-title{font-size:12px;font-weight:850;color:var(--text);}
   .home-pie-options-sub{margin:3px 0 9px;font-size:10px;color:var(--text-3);line-height:1.35;}
   .home-pie-options-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;max-height:260px;overflow-y:auto;}
+  .home-pie-options-grid .column-category{grid-column:1/-1;}
   .home-pie-option{display:flex;align-items:center;gap:6px;padding:6px;border-radius:6px;color:var(--text-2);font-size:10px;font-weight:700;cursor:pointer;}
   .home-pie-option:hover{background:var(--surface2);}
   .home-pie-option input{width:15px;height:15px;accent-color:var(--accent);}
@@ -1131,6 +1143,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .ep .field input:focus,.ep .field select:focus,.ep textarea:focus{box-shadow:0 0 0 3px rgba(13,27,42,.08);}
   .ep-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;}
   .ep-quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px;}
+  .ep-quick-grid.ep-quick-grid-2{grid-template-columns:repeat(2,minmax(0,1fr));}
   .ep-quick-field{min-width:0;}
   .ep-quick-field label{display:block;margin:0 0 5px;color:var(--text-3);font-size:9px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;}
   .ep-note-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start;}
@@ -1211,7 +1224,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	  .realizado-clear-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px;}
 
 	  @media(max-width:768px){
-	    .ep-quick-grid,.ep-note-grid{grid-template-columns:1fr;gap:8px;}
+	    .ep-quick-grid,.ep-quick-grid.ep-quick-grid-2,.ep-note-grid{grid-template-columns:1fr;gap:8px;}
 	    .ep-sim-summary{grid-template-columns:1fr;}
 	    .ep-sim-block+.ep-sim-block{border-left:0;border-top:1px solid var(--border);}
 	    .realizado-wrapper{margin-top:10px;}
@@ -1473,7 +1486,14 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	    .home-filter-card.collapsed .home-filter-sub{max-width:calc(100vw - 160px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 	    .home-filter-card.collapsed .home-filter-head-actions{display:block;flex:0 0 auto;}
 	    .home-filter-card.collapsed .home-filter-toggle{width:auto;min-height:34px;padding:0 10px;font-size:10px;}
+	    .home-list-filters{padding:10px;}
+	    .home-list-filters.collapsed{padding:8px 10px;}
+	    .home-list-filters.collapsed .home-filter-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0;}
+	    .home-list-filters.collapsed .home-filter-head-actions{display:block;flex:0 0 auto;}
+	    .home-list-filters.collapsed .home-filter-toggle{width:auto;min-height:34px;padding:0 10px;font-size:10px;}
 	    .home-filter-grid{grid-template-columns:1fr;}
+	    .home-list-filters .home-filter-grid{grid-template-columns:1fr;}
+	    .home-filter-clear-inline{width:100%;min-height:40px;}
 	    .home-section-grid{grid-template-columns:1fr;}
 	    .home-status-grid{grid-template-columns:1fr 1fr;}
 	    .home-panel{padding:11px 10px;border-radius:12px;margin-bottom:10px;overflow:hidden;}
@@ -1494,11 +1514,12 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	    .home-column-btn{flex:1;}
 	    .home-column-panel{right:0;width:min(320px,calc(100vw - 42px));}
 	    .home-charts-grid{grid-template-columns:1fr;gap:10px;margin-bottom:10px;}
+	    .home-pie-pair{grid-template-columns:1fr;gap:10px;}
 	    .home-chart-panel{padding:11px 10px;border-radius:12px;overflow:hidden;}
 	    .home-chart-head{display:grid;grid-template-columns:1fr;gap:9px;}
 	    .home-pie-head-actions{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;}
-	    .home-pie-layout{grid-template-columns:130px minmax(0,1fr);gap:12px;}
-	    .home-pie{width:124px;height:124px;}
+	    .home-pie-layout{grid-template-columns:156px minmax(0,1fr);gap:12px;}
+	    .home-pie{width:149px;height:149px;}
 	    .home-pie::after{inset:26px;}
 	    .home-pie-center{inset:31px;}
 	    .home-pie-center strong{font-size:17px;}
@@ -2703,10 +2724,37 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   #panel-lotes #edit-panel .ep{max-width:none;border-radius:14px;padding:16px;}
 
   @media(min-width:769px){
-    #panel-lotes #edit-panel .ep{padding:14px 16px;}
-    #panel-lotes #edit-panel .ep-section{margin:10px 0 6px;}
-    #panel-lotes #edit-panel .ep-partial-grid{margin-bottom:8px!important;}
-    #panel-lotes #edit-panel .ep-textarea{min-height:82px;}
+    #panel-lotes #edit-panel .ep{padding:9px 11px;}
+    #panel-lotes #edit-panel .ep-header{margin:0 0 8px;padding-bottom:7px;}
+    #panel-lotes #edit-panel .ep-title{font-size:14px;}
+    #panel-lotes #edit-panel .ep-close{width:27px;height:27px;font-size:16px;}
+    #panel-lotes #edit-panel .ep-section{margin:7px 0 4px;font-size:8px;letter-spacing:1.15px;}
+    #panel-lotes #edit-panel .ep-quick-grid{gap:7px;margin-bottom:6px;}
+    #panel-lotes #edit-panel .ep-quick-field label{margin-bottom:3px;font-size:8px;}
+    #panel-lotes #edit-panel .ep select.field,#panel-lotes #edit-panel .ep .field input,#panel-lotes #edit-panel .ep .field select{height:34px;min-height:34px;padding-top:5px;padding-bottom:5px;font-size:11px;}
+    #panel-lotes #edit-panel .ep-partial-grid{gap:7px;margin-bottom:5px!important;}
+    #panel-lotes #edit-panel .ep-note-grid{gap:8px;}
+    #panel-lotes #edit-panel .ep-textarea{min-height:54px;height:54px;padding:7px 9px;font-size:11px;line-height:1.3;}
+    #panel-lotes #edit-panel .ep-media-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px;align-items:start;margin-top:6px;}
+    #panel-lotes #edit-panel .ep-media-block{min-width:0;padding:7px;border:1px solid var(--border);border-radius:9px;background:#fff;}
+    #panel-lotes #edit-panel .ep-media-block .ep-section{margin:0 0 5px;}
+    #panel-lotes #edit-panel .ep-file-drop{padding:8px;font-size:10px;border-radius:7px;}
+    #panel-lotes #edit-panel .ep-file-hint{font-size:8px;margin-top:2px;}
+    #panel-lotes #edit-panel .ep-file-list,#panel-lotes #edit-panel .ep-video-list{gap:4px;margin-top:5px;}
+    #panel-lotes #edit-panel .ep-file-item,#panel-lotes #edit-panel .ep-video-item{padding:5px 7px;}
+    #panel-lotes #edit-panel .ep-file-name,#panel-lotes #edit-panel .ep-video-url{font-size:10px;}
+    #panel-lotes #edit-panel .ep-video-add{gap:5px;margin-top:0;}
+    #panel-lotes #edit-panel .ep-video-add input{min-height:32px;padding:5px 8px;font-size:10px;}
+    #panel-lotes #edit-panel .ep-video-add button{padding:5px 8px;font-size:9px;}
+    #panel-lotes #edit-panel .ep-actions{gap:6px;margin-top:9px;}
+    #panel-lotes #edit-panel .btn-ep-save,#panel-lotes #edit-panel .btn-ep-detail,#panel-lotes #edit-panel .btn-ep-danger{padding:7px 11px;font-size:10px;}
+    #panel-lotes #edit-panel .realizado-card{padding:8px;margin-bottom:6px;border-radius:10px;}
+    #panel-lotes #edit-panel .realizado-card-head{padding-bottom:6px;margin-bottom:6px;}
+    #panel-lotes #edit-panel .realizado-grid{gap:6px;}
+    #panel-lotes #edit-panel .realizado-field label,#panel-lotes #edit-panel .realizado-grid>.field label{min-height:17px;font-size:7.5px!important;margin-bottom:2px!important;}
+    #panel-lotes #edit-panel .realizado-field input,#panel-lotes #edit-panel .realizado-field select,#panel-lotes #edit-panel .realizado-grid>.field input,#panel-lotes #edit-panel .realizado-grid>.field select{min-height:34px!important;padding:5px 7px!important;font-size:11px!important;}
+    #panel-lotes #edit-panel .realizado-result-grid{gap:5px;}
+    #panel-lotes #edit-panel .realizado-metric-card{padding:7px;}
   }
   @media(min-width:769px) and (max-width:980px){
     #panel-lotes #edit-panel .ep-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
@@ -3324,6 +3372,31 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
     width: 100%;
     min-height: 36px;
     padding: 9px 14px;
+  }
+
+  /* Tipografia das planilhas: Home, Status e B3 (+10%). */
+  @media (min-width:769px){
+    #panel-home .home-table th{font-size:9.35px!important;}
+    #panel-home .home-table td{font-size:12.1px!important;}
+    #panel-home .home-table .muted{font-size:11px!important;}
+    #panel-home .home-list-filters .home-multi-button{font-size:12.1px!important;}
+    #panel-home .home-list-filters .home-multi-label{font-size:9.9px!important;}
+
+    #panel-lotes .status-head-cell{font-size:8.8px!important;}
+    #panel-lotes .status-cell{font-size:12.1px!important;}
+    #panel-lotes .status-cell-title{font-size:12.65px!important;}
+    #panel-lotes .status-cell-sub{font-size:11px!important;}
+    #panel-lotes .status-filter-control input,
+    #panel-lotes .status-filter-control select{font-size:11px!important;}
+
+    #panel-futuros .fut-table th{font-size:9.35px!important;}
+    #panel-futuros .fut-table td{font-size:12.1px!important;}
+    #panel-futuros .fut-table .muted{font-size:11px!important;}
+  }
+  @media (max-width:768px){
+    #panel-home .home-table th{font-size:8.6px!important;}
+    #panel-home .home-table td{font-size:11.55px!important;}
+    #panel-home .home-table .muted{font-size:10.45px!important;}
   }
 </style>
 <style id="status-mobile-compact-cards-final-20260713">
@@ -4839,10 +4912,10 @@ let activeLoteDetailId=null;
 let activeOrcEditIndex=null;
 let activeLoteReturnStatus=null;
 let pillFilter='';
-var statusColumnFilters={status:'',ano:'',confinamento:'',modalidade:'',raca:'',origem:'',vendedor:'',lote:'',b3:'',qtd:'',quebraPct:'',quebraKg:'',entrada:'',abate:'',recebimento:'',faturamento:'',capital:'',lucro:'',rent:'',rentmes:'',rcExpectativa:'',rcRealizado:'',consumoMedioExpectativa:'',consumoMedioRealizado:'',gmdOrigem:'',gmdChegada:'',gmcOrigem:'',gmcChegada:'',eficiencia:'',eficienciaChegada:''};
+var statusColumnFilters={status:'',ano:'',confinamento:'',modalidade:'',raca:'',origem:'',vendedor:'',frigorifico:'',lote:'',b3:'',qtd:'',quebraPct:'',quebraKg:'',entrada:'',abate:'',recebimento:'',faturamento:'',capital:'',lucro:'',rent:'',rentmes:'',rcExpectativa:'',rcRealizado:'',consumoMedioExpectativa:'',consumoMedioRealizado:'',gmdOrigem:'',gmdChegada:'',gmcOrigem:'',gmcChegada:'',eficiencia:'',eficienciaChegada:''};
 var STATUS_COLS=[
   {key:'status',label:'Status',w:88},{key:'ano',label:'Ano',w:52},{key:'confinamento',label:'Confinamento',w:112},
-  {key:'modalidade',label:'Modalidade',w:128},{key:'raca',label:'Raça',w:118},{key:'origem',label:'Origem',w:118},{key:'vendedor',label:'Vendedor',w:112},{key:'lote',label:'Lote',w:230},{key:'b3',label:'B3',w:136},{key:'qtd',label:'Qtd',w:62},{key:'quebraPct',label:'Quebra %',w:86},{key:'quebraKg',label:'Quebra kg',w:96},
+  {key:'modalidade',label:'Modalidade',w:128},{key:'raca',label:'Raça',w:118},{key:'origem',label:'Origem',w:118},{key:'vendedor',label:'Vendedor',w:112},{key:'frigorifico',label:'Frigorífico',w:132},{key:'lote',label:'Lote',w:230},{key:'b3',label:'B3',w:136},{key:'qtd',label:'Qtd',w:62},{key:'quebraPct',label:'Quebra %',w:86},{key:'quebraKg',label:'Quebra kg',w:96},
   {key:'entrada',label:'Entrada',w:92},{key:'abate',label:'Abate',w:92},{key:'recebimento',label:'Recebimento',w:104},
   {key:'faturamento',label:'Fat. lote',w:126},{key:'capital',label:'Capital',w:126},{key:'lucro',label:'Lucro',w:116},
   {key:'rent',label:'% Oper.',w:76},{key:'rentmes',label:'% Mês',w:76},{key:'rcExpectativa',label:'RC expectativa',w:108},{key:'rcRealizado',label:'RC realizado',w:100},{key:'consumoMedioExpectativa',label:'Consumo méd. expectativa',w:138},{key:'consumoMedioRealizado',label:'Consumo méd. realizado',w:130},{key:'gmdOrigem',label:'GMD Origem',w:108},{key:'gmdChegada',label:'GMD Chegada',w:108},{key:'gmcOrigem',label:'GMC Origem',w:116},{key:'gmcChegada',label:'GMC Chegada',w:116},{key:'eficiencia',label:'Efic. Origem',w:116},{key:'eficienciaChegada',label:'Efic. Cheg.',w:116}
@@ -4857,7 +4930,7 @@ if(!statusSortState.key){statusSortState={key:'status',dir:'asc'};}
 var statusColumnsPanelOpen=false;
 var HOME_TABLE_COLS=[
   {key:'status',label:'Status'},{key:'ano',label:'Ano'},{key:'confinamento',label:'Confinamento'},{key:'modalidade',label:'Modalidade'},{key:'raca',label:'Raça'},
-  {key:'origem',label:'Origem'},{key:'vendedor',label:'Vendedor'},{key:'lote',label:'Lote'},{key:'b3',label:'B3'},
+  {key:'origem',label:'Origem'},{key:'vendedor',label:'Vendedor'},{key:'frigorifico',label:'Frigorífico'},{key:'lote',label:'Lote'},{key:'b3',label:'B3'},
   {key:'qtd',label:'Qtd'},{key:'entrada',label:'Entrada'},{key:'abate',label:'Abate'},{key:'recebimento',label:'Recebimento'},
   {key:'quebraPct',label:'Quebra %'},{key:'quebraKg',label:'Quebra kg'},
   {key:'faturamento',label:'Fat. lote'},{key:'capital',label:'Capital'},{key:'lucro',label:'Lucro'},{key:'rent',label:'% Oper.'},{key:'rentmes',label:'% Mês'},{key:'rcExpectativa',label:'RC expectativa'},{key:'rcRealizado',label:'RC realizado'},{key:'consumoMedioExpectativa',label:'Consumo méd. expectativa'},{key:'consumoMedioRealizado',label:'Consumo méd. realizado'},
@@ -4867,7 +4940,7 @@ var HOME_TABLE_COLS=[
 var HOME_COL_VISIBLE_KEY='vm_home_cols_visible_v1';
 var HOME_COL_WIDTH_KEY='vm_home_cols_width_v1';
 var HOME_SORT_KEY='vm_home_table_sort_v1';
-var HOME_COL_DEFAULT_WIDTHS={status:92,ano:58,confinamento:120,modalidade:126,raca:118,origem:112,vendedor:118,lote:220,b3:130,qtd:72,quebraPct:86,quebraKg:96,entrada:96,abate:96,recebimento:106,faturamento:126,capital:126,lucro:116,rent:78,rentmes:78,rcExpectativa:108,rcRealizado:100,consumoMedioExpectativa:138,consumoMedioRealizado:130,gmdOrigem:108,gmdChegada:108,gmcOrigem:112,gmcChegada:112,eficiencia:118,eficienciaChegada:118};
+var HOME_COL_DEFAULT_WIDTHS={status:92,ano:58,confinamento:120,modalidade:126,raca:118,origem:112,vendedor:118,frigorifico:132,lote:220,b3:130,qtd:72,quebraPct:86,quebraKg:96,entrada:96,abate:96,recebimento:106,faturamento:126,capital:126,lucro:116,rent:78,rentmes:78,rcExpectativa:108,rcRealizado:100,consumoMedioExpectativa:138,consumoMedioRealizado:130,gmdOrigem:108,gmdChegada:108,gmcOrigem:112,gmcChegada:112,eficiencia:118,eficienciaChegada:118};
 var homeColumnResizeState=null;
 var homeColumnsPanelOpen=false;
 var homeTableSortState=(function(){
@@ -4953,7 +5026,7 @@ function endHomeColumnResize(){
 }
 var HOME_STATUS_COLUMN_GROUPS=[
   {label:'Identificação',keys:['status','ano','confinamento','modalidade','raca','lote']},
-  {label:'Compra e logística',keys:['origem','vendedor','qtd','quebraPct','quebraKg']},
+  {label:'Compra e logística',keys:['origem','vendedor','frigorifico','qtd','quebraPct','quebraKg']},
   {label:'Datas',keys:['entrada','abate','recebimento']},
   {label:'Financeiro',keys:['faturamento','capital','lucro','rent','rentmes']},
   {label:'Zootécnico',keys:['rcExpectativa','rcRealizado','consumoMedioExpectativa','consumoMedioRealizado','gmdOrigem','gmdChegada','gmcOrigem','gmcChegada','eficiencia','eficienciaChegada']},
@@ -5047,6 +5120,15 @@ function dashboardAddCardHtml(tab){
   var picker=hidden.length?hidden.map(function(def){return '<button type="button" class="dashboard-card-picker-option" onclick="addDashboardCard(\''+tab+'\',\''+def.key+'\')">'+escHtml(def.label)+'</button>';}).join(''):'<div style="font-size:10px;color:var(--text-3);padding:5px 0">Todos os quadros já estão visíveis.</div>';
   return '<div class="dashboard-card-add-wrap"><button type="button" class="dashboard-card-add" title="Adicionar quadro" onclick="toggleDashboardCardPicker(\''+tab+'\')">+</button><div class="dashboard-card-picker'+(dashboardCardPickerOpen[tab]?' open':'')+'"><div class="dashboard-card-picker-title">Adicionar quadro</div><div class="dashboard-card-picker-options">'+picker+'</div></div></div>';
 }
+document.addEventListener('click',function(event){
+  if(event.target&&event.target.closest&&event.target.closest('.dashboard-card-add-wrap'))return;
+  var hadOpen=false;
+  Object.keys(dashboardCardPickerOpen).forEach(function(tab){
+    if(dashboardCardPickerOpen[tab])hadOpen=true;
+    dashboardCardPickerOpen[tab]=false;
+  });
+  if(hadOpen)document.querySelectorAll('.dashboard-card-picker.open').forEach(function(picker){picker.classList.remove('open');});
+});
 function statusSummaryCardsHtml(){
   var cards={
     lotes:'<div class="status-total-card"><button type="button" class="dashboard-card-remove" title="Ocultar quadro" onclick="removeDashboardCard(\'status\',\'lotes\')">×</button><div class="status-total-label">Lotes</div><div class="status-total-value" id="status-total-lotes">—</div><div class="status-total-sub">Após os filtros aplicados</div></div>',
@@ -6727,23 +6809,31 @@ setupMobileHeaderAutoHide();
 /* ── HOME PANEL ────────────────────────────────── */
 var homeFilterState={ano:[],status:[],confinamento:[],origem:[],vendedor:[]};
 var HOME_PIE_METRICS=[
-  {key:'qtd',label:'Quantidade',format:'qtd'},
+  {key:'qtd',label:'Qtd',format:'qtd'},
   {key:'lotes',label:'Lotes',format:'lotes'},
-  {key:'quebraPct',label:'Quebra %',format:'pct'},
+  {key:'quebraPct',label:'Quebra %',format:'pctPoints'},
   {key:'quebraKg',label:'Quebra kg',format:'kg'},
-  {key:'faturamento',label:'Faturamento',format:'money'},
+  {key:'faturamento',label:'Fat. lote',format:'money'},
   {key:'capital',label:'Capital',format:'money'},
   {key:'lucro',label:'Lucro',format:'money'},
-  {key:'rent',label:'% lucro operação',format:'pct'},
-  {key:'rentMes',label:'% lucro ao mês',format:'pct'},
-  {key:'rcExpectativa',label:'RC expectativa',format:'pct'},
-  {key:'rcRealizado',label:'RC realizado',format:'pct'},
+  {key:'rent',label:'% Oper.',format:'pct'},
+  {key:'rentMes',label:'% Mês',format:'pct'},
+  {key:'rcExpectativa',label:'RC expectativa',format:'pctPoints'},
+  {key:'rcRealizado',label:'RC realizado',format:'pctPoints'},
+  {key:'consumoMedioExpectativa',label:'Consumo méd. expectativa',format:'pctPoints'},
+  {key:'consumoMedioRealizado',label:'Consumo méd. realizado',format:'pctPoints'},
   {key:'gmdOrigem',label:'GMD origem',format:'gmd'},
   {key:'gmdChegada',label:'GMD chegada',format:'gmd'},
   {key:'gmcOrigem',label:'GMC origem',format:'gmc'},
   {key:'gmcChegada',label:'GMC chegada',format:'gmc'},
-  {key:'eficiencia',label:'Efic. biológica origem',format:'efic'},
-  {key:'eficienciaChegada',label:'Efic. biológica chegada',format:'efic'}
+  {key:'eficiencia',label:'Efic. origem',format:'efic'},
+  {key:'eficienciaChegada',label:'Efic. chegada',format:'efic'}
+];
+var HOME_PIE_METRIC_GROUPS=[
+  {label:'Identificação',keys:['lotes']},
+  {label:'Compra e logística',keys:['qtd','quebraPct','quebraKg']},
+  {label:'Financeiro',keys:['faturamento','capital','lucro','rent','rentMes']},
+  {label:'Zootécnico',keys:['rcExpectativa','rcRealizado','consumoMedioExpectativa','consumoMedioRealizado','gmdOrigem','gmdChegada','gmcOrigem','gmcChegada','eficiencia','eficienciaChegada']}
 ];
 var HOME_BAR_METRICS=[
   {key:'qtd',label:'Quantidade',format:'qtd',color:'#0D1B2A'},
@@ -6772,6 +6862,7 @@ var HOME_PIE_GROUPS=[
   {key:'raca',label:'Raça'},
   {key:'origem',label:'Origem'},
   {key:'vendedor',label:'Vendedor'},
+  {key:'frigorifico',label:'Frigorífico'},
   {key:'lote',label:'Lote'},
   {key:'b3',label:'B3'},
   {key:'entrada',label:'Entrada'},
@@ -7308,6 +7399,12 @@ function renderHomeDashboardNovo(lotes){
     }
     return 'Manual / sem boitel';
   }
+  function nomeFrigorifico(l,o){
+    if(o&&o.frigNome)return o.frigNome;
+    var id=(o&&o.frigId)||l.frigId||'';
+    var frigorifico=id?frigs.find(function(item){return item.id===id;}):null;
+    return frigorifico&&frigorifico.nome?frigorifico.nome:'A definir';
+  }
   function tituloLote(l,o){
     var nome=getLoteNomeReferencia(l,o);
     if(nome)return nome;
@@ -7370,6 +7467,7 @@ function renderHomeDashboardNovo(lotes){
       raca:l.tipoCustom||labelRaca(l.tipoAnimal)||o.tipoCustom||labelRaca(o.tipoAnimal)||'A definir',
       origem:origemCompra,
       vendedor:vendedor?vendedor.nome:'A definir',
+      frigorifico:nomeFrigorifico(l,o),
       lote:tituloLote(l,o),
       b3:(b3Status.estado||'Aberto')+' · '+b3Status.cobertura,
       qtd:qtd,
@@ -7476,7 +7574,7 @@ function renderHomeDashboardNovo(lotes){
   function tableEmpty(cols,msg){
     return '<tr><td colspan="'+cols+'" class="home-empty-small">'+escHtml(msg)+'</td></tr>';
   }
-  function homePieChartHtml(groups,totalQtd,grouping){
+function homePieChartHtml(groups,totalQtd,grouping){
     grouping=grouping||HOME_PIE_GROUPS[0];
     var isStatusGroup=grouping.key==='status';
     var colors={embarque:'#C9A24E',confinando:'#6B7056',escalado:'#1F5B8F',abatido:'#515640',recebido:'#9A8C7A'};
@@ -7492,6 +7590,7 @@ function renderHomeDashboardNovo(lotes){
       if(metric.format==='lotes')return Math.round(value).toLocaleString('pt-BR')+' lote(s)';
       if(metric.format==='money')return fmt(value);
       if(metric.format==='pct')return fmtPct(value);
+      if(metric.format==='pctPoints')return value?fmtNum(value,2)+'%':'—';
       if(metric.format==='kg')return value?fmtNum(value,1)+' kg':'—';
       if(metric.format==='gmd')return value?fmtNum(value,2)+' kg/dia':'—';
       if(metric.format==='gmc')return value?fmtNum(value,3)+' kg/dia':'—';
@@ -7518,7 +7617,8 @@ function renderHomeDashboardNovo(lotes){
         var onClick=isStatusGroup?' onclick="homeChartFilterStatus(\''+encoded+'\')"':'';
         var color=isStatusGroup?(colors[group.status]||'#C8C1B4'):groupPalette[groupIndex%groupPalette.length];
         if(pct>0){
-          slices.push('<circle class="home-pie-slice'+(selectedStatus?' active':'')+'" cx="50" cy="50" r="'+radii[metricIndex]+'" fill="none" stroke="'+color+'" stroke-width="'+stroke+'" pathLength="100" stroke-dasharray="'+pct.toFixed(3)+' '+(100-pct).toFixed(3)+'" stroke-dashoffset="'+(-cursor).toFixed(3)+'" transform="rotate(-90 50 50)"'+onClick+'><title>'+escHtml(metric.label+' · '+group.nome+': '+displayValue(metric,value))+'</title></circle>');
+          var hoverLabel=encodeURIComponent(group.nome),hoverValue=encodeURIComponent(displayValue(metric,value));
+          slices.push('<circle class="home-pie-slice'+(selectedStatus?' active':'')+'" cx="50" cy="50" r="'+radii[metricIndex]+'" fill="none" stroke="'+color+'" stroke-width="'+stroke+'" pathLength="100" stroke-dasharray="'+pct.toFixed(3)+' '+(100-pct).toFixed(3)+'" stroke-dashoffset="'+(-cursor).toFixed(3)+'" transform="rotate(-90 50 50)" onmouseenter="showPieSubtotal(event,\''+hoverLabel+'\',\''+hoverValue+'\')" onmouseleave="hidePieSubtotal(event)" ontouchstart="showPieSubtotal(event,\''+hoverLabel+'\',\''+hoverValue+'\')"'+onClick+'><title>'+escHtml(metric.label+' · '+group.nome+': '+displayValue(metric,value))+'</title></circle>');
           cursor+=pct;
         }
       });
@@ -7533,10 +7633,10 @@ function renderHomeDashboardNovo(lotes){
       var content='<span class="home-chart-legend-dot" style="background:'+color+'"></span><span>'+escHtml(group.nome)+'</span><span class="home-chart-legend-values">'+values+'</span>';
       return isStatusGroup?'<button type="button" class="home-chart-legend-button'+(selectedStatus?' active':'')+'" onclick="homeChartFilterStatus(\''+encoded+'\')">'+content+'</button>':'<div class="home-chart-legend-button">'+content+'</div>';
     }).join('');
-    var options=HOME_PIE_METRICS.map(function(metric){
+    var options=groupedColumnOptionsHtml(HOME_PIE_METRICS,HOME_PIE_METRIC_GROUPS,function(metric){
       var checked=selected.indexOf(metric.key)>=0?' checked':'';
       return '<label class="home-pie-option"><input type="checkbox"'+checked+' onchange="homePieToggleMetric(\''+metric.key+'\',event)"><span>'+escHtml(metric.label)+'</span></label>';
-    }).join('');
+    });
     var metricHint=selected.length>1?'Anéis do externo para o interno: '+selected.map(function(key){return metricMap[key].label;}).join(' · '):firstMetric.label;
     var groupOptions=HOME_PIE_GROUPS.map(function(item){return '<option value="'+item.key+'"'+(item.key===grouping.key?' selected':'')+'>'+escHtml(item.label)+'</option>';}).join('');
     var chartTitle='Distribuição por '+grouping.label.toLowerCase();
@@ -7544,8 +7644,23 @@ function renderHomeDashboardNovo(lotes){
     if(homeChartPanelCollapsed('pie'))return '<div class="home-chart-panel collapsed"><div class="home-chart-head"><div><div class="home-chart-title">'+escHtml(chartTitle)+'</div><div class="home-chart-note">'+escHtml(chartNote)+'</div></div><button type="button" class="home-chart-collapse" onclick="toggleHomeChartPanel(\'pie\')">Mostrar quadro</button></div></div>';
     return '<div class="home-chart-panel"><div class="home-chart-head"><div><div class="home-chart-title">'+escHtml(chartTitle)+'</div><div class="home-chart-note">'+escHtml(chartNote)+'</div></div><div class="home-pie-head-actions"><div class="home-chart-control" style="min-width:142px"><label for="home-pie-group">Agrupar por</label><select id="home-pie-group" onchange="homePieSetGroup(this.value)">'+groupOptions+'</select></div><div class="home-pie-options"><button type="button" class="home-pie-options-btn'+(homeChartState.pieOptionsOpen?' active':'')+'" onclick="homePieToggleOptions(event)">Dados visíveis · '+selected.length+'/3</button><div class="home-pie-options-panel'+(homeChartState.pieOptionsOpen?' open':'')+'" onclick="event.stopPropagation()"><div class="home-pie-options-title">Dados visíveis</div><div class="home-pie-options-sub">Escolha até três indicadores para comparar.</div><div class="home-pie-options-grid">'+options+'</div></div></div><button type="button" class="home-chart-collapse" onclick="toggleHomeChartPanel(\'pie\')">Minimizar quadro</button></div></div>'
       +'<div class="home-chart-note" style="margin:-4px 0 10px">'+escHtml(metricHint)+'</div>'
-      +'<div class="home-pie-layout"><div class="home-pie'+(selected.length>1?' multi':'')+'"><svg width="160" height="160" viewBox="0 0 100 100" role="img" aria-label="Distribuição por status">'+slices.join('')+'</svg><div class="home-pie-center"><strong>'+escHtml(centerValue(firstMetric,firstTotal))+'</strong><span>'+escHtml(firstMetric.label)+'</span></div></div><div class="home-chart-legend">'+legend+'</div></div></div>';
+      +'<div class="home-pie-layout"><div class="home-pie'+(selected.length>1?' multi':'')+'"><svg width="160" height="160" viewBox="0 0 100 100" role="img" aria-label="Distribuição por status">'+slices.join('')+'</svg><div class="home-pie-center"><strong>'+escHtml(centerValue(firstMetric,firstTotal))+'</strong><span>'+escHtml(firstMetric.label)+'</span><div class="home-pie-subtotal" aria-live="polite"></div></div></div><div class="home-chart-legend">'+legend+'</div></div></div>';
   }
+  function showPieSubtotal(event,label,value){
+    var panel=event.currentTarget&&event.currentTarget.closest('.home-chart-panel');
+    var subtotal=panel&&panel.querySelector('.home-pie-subtotal');if(!subtotal)return;
+    subtotal.textContent='';
+    var name=document.createElement('div'),amount=document.createElement('strong');
+    name.textContent=decodeURIComponent(label);amount.textContent=decodeURIComponent(value);
+    subtotal.appendChild(name);subtotal.appendChild(amount);subtotal.classList.add('visible');
+  }
+  function hidePieSubtotal(event){
+    var panel=event.currentTarget&&event.currentTarget.closest('.home-chart-panel');
+    var subtotal=panel&&panel.querySelector('.home-pie-subtotal');if(!subtotal)return;
+    subtotal.textContent='';subtotal.classList.remove('visible');
+  }
+  window.showPieSubtotal=showPieSubtotal;
+  window.hidePieSubtotal=hidePieSubtotal;
   function homeMonthlyBarsHtml(rows,metricas,chartOptions){
     metricas=metricas||homeChartState.metricas;
     chartOptions=chartOptions||{};
@@ -7711,7 +7826,7 @@ function renderHomeDashboardNovo(lotes){
   var chartPeriodOptions={inicio:chartMonthOptions,fim:chartMonthOptionsFim};
   function homeTableCellHtml(key,row){
     if(key==='status')return '<span class="badge '+(STATUS_CFG[row.status]||{}).cls+'">'+escHtml(row.statusLabel)+'</span>';
-    if(key==='ano'||key==='confinamento'||key==='modalidade'||key==='raca'||key==='origem'||key==='vendedor'||key==='b3')return escHtml(row[key]);
+    if(key==='ano'||key==='confinamento'||key==='modalidade'||key==='raca'||key==='origem'||key==='vendedor'||key==='frigorifico'||key==='b3')return escHtml(row[key]);
     if(key==='lote')return '<span class="strong">'+escHtml(row.lote)+'</span><div class="muted">'+escHtml(row.resultado)+'</div>';
     if(key==='qtd')return numCab(row.qtd);
     if(key==='quebraPct')return row[key]?fmtNum(row[key],2)+'%':'—';
@@ -7872,34 +7987,27 @@ function renderHomeDashboardNovo(lotes){
   };
   var homeCardKeys=getDashboardCards('home');
   var filtrosMinimizados=homeFiltersCollapsed();
-  var quadrosMinimizados=homePanelsCollapsed();
+  var quadrosMinimizados=false;
   live.innerHTML=''
-    +'<div class="home-panels-toolbar"><button type="button" class="home-column-btn" onclick="toggleHomePanels()">'+(quadrosMinimizados?'Mostrar quadros':'Minimizar quadros')+'</button></div>'
-    +(quadrosMinimizados?'':'<div class="home-filter-card'+(filtrosMinimizados?' collapsed':'')+'">'
-      +'<div class="home-filter-head">'
-        +'<div><div class="home-filter-title">Dashboard dos lotes</div><div class="home-filter-sub">'+escHtml(filtroResumo)+'</div></div>'
-        +'<div class="home-filter-head-actions">'
-          +'<button type="button" class="home-filter-toggle" onclick="toggleHomeFilters()">'+(filtrosMinimizados?'Mostrar filtros':'Minimizar filtros')+'</button>'
-          +(filtrosMinimizados?'':'<button type="button" class="home-reset-btn" onclick="homeResetFilters()">Limpar filtros</button>')
-        +'</div>'
-      +'</div>'
-      +(filtrosMinimizados?'':'<div class="home-filter-grid">'
-        +homeMultiFilterHtml('ano','Ano',optionObjects(anos),'Todos os anos')
-        +homeMultiFilterHtml('status','Status',STATUS_ORDER.map(function(status){return {value:status,label:STATUS_CFG[status].label};}),'Todos os status')
-        +homeMultiFilterHtml('confinamento','Confinamento',optionObjects(confs),'Todos os confinamentos')
-        +homeMultiFilterHtml('origem','Origem',optionObjects(origens),'Todas as origens')
-        +homeMultiFilterHtml('vendedor','Vendedor',optionObjects(vendedores),'Todos os vendedores')
-      +'</div>')
-    +'</div>')
     +'<div class="home-panel home-list-only">'
       +'<div class="home-panel-head">'
         +'<div><div class="home-panel-title">Lotes filtrados</div><div class="home-panel-note">'+escHtml(filtroResumo)+'</div></div>'
         +'<div class="home-column-actions-wrap"><div class="home-panel-note">'+filtrados.length+' lote(s) · '+numCab(total.qtd)+' · lucro '+moneyShort(total.lucro)+'</div>'+homeColumnsPanelHtml()+'</div>'
       +'</div>'
+      +'<div class="home-list-filters">'
+        +'<div class="home-filter-grid">'
+          +homeMultiFilterHtml('ano','Ano',optionObjects(anos),'Todos os anos')
+          +homeMultiFilterHtml('status','Status',STATUS_ORDER.map(function(status){return {value:status,label:STATUS_CFG[status].label};}),'Todos os status')
+          +homeMultiFilterHtml('confinamento','Confinamento',optionObjects(confs),'Todos os confinamentos')
+          +homeMultiFilterHtml('origem','Origem',optionObjects(origens),'Todas as origens')
+          +homeMultiFilterHtml('vendedor','Vendedor',optionObjects(vendedores),'Todos os vendedores')
+          +'<button type="button" class="home-filter-clear-inline" onclick="homeResetFilters()">Limpar filtros</button>'
+        +'</div>'
+      +'</div>'
       +homeTableHtml(loteRows)
     +'</div>'
     +(quadrosMinimizados?'':dashboardCardsShellHtml('home','home-dashboard-grid',homeCardKeys.map(function(key){return dashboardDraggableCardHtml('home',key,homeCards[key]||'');}).join('')+dashboardAddCardHtml('home')))
-    +(quadrosMinimizados?'':'<div class="home-charts-grid">'+homePieChartHtml(pieGroups,total.qtd,pieGroupDef)+homeMonthlyBarsHtml(chartRows,homeChartState.metricas,chartPeriodOptions)+homeOverviewLineChartHtml(filtrados)+'</div>'+homeOperationalPanelsHtml());
+    +(quadrosMinimizados?'':'<div class="home-charts-grid"><div class="home-pie-pair">'+homePieChartHtml(pieGroups,total.qtd,pieGroupDef)+futCoverageChartHtml(lotesDisponiveisB3().filter(function(lote){return filtrados.some(function(row){return row.id===lote.id;});}))+'</div>'+homeMonthlyBarsHtml(chartRows,homeChartState.metricas,chartPeriodOptions)+homeOverviewLineChartHtml(filtrados)+'</div>'+homeOperationalPanelsHtml());
 
   applyHomeColumnWidths();
   fitHomeMoneyValues(live);
@@ -8454,6 +8562,36 @@ function futHeaderFilterOptions(key,arr,loteMap){
     found[String(value)]={value:String(value),label:label};
   });
   return Object.keys(found).map(function(k){return found[k];}).sort(function(a,b){return String(a.label).localeCompare(String(b.label),'pt-BR',{numeric:true});});
+}
+function toggleFutCoverageChart(){
+  var key='vm_fut_coverage_chart_collapsed_v1';
+  try{localStorage.setItem(key,localStorage.getItem(key)==='1'?'0':'1');}catch(e){}
+  renderHome();
+}
+function futCoverageChartHtml(lotes){
+  var totalNecessario=0,travados=0;
+  (lotes||[]).forEach(function(lote){
+    var orc=(lote.orcamentos&&lote.orcamentos[0])||{};
+    var necessidade=necessidadeContratosB3(lote,orc);
+    totalNecessario+=Math.max(0,Math.round(necessidade.metaOperacional||0));
+    travados+=resultadoB3Lote(lote.id).contratos||0;
+  });
+  var emAberto=Math.max(0,totalNecessario-travados);
+  var travadosExibidos=Math.min(travados,totalNecessario);
+  var totalGrafico=travadosExibidos+emAberto;
+  var pctTravado=totalGrafico>0?travadosExibidos/totalGrafico*100:0;
+  var pctAberto=totalGrafico>0?emAberto/totalGrafico*100:0;
+  var collapsed=false;
+  try{collapsed=localStorage.getItem('vm_fut_coverage_chart_collapsed_v1')==='1';}catch(e){}
+  var head='<div class="home-chart-head"><div><div class="home-chart-title">Cobertura B3</div><div class="home-chart-note">Necessidade total de contratos dos lotes vinculados</div></div><button type="button" class="home-chart-collapse" onclick="toggleFutCoverageChart()">'+(collapsed?'Mostrar quadro':'Minimizar quadro')+'</button></div>';
+  if(collapsed)return '<div class="home-chart-panel collapsed">'+head+'</div>';
+  var circles='<circle cx="50" cy="50" r="37" fill="none" stroke="#E8E3D9" stroke-width="22"></circle>';
+  if(pctTravado>0)circles+='<circle cx="50" cy="50" r="37" fill="none" stroke="#6B7056" stroke-width="22" pathLength="100" stroke-dasharray="'+pctTravado.toFixed(3)+' '+(100-pctTravado).toFixed(3)+'" transform="rotate(-90 50 50)" onmouseenter="showPieSubtotal(event,\'Travados\',\''+encodeURIComponent(fmtContratosB3(travados)+' ctr')+'\')" onmouseleave="hidePieSubtotal(event)" ontouchstart="showPieSubtotal(event,\'Travados\',\''+encodeURIComponent(fmtContratosB3(travados)+' ctr')+'\')"><title>Travados: '+fmtContratosB3(travados)+' contratos</title></circle>';
+  if(pctAberto>0)circles+='<circle cx="50" cy="50" r="37" fill="none" stroke="#C9A24E" stroke-width="22" pathLength="100" stroke-dasharray="'+pctAberto.toFixed(3)+' '+(100-pctAberto).toFixed(3)+'" stroke-dashoffset="'+(-pctTravado).toFixed(3)+'" transform="rotate(-90 50 50)" onmouseenter="showPieSubtotal(event,\'Em%20aberto\',\''+encodeURIComponent(fmtContratosB3(emAberto)+' ctr')+'\')" onmouseleave="hidePieSubtotal(event)" ontouchstart="showPieSubtotal(event,\'Em%20aberto\',\''+encodeURIComponent(fmtContratosB3(emAberto)+' ctr')+'\')"><title>Em aberto: '+fmtContratosB3(emAberto)+' contratos</title></circle>';
+  var legend='<div class="home-chart-legend-button"><span class="home-chart-legend-dot" style="background:#0D1B2A"></span><span>Total necessário</span><span class="home-chart-legend-values"><strong>'+fmtContratosB3(totalNecessario)+' ctr</strong></span></div>'
+    +'<div class="home-chart-legend-button"><span class="home-chart-legend-dot" style="background:#C9A24E"></span><span>Em aberto</span><span class="home-chart-legend-values"><strong>'+fmtContratosB3(emAberto)+' ctr</strong></span></div>'
+    +'<div class="home-chart-legend-button"><span class="home-chart-legend-dot" style="background:#6B7056"></span><span>Travados</span><span class="home-chart-legend-values"><strong>'+fmtContratosB3(travados)+' ctr</strong></span></div>';
+  return '<div class="home-chart-panel fut-coverage-panel">'+head+'<div class="home-pie-layout"><div class="home-pie"><svg width="160" height="160" viewBox="0 0 100 100" role="img" aria-label="Cobertura de contratos B3">'+circles+'</svg><div class="home-pie-center"><strong>'+fmtContratosB3(totalNecessario)+'</strong><span>Total necessário</span><div class="home-pie-subtotal" aria-live="polite"></div></div></div><div class="home-chart-legend">'+legend+'</div></div></div>';
 }
 function renderFuturos(){
   fillFuturoLoteSelects();
@@ -9038,17 +9176,10 @@ function openEditPanel(loteId, cardEl){
   if(cardEl&&ep&&cardEl.parentNode){
     cardEl.insertAdjacentElement('afterend',ep);
   }
-  var vend=getVends().find(function(v){return v.id===lote.vendedorId;});
   var o=lote.orcamentos&&lote.orcamentos[0];
-  // Build vendor options
-  var vendOpts='<option value="">A definir...</option><option value="__new__">+ Cadastrar novo...</option>';
-  getVends().forEach(function(v){
-    vendOpts+='<option value="'+v.id+'"'+(lote.vendedorId===v.id?' selected':'')+'>'+v.nome+(v.regiao?' ('+v.regiao+')':'')+'</option>';
-  });
-  // Build frig options
-  var frigOpts='<option value="">Nenhum</option><option value="__new__">+ Cadastrar novo...</option>';
-  getFrigs().forEach(function(f){
-    frigOpts+='<option value="'+f.id+'"'+(lote.frigId===f.id?' selected':'')+'>'+f.nome+'</option>';
+  var transportadoraOpts='<option value="">A definir...</option>';
+  getTransportadoras().filter(function(t){return t.ativa!==false||t.id===lote.transportadoraId;}).forEach(function(t){
+    transportadoraOpts+='<option value="'+escHtml(t.id)+'"'+(lote.transportadoraId===t.id?' selected':'')+'>'+escHtml(t.nome||'Transportadora')+'</option>';
   });
   // Observação do confinamento fica nos ajustes finais para não duplicar os campos operacionais.
   var confHtml='';
@@ -9212,7 +9343,7 @@ function openEditPanel(loteId, cardEl){
       +'<div class="ep-title">Editar Orçamento</div>'
       +'<button class="ep-close" onclick="closeEditPanel()">×</button>'
     +'</div>'
-    +'<div class="ep-quick-grid">'
+    +'<div class="ep-quick-grid ep-quick-grid-2">'
       +'<div class="ep-quick-field"><label>Status</label><select id="ep-status" class="field" onchange="updateEditPanelStatus(this.value)">'
         +'<option value="embarque"'+(lote.status==='embarque'?' selected':'')+'>Embarque</option>'
         +'<option value="confinando"'+(lote.status==='confinando'?' selected':'')+'>Confinando</option>'
@@ -9220,11 +9351,8 @@ function openEditPanel(loteId, cardEl){
         +'<option value="abatido"'+(lote.status==='abatido'?' selected':'')+'>Abatido</option>'
         +'<option value="recebido"'+(lote.status==='recebido'?' selected':'')+'>Recebido</option>'
       +'</select></div>'
-      +'<div class="ep-quick-field"><label>Vendedor</label><select id="ep-vend" class="field" onchange="handleEpVendSelect(this)">'
-        +vendOpts
-      +'</select></div>'
-      +'<div class="ep-quick-field"><label>Frigorífico</label><select id="ep-frig" class="field" onchange="handleEpFrigSelect(this)">'
-        +frigOpts
+      +'<div class="ep-quick-field"><label>Transportadora</label><select id="ep-transportadora" class="field">'
+        +transportadoraOpts
       +'</select></div>'
     +'</div>'
     +'<div class="ep-section">Identificação do lote</div>'
@@ -9233,40 +9361,26 @@ function openEditPanel(loteId, cardEl){
       +'<div class="field" style="margin:0"><label>Nome / Referência <span style="font-size:9px;color:var(--text-3);font-weight:400;">(opcional)</span></label><input type="text" id="ep-lot-name" value="'+escHtml(nomeLote)+'" placeholder="Ex: Murilo Duque"></div>'
     +'</div>'
     +contratosPrecoHtml
-    +'<div id="ep-vend-qa" class="quick-add-form" style="display:none;">'
-      +'<div class="qa-hint">Novo Vendedor</div>'
-      +'<input type="text" id="ep-qv-nome" placeholder="Nome *">'
-      +'<input type="text" id="ep-qv-tel" placeholder="Telefone (opcional)">'
-      +'<input type="text" id="ep-qv-regiao" placeholder="Região (opcional)">'
-      +'<div class="quick-add-btns">'
-        +'<button class="btn-qa-save" data-action="save-ep-vend">Adicionar</button>'
-        +'<button class="btn-qa-cancel" data-action="cancel-ep-vend">Cancelar</button>'
-      +'</div>'
-    +'</div>'
-    +'<div id="ep-frig-qa" class="quick-add-form" style="display:none;">'
-      +'<div class="qa-hint">Novo Frigorífico</div>'
-      +'<input type="text" id="ep-fq-nome" placeholder="Nome *">'
-      +'<input type="text" id="ep-fq-regiao" placeholder="Cidade / Região (opcional)">'
-      +'<div class="quick-add-btns">'
-        +'<button class="btn-qa-save" data-action="save-ep-frig">Adicionar</button>'
-        +'<button class="btn-qa-cancel" data-action="cancel-ep-frig">Cancelar</button>'
-      +'</div>'
-    +'</div>'
     // Observações
     +'<div class="ep-note-grid">'
       +'<div><div class="ep-section">Observações da Negociação</div><textarea id="ep-obs" rows="3" class="ep-textarea" placeholder="Notas, condições acordadas, próximos passos...">'+escHtml(lote.obs||'')+'</textarea></div>'
       +'<div><div class="ep-section">Observação / Relatório</div><textarea id="ep-relatorio" rows="3" class="ep-textarea" placeholder="Escreva um relatório livre sobre o orçamento, negociação, pontos de atenção...">'+escHtml(lote.relatorio||'')+'</textarea></div>'
     +'</div>'
-    +'<div class="ep-section">Arquivos</div>'
-    +'<div class="ep-file-drop" id="ep-file-drop">Arraste arquivos aqui ou clique para selecionar<div class="ep-file-hint">PDF, fotos, Excel e Word. Até 4 MB por arquivo.</div></div>'
-    +'<input type="file" id="ep-file-input" multiple accept=".pdf,image/*,.xls,.xlsx,.xlsm,.csv,.doc,.docx" style="display:none">'
-    +'<div id="ep-file-list">'+arquivosHtml+'</div>'
-    +'<div class="ep-section">Vídeos Entrada</div>'
-    +'<div class="ep-video-add"><input type="url" id="ep-video-entrada" placeholder="Cole o link do YouTube da entrada"><button type="button" data-action="add-video-entrada">Adicionar</button></div>'
-    +'<div id="ep-videos-entrada-list">'+videosEntradaHtml+'</div>'
-    +'<div class="ep-section">Vídeos Saída</div>'
-    +'<div class="ep-video-add"><input type="url" id="ep-video-saida" placeholder="Cole o link do YouTube da saída"><button type="button" data-action="add-video-saida">Adicionar</button></div>'
-    +'<div id="ep-videos-saida-list">'+videosSaidaHtml+'</div>'
+    +'<div class="ep-media-grid">'
+      +'<div class="ep-media-block"><div class="ep-section">Arquivos</div>'
+        +'<div class="ep-file-drop" id="ep-file-drop">Arraste arquivos aqui ou clique para selecionar<div class="ep-file-hint">PDF, fotos, Excel e Word. Até 4 MB por arquivo.</div></div>'
+        +'<input type="file" id="ep-file-input" multiple accept=".pdf,image/*,.xls,.xlsx,.xlsm,.csv,.doc,.docx" style="display:none">'
+        +'<div id="ep-file-list">'+arquivosHtml+'</div>'
+      +'</div>'
+      +'<div class="ep-media-block"><div class="ep-section">Vídeos Entrada</div>'
+        +'<div class="ep-video-add"><input type="url" id="ep-video-entrada" placeholder="Link do YouTube da entrada"><button type="button" data-action="add-video-entrada">Adicionar</button></div>'
+        +'<div id="ep-videos-entrada-list">'+videosEntradaHtml+'</div>'
+      +'</div>'
+      +'<div class="ep-media-block"><div class="ep-section">Vídeos Saída</div>'
+        +'<div class="ep-video-add"><input type="url" id="ep-video-saida" placeholder="Link do YouTube da saída"><button type="button" data-action="add-video-saida">Adicionar</button></div>'
+        +'<div id="ep-videos-saida-list">'+videosSaidaHtml+'</div>'
+      +'</div>'
+    +'</div>'
     +confHtml
     +resSummary
     +realHtml
@@ -9514,10 +9628,12 @@ function applyEditPanelDraft(lote){
   if(!lote)return;
   var vendEl=document.getElementById('ep-vend');
   var frigEl=document.getElementById('ep-frig');
+  var transportadoraEl=document.getElementById('ep-transportadora');
   var obsEl=document.getElementById('ep-obs');
   var relEl=document.getElementById('ep-relatorio');
   if(vendEl&&vendEl.value&&vendEl.value!=='__new__')lote.vendedorId=vendEl.value;
   if(frigEl&&frigEl.value&&frigEl.value!=='__new__')lote.frigId=frigEl.value;
+  if(transportadoraEl)lote.transportadoraId=transportadoraEl.value||null;
   if(obsEl)lote.obs=obsEl.value.trim();
   if(relEl)lote.relatorio=relEl.value.trim();
   if(!Array.isArray(lote.arquivos))lote.arquivos=[];
@@ -10048,13 +10164,11 @@ function saveEditPanel(){
   if(!canEditLot(arr[i])){toast('⚠ Você não possui permissão para editar este lote.');return;}
   if(!aplicarIdentificacaoLote(arr[i],arr))return;
   var newStatus=document.getElementById('ep-status').value;
-  var newVend=document.getElementById('ep-vend').value;
-  var newFrig=document.getElementById('ep-frig').value;
+  var newTransportadora=(document.getElementById('ep-transportadora')||{value:''}).value;
   var newObs=document.getElementById('ep-obs').value.trim();
   var newRelatorio=(document.getElementById('ep-relatorio')||{value:''}).value.trim();
   arr[i].status=newStatus;
-  if(newVend&&newVend!=='__new__')arr[i].vendedorId=newVend;
-  if(newFrig&&newFrig!=='__new__')arr[i].frigId=newFrig;
+  arr[i].transportadoraId=newTransportadora||null;
   arr[i].obs=newObs;
   arr[i].relatorio=newRelatorio;
   if(!Array.isArray(arr[i].arquivos))arr[i].arquivos=[];
@@ -10607,6 +10721,7 @@ function renderLotes(){
   var fFrig=document.getElementById('filter-frig')?document.getElementById('filter-frig').value:'';
   var fT=(document.getElementById('filter-tipo')||{value:''}).value;
   var vends=getVends();
+  var frigs=getFrigs();
   var ST_COLORS={'embarque':'#C9A24E','confinando':'var(--green)','escalado':'var(--accent)','abatido':'#515640','recebido':'var(--text-3)'};
   var todosLotes=getLotes();
   if(garantirNumerosLote(todosLotes))saveLotes(todosLotes);
@@ -10721,6 +10836,9 @@ function renderLotes(){
     var vendedorVal=(vend&&vend.nome)?vend.nome:'A definir';
     var sc=STATUS_CFG[l.status]||STATUS_CFG.embarque;
     var o=l.orcamentos&&l.orcamentos[0];
+    var frigorificoId=(o&&o.frigId)||l.frigId||'';
+    var frigorifico=frigorificoId?frigs.find(function(f){return f.id===frigorificoId;}):null;
+    var frigorificoVal=(o&&o.frigNome)||(frigorifico&&frigorifico.nome)||'A definir';
     var barColor=STATUS_COLORS[l.status]||ST_COLORS[l.status]||'var(--border)';
     var nomeReferencia=getLoteNomeReferencia(l,o);
     var cardTitle=nomeReferencia;
@@ -10801,6 +10919,7 @@ function renderLotes(){
       +' data-filter-raca="'+escHtml(racaVal)+'"'
       +' data-filter-origem="'+escHtml(origemVal)+'"'
       +' data-filter-vendedor="'+escHtml(vendedorVal)+'"'
+      +' data-filter-frigorifico="'+escHtml(frigorificoVal)+'"'
       +' data-filter-lote="'+escHtml(filtroLote)+'"'
       +' data-filter-b3="'+escHtml(b3Estado)+'"'
       +' data-filter-qtd="'+escHtml(qtdVal)+'"'
@@ -10875,6 +10994,7 @@ function renderLotes(){
       +'<span data-status-mobile-field="recebimento"><em>Receb.</em>'+escHtml(dataRecebimentoCurta)+'</span>'
       +'<span data-status-mobile-field="b3"><em>B3</em>'+escHtml(b3Cobertura)+'</span>'
       +'<span class="vendor" data-status-mobile-field="vendedor" title="'+escHtml(vendedorVal)+'"><em>Vendedor</em>'+escHtml(vendedorVal)+'</span>'
+      +'<span data-status-mobile-field="frigorifico" title="'+escHtml(frigorificoVal)+'"><em>Frigorífico</em>'+escHtml(frigorificoVal)+'</span>'
       +'<span class="muted" data-status-mobile-field="trava"><em>Trava</em>'+escHtml(b3Estado)+'</span>'
       +'<span data-status-mobile-field="origem" title="'+escHtml(origemVal)+'"><em>Origem</em>'+escHtml(origemVal)+'</span>'
       +'<span class="money" data-status-mobile-field="capital"><em>Capital</em>'+escHtml(fmtCompactMoney(capital))+'</span>'
@@ -10904,6 +11024,7 @@ function renderLotes(){
       +statusCell('raca',racaVal,'muted')
       +statusCell('origem',origemVal,'muted')
       +statusCell('vendedor',vendedorVal,'muted')
+      +statusCell('frigorifico',frigorificoVal,'muted')
       +loteCell
       +b3Cell
       +statusCell('qtd',qtdVal)
@@ -14991,6 +15112,7 @@ restoreBasicSession();
     { key: 'raca', label: 'Raça', group: 'Operacao' },
     { key: 'origem', label: 'Origem', group: 'Operacao' },
     { key: 'vendedor', label: 'Vendedor', group: 'Operacao' },
+    { key: 'frigorifico', label: 'Frigorífico', group: 'Operacao' },
     { key: 'entrada', label: 'Entrada', group: 'Datas' },
     { key: 'abate', label: 'Abate', group: 'Datas' },
     { key: 'recebimento', label: 'Recebimento', group: 'Datas' },
