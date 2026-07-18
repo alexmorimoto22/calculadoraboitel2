@@ -1439,6 +1439,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	    .fut-hero .h-greeting-name{font-size:21px;}
 	    .fut-new-btn{width:100%;min-height:44px;}
 	    .home-filter-card{padding:12px;border-radius:12px;margin-bottom:10px;}
+	    .home-panels-toolbar{display:none;}
 	    .home-filter-head{display:grid;grid-template-columns:1fr;gap:9px;align-items:start;margin-bottom:10px;}
 	    .home-filter-head-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 	    .home-filter-title{font-size:14px;}
@@ -4388,11 +4389,11 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
             <div class="field fut-span-3"><label>Lado da abertura</label><select id="fut-lado" onchange="atualizarFuturoPreview()"><option value="venda">Venda</option><option value="compra">Compra</option></select><div class="hint">Define a fórmula do resultado.</div></div>
             <div class="field fut-span-2"><label>Lote vinculado</label><select id="fut-lote" onchange="atualizarCorretagemFuturoPorLote();atualizarFuturoPreview()"></select><div class="hint" id="fut-lote-coverage">Selecione a operação que receberá o resultado do hedge.</div></div>
             <div class="field fut-span-3"><label>Tipo de trava</label><select id="fut-tipo" onchange="atualizarFuturoPreview()"><option value="bolsa">Bolsa B3</option><option value="direto">Direto / contrato físico</option></select><div class="hint">Bolsa ou direto.</div></div>
-            <div class="field fut-span-3"><label>Qtd contratos</label><input type="number" id="fut-qtd" value="1" step="1" min="0" oninput="atualizarFuturoPreview()" onblur="ajustarQtdContratoB3NoForm()"><div class="hint">Somente inteiros.</div></div>
             <div class="fut-preview fut-span-4" id="fut-lote-summary" style="display:none;margin:0;"></div>
             <div class="field fut-span-3"><label>Código / vencimento B3</label><input type="text" id="fut-codigo" placeholder="Ex: BGIU26" readonly><div class="hint">Gerado automaticamente pelo vencimento.</div></div>
             <div class="field fut-span-3"><label>Vencimento</label><input type="month" id="fut-vencimento" onchange="atualizarCodigoB3();atualizarFuturoPreview()"></div>
             <div class="field fut-span-3"><label>Data da abertura</label><input type="date" id="fut-data-venda"></div>
+            <div class="field fut-span-3"><label>Qtd contratos</label><input type="number" id="fut-qtd" value="1" step="1" min="0" oninput="atualizarFuturoPreview()" onblur="ajustarQtdContratoB3NoForm()"><div class="hint">Somente inteiros.</div></div>
             <div class="field fut-span-3"><label>Preço abertura (R$/@)</label><input type="text" inputmode="decimal" data-decimal="1" id="fut-preco-venda" value="0" oninput="atualizarFuturoPreview()"></div>
             <div class="field fut-span-3 fut-legacy-liq" style="display:none;"><label>Data liquidação inicial</label><input type="date" id="fut-data-compra"></div>
             <div class="field fut-span-3 fut-legacy-liq" style="display:none;"><label>Preço liquidação inicial (R$/@)</label><input type="text" inputmode="decimal" data-decimal="1" id="fut-preco-compra" value="" oninput="atualizarFuturoPreview()"><div class="hint">Vazio = aberto.</div></div>
@@ -7125,6 +7126,7 @@ function toggleHomeFilters(){
   renderHome();
 }
 function homePanelsCollapsed(){
+  if(dashboardViewportStorageSuffix()==='_mobile')return false;
   try{return localStorage.getItem('vm_home_panels_collapsed'+dashboardViewportStorageSuffix()+'_v1')==='1';}catch(e){return false;}
 }
 function toggleHomePanels(){
