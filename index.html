@@ -4599,7 +4599,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
             <div class="fut-form-grid">
             <div class="field fut-span-3"><label>Tipo de operação</label><select id="fut-operacao" onchange="alternarOperacaoFuturo();atualizarCorretagemFuturoPorLote();atualizarFuturoPreview()"><option value="hedge">Hedge vinculado a lote</option><option value="livre">Operação livre / especulativa</option></select><div class="hint">Livre não exige lote.</div></div>
             <div class="field fut-span-3"><label>Lado da abertura</label><select id="fut-lado" onchange="atualizarFuturoPreview()"><option value="venda">Venda</option><option value="compra">Compra</option></select><div class="hint">Define a fórmula do resultado.</div></div>
-            <div class="field fut-span-2"><label>Lote vinculado</label><select id="fut-lote" onchange="atualizarCorretagemFuturoPorLote();atualizarFuturoPreview()"></select><div class="hint" id="fut-lote-coverage">Selecione a operação que receberá o resultado do hedge.</div></div>
+            <div class="field fut-span-2"><label>Número do lote</label><select id="fut-lote" onchange="atualizarCorretagemFuturoPorLote();atualizarFuturoPreview()"></select><div class="hint" id="fut-lote-coverage">Selecione a operação que receberá o resultado do hedge.</div></div>
             <div class="field fut-span-3"><label>Tipo de trava</label><select id="fut-tipo" onchange="atualizarFuturoPreview()"><option value="bolsa">Bolsa B3</option><option value="direto">Direto / contrato físico</option></select><div class="hint">Bolsa ou direto.</div></div>
             <div class="fut-preview fut-span-4" id="fut-lote-summary" style="display:none;margin:0;"></div>
             <div class="field fut-span-3"><label>Código / vencimento B3</label><input type="text" id="fut-codigo" placeholder="Ex: BGIU26" readonly><div class="hint">Gerado automaticamente pelo vencimento.</div></div>
@@ -8223,6 +8223,10 @@ function loteLabelB3(lote){
   var tipo=(lote.tipoAnimal&&TIPO_LABEL[lote.tipoAnimal])?TIPO_LABEL[lote.tipoAnimal]:(lote.tipoCustom||'Lote');
   return tipo+' · '+(lote.qtd||0)+' cab.';
 }
+function loteNumeroLabelB3(lote){
+  var numero=getNumeroLote(lote);
+  return numero?'Lote '+numero:loteLabelB3(lote);
+}
 function lotesDisponiveisB3(apenasVinculaveis){
   return getLotes().filter(function(l){
     var podeVer=canViewLot(l);
@@ -8250,13 +8254,13 @@ function fillFuturoLoteSelects(){
     var sc=STATUS_CFG[l.status]||STATUS_CFG.embarque;
     var resumo=resultadoB3Lote(l.id);
     var cobertura=textoCoberturaB3(l,(l.orcamentos&&l.orcamentos[0]),resumo);
-    return '<option value="'+l.id+'">'+escHtml(loteLabelB3(l))+' · '+escHtml(sc.label)+' · '+escHtml(cobertura)+'</option>';
+    return '<option value="'+l.id+'">'+escHtml(loteNumeroLabelB3(l))+' · '+escHtml(sc.label)+' · '+escHtml(cobertura)+'</option>';
   }).join('');
   var filterOpts=lotes.map(function(l){
     var sc=STATUS_CFG[l.status]||STATUS_CFG.embarque;
     var resumo=resultadoB3Lote(l.id);
     var cobertura=textoCoberturaB3(l,(l.orcamentos&&l.orcamentos[0]),resumo);
-    return '<option value="'+l.id+'">'+escHtml(loteLabelB3(l))+' · '+escHtml(sc.label)+' · '+escHtml(cobertura)+'</option>';
+    return '<option value="'+l.id+'">'+escHtml(loteNumeroLabelB3(l))+' · '+escHtml(sc.label)+' · '+escHtml(cobertura)+'</option>';
   }).join('');
   if(form){
     form.innerHTML='<option value="">Sem lote / operação livre</option>'+formOpts;
