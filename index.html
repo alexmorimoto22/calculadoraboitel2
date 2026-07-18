@@ -587,14 +587,14 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .columns-clear-btn{border:0;background:transparent;color:var(--text-3);font-family:'Inter',sans-serif;font-size:10px;font-weight:800;cursor:pointer;padding:3px 0;}
   .columns-clear-btn:hover{color:var(--accent);}
   .home-charts-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px;}
-  .home-pie-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch;}
+  .home-pie-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start;}
   .home-chart-panel{container-type:inline-size;background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:0 4px 18px rgba(13,27,42,.05);min-width:0;}
   .home-chart-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;}
   .home-chart-panel.collapsed{padding:11px 14px;}
   .home-chart-panel.collapsed .home-chart-head{align-items:center;margin-bottom:0;}
   .home-chart-collapse{height:32px;padding:0 11px;border:1px solid var(--accent);border-radius:8px;background:#fff;color:var(--accent);font-family:'Inter',sans-serif;font-size:10px;font-weight:800;white-space:nowrap;cursor:pointer;}
   .home-chart-collapse:hover{background:var(--accent);color:#fff;}
-  .home-pie-head-actions{display:flex;align-items:flex-end;gap:8px;}
+  .home-pie-head-actions{display:flex;align-items:flex-end;justify-content:flex-end;gap:8px;flex-wrap:wrap;}
   .home-chart-title{font-size:10px;font-weight:850;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);}
   .home-chart-note{font-size:10px;color:var(--text-3);margin-top:3px;}
   .home-pie-layout{display:grid;grid-template-columns:204px minmax(0,1fr);gap:18px;align-items:center;}
@@ -711,13 +711,14 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-pie.multi .home-pie-center{inset:56px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(13,27,42,.08);}
   .home-pie.multi .home-pie-center strong{font-size:12px;}
   .home-pie.multi .home-pie-center span{font-size:6.5px;letter-spacing:.45px;}
-  @container (max-width: 760px){
+  @container (max-width: 500px){
     .home-pie-layout{grid-template-columns:1fr;justify-items:center;gap:14px;}
     .home-chart-legend{width:100%;}
     .home-chart-legend-button{grid-template-columns:9px minmax(0,1fr);align-items:start;gap:7px 8px;padding:5px 4px;}
     .home-chart-legend-values{grid-column:2;justify-content:flex-start;max-width:none;gap:4px;}
     .home-chart-legend-values strong{white-space:normal;line-height:1.25;}
   }
+  @media(max-width:980px){.home-pie-pair{grid-template-columns:1fr;}}
   #panel-futuros{width:min(1440px,calc(100vw - 48px));margin-left:50%;transform:translateX(-50%);}
   .fut-hero{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap;gap:12px;padding:16px 18px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(135deg,rgba(255,253,247,.88),rgba(242,237,227,.84));box-shadow:0 8px 24px rgba(13,27,42,.06);}
   .fut-hero .h-greeting-name{font-size:25px;}
@@ -1112,6 +1113,10 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .status-head-cell:hover .status-col-resizer{background:rgba(201,162,78,.18);}
   .status-col-hidden{padding-left:0!important;padding-right:0!important;opacity:0!important;pointer-events:none!important;overflow:hidden!important;}
   .status-viewbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 10px;}
+  .status-sheet-card{padding:10px 12px;border:1px solid var(--border);border-radius:11px;background:rgba(255,253,247,.9);box-shadow:0 5px 20px rgba(13,27,42,.05);}
+  .status-sheet-heading{margin-bottom:5px;}
+  .status-sheet-title{font-size:10px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:var(--navy);}
+  .status-sheet-sub{margin-top:2px;font-size:9px;color:var(--text-3);}
   .status-view-actions{position:relative;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
   .status-view-btn{height:32px;border:1px solid var(--border);border-radius:9px;background:#fff;color:var(--text);font-family:'Inter',sans-serif;font-size:10px;font-weight:850;letter-spacing:.2px;padding:0 11px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(13,27,42,.04);}
   .status-view-btn:hover{border-color:var(--accent);color:var(--accent);}
@@ -1697,6 +1702,8 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 	  @media(max-width:640px){
 	    #panel-lotes{width:100%;max-width:100%;margin-left:0;transform:none;overflow-x:hidden;}
 	    #panel-lotes .status-viewbar{display:none!important;}
+	    #panel-lotes .status-sheet-card{padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;}
+	    #panel-lotes .status-sheet-heading{display:none;}
 	    #panel-lotes .status-summary{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
 	    #panel-lotes .status-total-card{padding:10px;border-radius:12px;}
 	    #panel-lotes .status-total-label{font-size:8px;letter-spacing:.75px;}
@@ -2873,7 +2880,10 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   #panel-futuros .fut-card{padding:12px 14px;border-radius:13px;}
   #panel-futuros .fut-card-value{font-size:21px;}
   #panel-futuros .fut-layout{gap:12px;}
-  #panel-futuros .fut-form,#panel-futuros .fut-list-card{border-radius:15px;padding:14px 16px;}
+  #panel-futuros .fut-form{border-radius:15px;padding:14px 16px;}
+  #panel-futuros .fut-list-card{border-radius:11px;padding:10px 12px;}
+  #panel-futuros .fut-list-card .fut-toolbar{margin-bottom:5px;}
+  #panel-futuros .fut-list-card .fut-table-controls{margin-bottom:7px;}
   #panel-futuros .fut-form-title{font-size:16px;}
   #panel-futuros .fut-form-grid{grid-template-columns:repeat(12,minmax(0,1fr));gap:8px 10px;align-items:start;}
   #panel-futuros .fut-span-2{grid-column:span 4;}
@@ -2889,6 +2899,10 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   #panel-futuros .fut-table{min-width:980px;}
   #panel-futuros .fut-table th{position:sticky;top:0;z-index:3;padding:0;background:#fbfaf5;box-sizing:border-box;}
   #panel-futuros .fut-table td{padding:9px 10px;font-size:11px;box-sizing:border-box;overflow:hidden;text-overflow:ellipsis;}
+  #panel-futuros .fut-table tbody tr{height:42px;}
+  #panel-futuros .fut-table tbody td{height:42px;max-height:42px;padding-top:6px;padding-bottom:6px;}
+  #panel-lotes .status-row{height:42px;min-height:42px;grid-auto-rows:42px;}
+  #panel-lotes .status-row>.status-cell{height:42px;box-sizing:border-box;display:flex;align-items:center;}
 }
 
   /* ── EXPORTAÇÃO DE RELATÓRIOS ───────────────────── */
@@ -4604,6 +4618,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
           <div class="fut-table-controls">
             <div class="fut-table-hint">Clique no título da coluna para ordenar. Arraste a borda do título para ajustar a largura.</div>
             <div class="fut-table-actions">
+              <button type="button" class="status-view-btn" onclick="limparFiltrosFuturos()">Limpar filtros</button>
               <button type="button" class="status-view-btn" onclick="toggleFutColumnsPanel()">Colunas visíveis</button>
               <button type="button" class="status-view-btn" onclick="resetFutColumns()">Restaurar</button>
               <div id="fut-column-panel" class="fut-column-panel"></div>
@@ -6993,6 +7008,31 @@ var HOME_PIE_METRIC_GROUPS=[
   {label:'Financeiro',keys:['faturamento','capital','lucro','rent','rentMes']},
   {label:'Zootécnico',keys:['rcExpectativa','rcRealizado','consumoMedioExpectativa','consumoMedioRealizado','gmdOrigem','gmdChegada','gmcOrigem','gmcChegada','eficiencia','eficienciaChegada']}
 ];
+function syncHomePieMetricsFromStatus(){
+  var aliases={rentmes:'rentMes'};
+  var existing={};HOME_PIE_METRICS.forEach(function(metric){existing[metric.key]=metric;});
+  function inferredMetric(col){
+    var key=aliases[col.key]||col.key,label=col.label||col.key,lower=(key+' '+label).toLowerCase(),format='lotes',sourceKey='lotes';
+    if(key==='qtd'){format='qtd';sourceKey='qtd';}
+    else if(/fatur|capital|lucro|pre[cç]o|valor|custo/.test(lower)){format='money';sourceKey=key;}
+    else if(/quebra.*kg/.test(lower)){format='kg';sourceKey=key;}
+    else if(/%|rent|rc|consumo/.test(lower)){format='pctPoints';sourceKey=key;}
+    else if(/gmd/.test(lower)){format='gmd';sourceKey=key;}
+    else if(/gmc/.test(lower)){format='gmc';sourceKey=key;}
+    else if(/efic/.test(lower)){format='efic';sourceKey=key;}
+    return {key:key,label:label,format:format,sourceKey:sourceKey,fallbackLotes:sourceKey==='lotes'};
+  }
+  STATUS_COLS.forEach(function(col){var key=aliases[col.key]||col.key;if(!existing[key]){var metric=inferredMetric(col);HOME_PIE_METRICS.push(metric);existing[key]=metric;}else if(!existing[key].sourceKey){existing[key].sourceKey=key;}});
+  var statusGroups=(typeof HOME_STATUS_COLUMN_GROUPS!=='undefined'&&HOME_STATUS_COLUMN_GROUPS)||[];
+  var groupedKeys={};
+  HOME_PIE_METRIC_GROUPS=statusGroups.map(function(group){
+    var keys=(group.keys||[]).map(function(key){return aliases[key]||key;}).filter(function(key){if(!existing[key])return false;groupedKeys[key]=true;return true;});
+    return {label:group.label,keys:keys};
+  }).filter(function(group){return group.keys.length;});
+  var extras=HOME_PIE_METRICS.map(function(metric){return metric.key;}).filter(function(key){return !groupedKeys[key];});
+  if(extras.length)HOME_PIE_METRIC_GROUPS.unshift({label:'Indicadores',keys:extras});
+}
+syncHomePieMetricsFromStatus();
 var HOME_BAR_METRICS=[
   {key:'qtd',label:'Quantidade',format:'qtd',color:'#0D1B2A'},
   {key:'lotes',label:'Lotes',format:'lotes',color:'#5A6B7A'},
@@ -7695,6 +7735,12 @@ function renderHomeDashboardNovo(lotes){
     out.gmcChegada=out.qtd>0?gmcChegadaPeso/out.qtd:0;
     out.eficiencia=out.qtd>0?eficPeso/out.qtd:0;
     out.eficienciaChegada=out.qtd>0?eficChegadaPeso/out.qtd:0;
+    STATUS_COLS.forEach(function(col){
+      var key=col.key==='rentmes'?'rentMes':col.key;
+      if(Object.prototype.hasOwnProperty.call(out,key))return;
+      var numeric=rows.map(function(row){return row[key];}).filter(function(value){return value!==null&&value!==undefined&&value!==''&&!isNaN(Number(value));});
+      out[key]=numeric.length?numeric.reduce(function(total,value){return total+Number(value);},0):rows.length;
+    });
     return out;
   }
   function groupRows(rows,keyFn){
@@ -7742,7 +7788,11 @@ function homePieChartHtml(groups,totalQtd,grouping){
     var selected=(homeChartState.pieMetrics||['qtd']).filter(function(key){return !!metricMap[key];}).slice(0,3);
     if(!selected.length)selected=['qtd'];
     homeChartState.pieMetrics=selected;
-    function valueFor(group,key){return finNum(group[key]);}
+    function valueFor(group,key){
+      var metric=metricMap[key]||{},source=metric.sourceKey||key,value=group[source];
+      if((value===undefined||value===null||value==='')&&metric.fallbackLotes)value=group.lotes;
+      return finNum(value);
+    }
     function displayValue(metric,value){
       if(metric.format==='qtd')return numCab(value);
       if(metric.format==='lotes')return Math.round(value).toLocaleString('pt-BR')+' lote(s)';
@@ -8705,6 +8755,12 @@ window.addEventListener('resize',function(){if(tableMultiOpen.scope)requestAnima
 document.addEventListener('click',function(event){if(event.target&&event.target.closest&&(event.target.closest('.table-multi')||event.target.closest('.table-multi-menu')))return;if(tableMultiOpen.scope){tableMultiOpen={scope:'',key:''};document.querySelectorAll('.table-multi.open').forEach(function(el){el.classList.remove('open');});document.querySelectorAll('body>.table-multi-menu.table-multi-floating').forEach(function(old){old.remove();});}});
 function updateFutColumnFilter(key,value){
   futColumnFilters[key]=value||'';
+  renderFuturos();
+}
+function limparFiltrosFuturos(){
+  Object.keys(futColumnFilters).forEach(function(key){futColumnFilters[key]=[];});
+  tableMultiOpen={scope:'',key:''};
+  document.querySelectorAll('body>.table-multi-menu.table-multi-floating').forEach(function(menu){menu.remove();});
   renderFuturos();
 }
 function futTableFilterHtml(key,options){
@@ -10834,7 +10890,7 @@ function applyStatusGridTemplate(){
   if(window.matchMedia&&window.matchMedia('(max-width: 640px)').matches){
     table.style.width='';
     table.style.minWidth='';
-    document.querySelectorAll('#panel-lotes [data-status-col]').forEach(function(el){el.style.gridColumn='';el.style.left='';el.classList.remove('column-frozen');});
+    document.querySelectorAll('#panel-lotes [data-status-col]').forEach(function(el){el.style.gridColumn='';el.style.gridRow='';el.style.left='';el.classList.remove('column-frozen');});
     return;
   }
   var width=statusGridWidth();
@@ -10843,7 +10899,7 @@ function applyStatusGridTemplate(){
   document.querySelectorAll('#panel-lotes [data-status-col]').forEach(function(el){
     el.classList.remove('column-frozen');el.style.left='';
     var index=STATUS_COLS.findIndex(function(c){return c.key===el.getAttribute('data-status-col');});
-    if(index>=0)el.style.gridColumn=String(index+1);
+    if(index>=0){el.style.gridColumn=String(index+1);el.style.gridRow='1';}
   });
   var visible=statusVisibleCols(),frozen=Math.min(getStatusFrozenCount(),visible.length),left=0,widths=getStatusColWidths();
   visible.slice(0,frozen).forEach(function(col){
@@ -11063,6 +11119,7 @@ function renderLotes(){
     return '<div class="status-viewbar">'
       +'<div class="status-sort-tools"><span>Clique no título do filtro para ordenar ↑↓</span></div>'
       +'<div class="status-view-actions">'
+        +'<button type="button" class="status-view-btn" onclick="limparStatusColumnFilters()">Limpar filtros</button>'
         +'<button type="button" class="status-view-btn" onclick="toggleStatusColumnsPanel()">Colunas visíveis</button>'
         +'<button type="button" class="status-view-btn" onclick="resetStatusColumns()">Restaurar</button>'
         +statusColumnPanelHtml()
@@ -11412,6 +11469,7 @@ function renderLotes(){
       +'<div><div class="status-mobile-title">Status dos lotes</div><div class="status-mobile-sub">Acompanhe o desempenho de cada lote.</div></div>'
     +'</div>'
     +dashboardCardsShellHtml('status','status-summary',statusSummaryCardsHtml())
+    +'<div class="status-sheet-card"><div class="status-sheet-heading"><div class="status-sheet-title">Todos os lotes</div><div class="status-sheet-sub">'+lotes.length+' lote(s) exibido(s)</div></div>'
     +statusViewbarHtml()
     +'<div class="status-table-wrap"><div class="status-table">'
     +'<div class="status-filter-row" style="grid-template-columns:'+statusGridTemplate()+'">'
@@ -11420,9 +11478,9 @@ function renderLotes(){
     +'<div class="status-table-body">'
       +lotes.map(function(l,idx){return buildStatusCard(l,idx);}).join('')
       +'</div>'
-    +'</div></div>';
+    +'</div></div></div>';
   html+='<div class="status-mobile-hint"><span class="status-mobile-hint-icon">i</span><span>Arraste itens horizontalmente para ver mais detalhes.</span></div>';
-  html+='<div class="status-table-note"><span id="status-filter-count"></span> · Clique em uma linha para editar. Para mudar o status, arraste a linha para um dos botões de status acima. <button type="button" onclick="limparStatusColumnFilters()" style="border:none;background:none;color:var(--accent);font-weight:800;cursor:pointer;font-family:Inter,sans-serif;font-size:10px;">Limpar filtros</button></div>';
+  html+='<div class="status-table-note"><span id="status-filter-count"></span> · Clique em uma linha para editar. Para mudar o status, arraste a linha para um dos botões de status acima.</div>';
   container.innerHTML=html;
   setupStatusDrag(container);
   container.onclick=function(evt){
