@@ -1211,6 +1211,8 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .ep-quick-grid.ep-quick-grid-2{grid-template-columns:repeat(2,minmax(0,1fr));}
   .ep-quick-field{min-width:0;}
   .ep-quick-field label{display:block;margin:0 0 5px;color:var(--text-3);font-size:9px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase;}
+  .ep-quick-field input{display:block;width:100%;height:42px;box-sizing:border-box;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:0 12px;font-family:'Inter',sans-serif;font-size:13px;font-weight:650;color:var(--text);outline:none;}
+  .ep-quick-field input:focus{background:#fff;border-color:var(--accent);box-shadow:0 0 0 3px rgba(13,27,42,.08);}
   .ep-note-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start;}
   .btn-ep-save{background:var(--green);color:#fff;border:none;border-radius:7px;padding:9px 18px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
   .btn-ep-detail{background:none;border:1px solid var(--border);color:var(--text-2);border-radius:7px;padding:9px 14px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;}
@@ -2831,16 +2833,20 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   #panel-lotes .badge{font-size:8.5px;padding:3px 8px;}
   #panel-lotes .status-seq-pc{font-size:8.5px;padding:3px 7px;min-width:46px;}
   #panel-lotes #edit-panel .ep{max-width:none;border-radius:14px;padding:16px;}
+  #panel-lotes #edit-panel{position:sticky;left:12px;z-index:9;width:min(1440px,calc(90vw - 108px))!important;max-width:calc(90vw - 108px)!important;}
+  #panel-lotes #edit-panel .ep{position:static;left:auto;width:100%;max-width:100%;margin-right:0;}
 
   @media(min-width:769px){
     #panel-lotes #edit-panel .ep{padding:9px 11px;}
     #panel-lotes #edit-panel .ep-header{margin:0 0 8px;padding-bottom:7px;}
+    #panel-lotes #edit-panel .ep-header{cursor:pointer;}
+    #panel-lotes #edit-panel .ep-header:hover .ep-title{color:var(--accent);}
     #panel-lotes #edit-panel .ep-title{font-size:14px;}
     #panel-lotes #edit-panel .ep-close{width:27px;height:27px;font-size:16px;}
     #panel-lotes #edit-panel .ep-section{margin:7px 0 4px;font-size:8px;letter-spacing:1.15px;}
     #panel-lotes #edit-panel .ep-quick-grid{gap:7px;margin-bottom:6px;}
     #panel-lotes #edit-panel .ep-quick-field label{margin-bottom:3px;font-size:8px;}
-    #panel-lotes #edit-panel .ep select.field,#panel-lotes #edit-panel .ep .field input,#panel-lotes #edit-panel .ep .field select{height:34px;min-height:34px;padding-top:5px;padding-bottom:5px;font-size:11px;}
+    #panel-lotes #edit-panel .ep select.field,#panel-lotes #edit-panel .ep .field input,#panel-lotes #edit-panel .ep .field select,#panel-lotes #edit-panel .ep-quick-field input{height:34px;min-height:34px;padding-top:5px;padding-bottom:5px;font-size:11px;}
     #panel-lotes #edit-panel .ep-partial-grid{gap:7px;margin-bottom:5px!important;}
     #panel-lotes #edit-panel .ep-note-grid{gap:8px;}
     #panel-lotes #edit-panel .ep-textarea{min-height:54px;height:54px;padding:7px 9px;font-size:11px;line-height:1.3;}
@@ -2866,8 +2872,11 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
     #panel-lotes #edit-panel .realizado-metric-card{padding:7px;}
   }
   @media(min-width:769px) and (max-width:980px){
+    #panel-lotes #edit-panel{left:8px;width:calc(90vw - 43px)!important;max-width:calc(90vw - 43px)!important;}
     #panel-lotes #edit-panel .ep-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
     #panel-lotes #edit-panel .ep-note-grid{grid-template-columns:1fr;}
+    #panel-lotes #edit-panel .ep-media-grid{grid-template-columns:1fr 1fr;}
+    #panel-lotes #edit-panel .ep-media-block:first-child{grid-column:1/-1;}
   }
 
   #panel-futuros .fut-hero{
@@ -9594,11 +9603,11 @@ function openEditPanel(loteId, cardEl){
       +'</section>';
   }
   ep.innerHTML='<div class="ep">'
-    +'<div class="ep-header">'
+    +'<div class="ep-header" title="Clique para fechar" onclick="if(event.target.closest(\'.ep-close\'))return;closeEditPanel()">'
       +'<div class="ep-title">Editar Orçamento</div>'
       +'<button class="ep-close" onclick="closeEditPanel()">×</button>'
     +'</div>'
-    +'<div class="ep-quick-grid ep-quick-grid-2">'
+    +'<div class="ep-quick-grid">'
       +'<div class="ep-quick-field"><label>Status</label><select id="ep-status" class="field" onchange="updateEditPanelStatus(this.value)">'
         +'<option value="embarque"'+(lote.status==='embarque'?' selected':'')+'>Embarque</option>'
         +'<option value="confinando"'+(lote.status==='confinando'?' selected':'')+'>Confinando</option>'
@@ -9609,11 +9618,7 @@ function openEditPanel(loteId, cardEl){
       +'<div class="ep-quick-field"><label>Transportadora</label><select id="ep-transportadora" class="field">'
         +transportadoraOpts
       +'</select></div>'
-    +'</div>'
-    +'<div class="ep-section">Identificação do lote</div>'
-    +'<div class="ep-partial-grid" style="margin-bottom:10px;">'
-      +'<div class="field" style="margin:0"><label>Número do lote</label><input type="text" inputmode="text" pattern="[0-9]+(?:-[0-9]+)?" id="ep-lot-number" value="'+escHtml(numeroLote)+'" placeholder="Ex: 105 ou 105-1"></div>'
-      +'<div class="field" style="margin:0"><label>Nome / Referência <span style="font-size:9px;color:var(--text-3);font-weight:400;">(opcional)</span></label><input type="text" id="ep-lot-name" value="'+escHtml(nomeLote)+'" placeholder="Ex: Murilo Duque"></div>'
+      +'<div class="ep-quick-field"><label>Número do lote</label><input type="text" inputmode="text" pattern="[0-9]+(?:-[0-9]+)?" id="ep-lot-number" value="'+escHtml(numeroLote)+'" placeholder="Ex: 105 ou 105-1"></div>'
     +'</div>'
     +contratosPrecoHtml
     // Observações
@@ -14361,6 +14366,7 @@ async function exportReport(tab,type){
     setExportLoading(tab,true,type);
     var data=buildExportData(tab);
     if(!data){toast('Não foi possível gerar o relatório. Tente novamente.');return;}
+    await attachSelectedIndicatorsToReport(data,tab);
     if(type==='pdf')await downloadReportPdf(data,tab);
     else if(type==='excel')await downloadReportXlsx(data,tab);
     else if(type==='jpg'&&tab==='calc')await downloadCalculatorReportJpg(data.calculatorReport,true,tab);
@@ -14371,6 +14377,54 @@ async function exportReport(tab,type){
   }finally{
     setTimeout(function(){setExportLoading(tab,false,type);},250);
   }
+}
+function selectedIndicatorsRoot(tab){
+  if(tab==='status')return document.querySelector('#panel-lotes [data-dashboard-grid="status"]');
+  if(tab==='b3')return document.querySelector('#panel-futuros [data-dashboard-grid="futuros"]');
+  if(tab==='home')return document.querySelector('#panel-home [data-dashboard-grid="home"]');
+  if(tab==='caixa')return document.querySelector('#panel-caixa .cash-kpis');
+  if(tab==='calc')return document.querySelector('#panel-calc .results-grid,#panel-calc .calc-results');
+  return null;
+}
+function selectedIndicatorRows(root){
+  var rows=[['Indicador','Valor','Observação']];if(!root)return rows;
+  root.querySelectorAll('.home-metric,.status-total-card,.fut-card,.cash-kpi').forEach(function(card){
+    if(!exportVisible(card)||card.classList.contains('dashboard-card-add'))return;
+    var label=exportText(card.querySelector('.home-metric-label,.status-total-label,.fut-card-label,.cash-label'));
+    var value=exportText(card.querySelector('.home-metric-value,.status-total-value,.fut-card-value,.cash-value,.cash-manual-input'));
+    var sub=exportText(card.querySelector('.home-metric-sub,.status-total-sub,.fut-card-sub,.cash-update-value'));
+    if(label||value||sub)rows.push([label,value,sub]);
+  });
+  return rows;
+}
+async function attachSelectedIndicatorsToReport(data,tab){
+  var dashboardTab=tab==='b3'?'futuros':tab,restoreCollapsed=false;
+  var root=selectedIndicatorsRoot(tab);
+  if(!root&&['home','status','b3'].indexOf(tab)>=0&&dashboardCardsCollapsed(dashboardTab)){
+    restoreCollapsed=true;
+    try{localStorage.setItem(dashboardCardsCollapsedKey(dashboardTab),'0');}catch(e){}
+    refreshDashboardCards(dashboardTab);root=selectedIndicatorsRoot(tab);
+  }
+  if(!root){if(restoreCollapsed){try{localStorage.setItem(dashboardCardsCollapsedKey(dashboardTab),'1');}catch(e){}refreshDashboardCards(dashboardTab);}return data;}
+  var rows=selectedIndicatorRows(root);if(rows.length>1){
+    data.sheets=data.sheets||[];
+    data.sheets.unshift({name:'Indicadores selecionados',rows:rows});
+  }
+  if(!window.html2canvas){if(restoreCollapsed){try{localStorage.setItem(dashboardCardsCollapsedKey(dashboardTab),'1');}catch(e){}refreshDashboardCards(dashboardTab);}return data;}
+  var clone=root.cloneNode(true),host=document.createElement('div');
+  host.id=tab==='status'?'panel-lotes':tab==='b3'?'panel-futuros':tab==='home'?'panel-home':tab==='caixa'?'panel-caixa':'indicator-export-host';
+  clone.querySelectorAll('button,.dashboard-card-add,.dashboard-card-remove').forEach(function(el){el.remove();});
+  host.style.cssText='position:fixed;left:-12000px;top:0;width:1200px;padding:24px;background:#F2EDE3;z-index:-1;font-family:Inter,Arial,sans-serif;box-sizing:border-box';
+  host.style.setProperty('width','1200px','important');host.style.setProperty('max-width','1200px','important');host.style.setProperty('margin','0','important');host.style.setProperty('transform','none','important');
+  clone.style.cssText+='width:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0;';
+  host.appendChild(clone);document.body.appendChild(host);
+  try{
+    await waitCalculatorReportAssets(host);
+    var canvas=await html2canvas(host,{scale:1.35,backgroundColor:'#F2EDE3',useCORS:true,logging:false,width:1200,height:Math.ceil(host.scrollHeight),windowWidth:1200,windowHeight:Math.ceil(host.scrollHeight)});
+    data.indicatorImage=canvas.toDataURL('image/jpeg',0.92);
+    data.indicatorImageRatio=canvas.width/canvas.height;
+  }finally{host.remove();if(restoreCollapsed){try{localStorage.setItem(dashboardCardsCollapsedKey(dashboardTab),'1');}catch(e){}refreshDashboardCards(dashboardTab);}}
+  return data;
 }
 function exportNowLabel(){
   try{return new Date().toLocaleString('pt-BR');}catch(e){return new Date().toISOString();}
@@ -14923,6 +14977,12 @@ async function downloadReportPdf(data,tab){
   }else{
     header(data.title,exportNowLabel());
     var y=33;
+    if(data.indicatorImage){
+      var indicatorW=pageW-28,indicatorH=indicatorW/Math.max(1,data.indicatorImageRatio||3);
+      indicatorH=Math.min(82,indicatorH);
+      doc.setTextColor.apply(doc,navy);doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('INDICADORES SELECIONADOS',14,y);y+=4;
+      doc.addImage(data.indicatorImage,'JPEG',14,y,indicatorW,indicatorH,undefined,'FAST');y+=indicatorH+9;
+    }
     (data.sheets||[]).forEach(function(sheet,index){
       if(index&&y>210){doc.addPage();header(data.title,exportNowLabel());y=33;}
       var rows=sheet.rows&&sheet.rows.length?sheet.rows:[['Sem dados']];
@@ -15123,11 +15183,12 @@ function genericReportImageHtml(data){
   }).join('');
   return '<div class="gri-titlebar"><div><small>RELATÓRIO DA PÁGINA</small><h1>'+exportXml(data.title||'Relatório')+'</h1></div><strong>'+exportXml(exportNowLabel())+'</strong></div>'
     +(filters.length?'<div class="gri-filters">'+filters.map(function(item){return '<div><small>'+exportXml(item[0])+'</small><strong>'+exportXml(item[1])+'</strong></div>';}).join('')+'</div>':'')
+    +(data.indicatorImage?'<section class="gri-indicators"><h2>Indicadores selecionados</h2><img src="'+data.indicatorImage+'" alt="Indicadores selecionados"></section>':'')
     +(sections||'<section class="gri-section"><h2>Dados</h2><p>Sem dados para exibir.</p></section>')
     +'<div class="gri-foot">VM Agro · Gestão de Lotes · '+exportXml(exportUser())+'</div>';
 }
 function genericReportImageStyles(){
-  return '#generic-report-image *{box-sizing:border-box}#generic-report-image{letter-spacing:0}#generic-report-image .gri-titlebar{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;margin-bottom:18px;padding:0 2px 16px;border-bottom:4px solid #C9A24E}#generic-report-image .gri-titlebar small{display:block;color:#8A7967;font-size:13px;font-weight:800}#generic-report-image .gri-titlebar h1{margin:5px 0 0;color:#0D1B2A;font-size:30px;line-height:1.1}#generic-report-image .gri-titlebar>strong{color:#6F6457;font-size:14px;white-space:nowrap}#generic-report-image .gri-filters{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:16px}#generic-report-image .gri-filters>div{min-width:150px;padding:10px 12px;background:#FFFDF7;border:1px solid #D8CBB5;border-radius:7px}#generic-report-image .gri-filters small{display:block;color:#8A7967;font-size:10px;font-weight:800;text-transform:uppercase}#generic-report-image .gri-filters strong{display:block;margin-top:3px;color:#0D1B2A;font-size:13px}#generic-report-image .gri-section{margin-top:14px;padding:16px;background:#FFFFFF;border:1px solid #D8CBB5;border-radius:8px}#generic-report-image .gri-section h2{margin:0 0 12px;padding-bottom:9px;border-bottom:2px solid #C9A24E;color:#0D1B2A;font-size:17px;text-transform:uppercase}#generic-report-image .gri-table-wrap{width:100%;overflow:visible}#generic-report-image table{width:100%;border-collapse:collapse;table-layout:auto;color:#0D1B2A;font-size:11px}#generic-report-image th{padding:10px 9px;background:#0D1B2A;color:#FFFFFF;text-align:left;font-size:10px;text-transform:uppercase;vertical-align:bottom}#generic-report-image th:first-child{border-radius:5px 0 0 0}#generic-report-image th:last-child{border-radius:0 5px 0 0}#generic-report-image td{padding:9px;border-bottom:1px solid #E4DCCE;background:#FFFFFF;vertical-align:top;line-height:1.3}#generic-report-image tbody tr:nth-child(even) td{background:#FAF7F0}#generic-report-image .gri-foot{padding:22px 0 4px;color:#8A7967;font-size:11px;font-weight:650;text-align:center}';
+  return '#generic-report-image *{box-sizing:border-box}#generic-report-image{letter-spacing:0}#generic-report-image .gri-titlebar{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;margin-bottom:18px;padding:0 2px 16px;border-bottom:4px solid #C9A24E}#generic-report-image .gri-titlebar small{display:block;color:#8A7967;font-size:13px;font-weight:800}#generic-report-image .gri-titlebar h1{margin:5px 0 0;color:#0D1B2A;font-size:30px;line-height:1.1}#generic-report-image .gri-titlebar>strong{color:#6F6457;font-size:14px;white-space:nowrap}#generic-report-image .gri-filters{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:16px}#generic-report-image .gri-filters>div{min-width:150px;padding:10px 12px;background:#FFFDF7;border:1px solid #D8CBB5;border-radius:7px}#generic-report-image .gri-filters small{display:block;color:#8A7967;font-size:10px;font-weight:800;text-transform:uppercase}#generic-report-image .gri-filters strong{display:block;margin-top:3px;color:#0D1B2A;font-size:13px}#generic-report-image .gri-indicators{margin:14px 0;padding:16px;background:#fff;border:1px solid #D8CBB5;border-radius:8px}#generic-report-image .gri-indicators h2{margin:0 0 12px;color:#0D1B2A;font-size:17px;text-transform:uppercase}#generic-report-image .gri-indicators img{display:block;width:100%;height:auto}#generic-report-image .gri-section{margin-top:14px;padding:16px;background:#FFFFFF;border:1px solid #D8CBB5;border-radius:8px}#generic-report-image .gri-section h2{margin:0 0 12px;padding-bottom:9px;border-bottom:2px solid #C9A24E;color:#0D1B2A;font-size:17px;text-transform:uppercase}#generic-report-image .gri-table-wrap{width:100%;overflow:visible}#generic-report-image table{width:100%;border-collapse:collapse;table-layout:auto;color:#0D1B2A;font-size:11px}#generic-report-image th{padding:10px 9px;background:#0D1B2A;color:#FFFFFF;text-align:left;font-size:10px;text-transform:uppercase;vertical-align:bottom}#generic-report-image th:first-child{border-radius:5px 0 0 0}#generic-report-image th:last-child{border-radius:0 5px 0 0}#generic-report-image td{padding:9px;border-bottom:1px solid #E4DCCE;background:#FFFFFF;vertical-align:top;line-height:1.3}#generic-report-image tbody tr:nth-child(even) td{background:#FAF7F0}#generic-report-image .gri-foot{padding:22px 0 4px;color:#8A7967;font-size:11px;font-weight:650;text-align:center}';
 }
 function genericReportImageWidth(data){
   var maxCols=(data.sheets||[]).reduce(function(max,sheet){
@@ -15186,7 +15247,7 @@ function htmlTable(rows){
     +'</tbody></table>';
 }
 async function downloadReportXlsx(data,tab){
-  var files=buildXlsxFiles(data.sheets||[]);
+  var files=buildXlsxFiles(data.sheets||[],data.indicatorImage||'');
   var blob=new Blob([makeZip(files)],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
   var result=await deliverReportFiles([{blob:blob,name:data.file+'.xlsx',type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}],tab||currentExportTab(),'Relatório da VM Agro');
   if(result==='downloaded')toast('✓ Excel exportado');else if(result==='shared')toast('✓ Excel compartilhado');
@@ -15196,7 +15257,7 @@ function cleanSheetName(name,i){
   return s||('Aba '+i);
 }
 function colName(n){var s='';while(n>0){var m=(n-1)%26;s=String.fromCharCode(65+m)+s;n=Math.floor((n-1)/26);}return s;}
-function sheetXml(rows,sheetName){
+function sheetXml(rows,sheetName,withDrawing){
   rows=rows&&rows.length?rows:[['Sem dados']];
   var max=rows.reduce(function(m,r){return Math.max(m,r.length);},1);
   var cols='<cols>';for(var c=1;c<=max;c++){var width=Math.min(42,Math.max(14,rows.reduce(function(m,r){return Math.max(m,String(r[c-1]??'').length);},0)+3));cols+='<col min="'+c+'" max="'+c+'" width="'+width+'" customWidth="1"/>';}cols+='</cols>';
@@ -15215,16 +15276,26 @@ function sheetXml(rows,sheetName){
     }
     return '<row r="'+(ri+1)+'">'+cells.join('')+'</row>';
   }).join('');
-  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>'+cols+'<sheetData>'+body+'</sheetData><autoFilter ref="A1:'+colName(max)+Math.max(1,rows.length)+'"/></worksheet>';
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>'+cols+'<sheetData>'+body+'</sheetData><autoFilter ref="A1:'+colName(max)+Math.max(1,rows.length)+'"/>'+(withDrawing?'<drawing r:id="rId1"/>':'')+'</worksheet>';
 }
-function buildXlsxFiles(sheets){
+function reportDataUrlBytes(dataUrl){
+  var base64=String(dataUrl||'').split(',')[1]||'',binary=atob(base64),bytes=new Uint8Array(binary.length);
+  for(var i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);return bytes;
+}
+function buildXlsxFiles(sheets,indicatorImage){
   var files=[],sheetDefs=sheets.map(function(s,i){return {name:cleanSheetName(s.name,i+1),rows:s.rows||[]};});
-  files.push({name:'[Content_Types].xml',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'+sheetDefs.map(function(s,i){return '<Override PartName="/xl/worksheets/sheet'+(i+1)+'.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>';}).join('')+'<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>'});
+  files.push({name:'[Content_Types].xml',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>'+(indicatorImage?'<Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/xl/drawings/drawing1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/>':'')+'<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'+sheetDefs.map(function(s,i){return '<Override PartName="/xl/worksheets/sheet'+(i+1)+'.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>';}).join('')+'<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>'});
   files.push({name:'_rels/.rels',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/></Relationships>'});
   files.push({name:'xl/workbook.xml',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>'+sheetDefs.map(function(s,i){return '<sheet name="'+exportXml(s.name)+'" sheetId="'+(i+1)+'" r:id="rId'+(i+1)+'"/>';}).join('')+'</sheets></workbook>'});
   files.push({name:'xl/_rels/workbook.xml.rels',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+sheetDefs.map(function(s,i){return '<Relationship Id="rId'+(i+1)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet'+(i+1)+'.xml"/>';}).join('')+'<Relationship Id="rId'+(sheetDefs.length+1)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'});
   files.push({name:'xl/styles.xml',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="3"><numFmt numFmtId="164" formatCode="[$R$-pt-BR] #,##0.00;[Red]-[$R$-pt-BR] #,##0.00"/><numFmt numFmtId="165" formatCode="0.00%"/><numFmt numFmtId="166" formatCode="#,##0.00"/></numFmts><fonts count="3"><font><sz val="11"/><name val="Calibri"/><color rgb="FF0D1B2A"/></font><font><b/><sz val="11"/><name val="Calibri"/><color rgb="FFFFFFFF"/></font><font><b/><sz val="11"/><name val="Calibri"/><color rgb="FF0D1B2A"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF0D1B2A"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="5"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFill="1" applyFont="1" applyAlignment="1"><alignment horizontal="center"/></xf><xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="10" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="166" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/></cellXfs></styleSheet>'});
-  sheetDefs.forEach(function(s,i){files.push({name:'xl/worksheets/sheet'+(i+1)+'.xml',data:sheetXml(s.rows,s.name)});});
+  sheetDefs.forEach(function(s,i){files.push({name:'xl/worksheets/sheet'+(i+1)+'.xml',data:sheetXml(s.rows,s.name,!!indicatorImage&&i===0)});});
+  if(indicatorImage){
+    files.push({name:'xl/worksheets/_rels/sheet1.xml.rels',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing1.xml"/></Relationships>'});
+    files.push({name:'xl/drawings/drawing1.xml',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><xdr:twoCellAnchor editAs="oneCell"><xdr:from><xdr:col>4</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>1</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from><xdr:to><xdr:col>15</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>20</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:to><xdr:pic><xdr:nvPicPr><xdr:cNvPr id="1" name="Indicadores selecionados"/><xdr:cNvPicPr/></xdr:nvPicPr><xdr:blipFill><a:blip r:embed="rId1"/><a:stretch><a:fillRect/></a:stretch></xdr:blipFill><xdr:spPr><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic><xdr:clientData/></xdr:twoCellAnchor></xdr:wsDr>'});
+    files.push({name:'xl/drawings/_rels/drawing1.xml.rels',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/image1.jpeg"/></Relationships>'});
+    files.push({name:'xl/media/image1.jpeg',data:reportDataUrlBytes(indicatorImage)});
+  }
   files.push({name:'docProps/core.xml',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/"><dc:creator>VM Agro</dc:creator><dc:title>Relatório VM Agro</dc:title><dcterms:created xsi:type="dcterms:W3CDTF" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'+new Date().toISOString()+'</dcterms:created></cp:coreProperties>'});
   files.push({name:'docProps/app.xml',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Application>VM Agro</Application></Properties>'});
   return files;
