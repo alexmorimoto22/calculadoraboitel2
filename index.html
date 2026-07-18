@@ -497,6 +497,10 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-metric,.status-total-card{position:relative;}
   .dashboard-card-remove{position:absolute;top:7px;right:7px;width:20px;height:20px;display:grid;place-items:center;border:0;border-radius:5px;background:transparent;color:var(--text-3);font-size:15px;line-height:1;cursor:pointer;opacity:0;}
   .home-metric:hover .dashboard-card-remove,.status-total-card:hover .dashboard-card-remove,.fut-card:hover .dashboard-card-remove{opacity:1;background:var(--surface2);}
+  [data-dashboard-card]{cursor:grab;transition:opacity .15s,transform .15s,box-shadow .15s;user-select:none;-webkit-user-select:none;}
+  [data-dashboard-card]:active{cursor:grabbing;}
+  [data-dashboard-card].dashboard-card-dragging{opacity:.48;transform:scale(.985);box-shadow:0 8px 22px rgba(13,27,42,.18);}
+  [data-dashboard-card].dashboard-card-touch-ready{box-shadow:0 0 0 2px var(--gold),0 8px 22px rgba(13,27,42,.18);}
   .dashboard-card-add-wrap{position:relative;min-width:0;}
   .dashboard-card-add{width:100%;min-height:100%;height:100%;display:grid;place-items:center;border:1px dashed var(--border2);border-radius:13px;background:rgba(255,255,255,.52);color:var(--accent);font-family:'Inter',sans-serif;font-size:24px;font-weight:500;cursor:pointer;}
   .dashboard-card-add:hover{border-color:var(--accent);background:#fff;}
@@ -4794,11 +4798,12 @@ const USERS={
   alexmorimoto:'alex@2025',
   vitormorimoto:'vitor@2025',
   'alex.morimoto22@gmail.com':'alex@2025',
-  'vitormorimoto@gmail.com':'vitor@2025'
+  'vitormorimoto@gmail.com':'vitor@2025',
+  'marianamariano2006@gmail.com':'mariana@2025'
 };
-const ADMINS=['hastagro','caroline','alexmorimoto','alex.morimoto22@gmail.com','vitormorimoto@gmail.com'];
-const PARAM_ADMINS=['hastagro','alexmorimoto','alex.morimoto22@gmail.com','vitormorimoto@gmail.com'];
-const FULL_ACCESS=['hastagro','caroline','alexmorimoto','alex.morimoto22@gmail.com','vitormorimoto@gmail.com'];
+const ADMINS=['hastagro','caroline','alexmorimoto','alex.morimoto22@gmail.com','vitormorimoto@gmail.com','marianamariano2006@gmail.com'];
+const PARAM_ADMINS=['hastagro','alexmorimoto','alex.morimoto22@gmail.com','vitormorimoto@gmail.com','marianamariano2006@gmail.com'];
+const FULL_ACCESS=['hastagro','caroline','alexmorimoto','alex.morimoto22@gmail.com','vitormorimoto@gmail.com','marianamariano2006@gmail.com'];
 const SESSION_KEY='vm_agro_session';
 let currentUser='';
 /* Mantidos como compatibilidade dos dados antigos; o login básico não usa perfis do Supabase. */
@@ -5065,7 +5070,7 @@ function statusSummaryCardsHtml(){
     eficiencia:'<div class="status-total-card"><button type="button" class="dashboard-card-remove" title="Ocultar quadro" onclick="removeDashboardCard(\'status\',\'eficiencia\')">×</button><div class="status-total-label">Efic. biológica origem</div><div class="status-total-value" id="status-total-eficiencia">—</div><div class="status-total-sub">Projetado ou realizado</div></div>',
     eficienciaChegada:'<div class="status-total-card"><button type="button" class="dashboard-card-remove" title="Ocultar quadro" onclick="removeDashboardCard(\'status\',\'eficienciaChegada\')">×</button><div class="status-total-label">Efic. biológica chegada</div><div class="status-total-value" id="status-total-eficiencia-chegada">—</div><div class="status-total-sub">Projetado ou realizado</div></div>'
   };
-  return getDashboardCards('status').map(function(key){return cards[key]||'';}).join('')+dashboardAddCardHtml('status');
+  return getDashboardCards('status').map(function(key){return dashboardDraggableCardHtml('status',key,cards[key]||'');}).join('')+dashboardAddCardHtml('status');
 }
 function dashboardCardsCollapsedKey(tab){return 'vm_dashboard_cards_collapsed_'+tab+dashboardViewportStorageSuffix()+'_v1';}
 function dashboardCardsCollapsed(tab){try{return localStorage.getItem(dashboardCardsCollapsedKey(tab))==='1';}catch(e){return false;}}
@@ -5077,7 +5082,53 @@ function toggleDashboardCardsCollapsed(tab){
 function dashboardCardsShellHtml(tab,gridClass,content){
   var collapsed=dashboardCardsCollapsed(tab),count=getDashboardCards(tab).length;
   if(collapsed)return '<div class="dashboard-cards-shell"><div class="dashboard-cards-collapsed"><span>'+count+' quadro(s) de indicadores oculto(s)</span><button type="button" onclick="toggleDashboardCardsCollapsed(\''+tab+'\')">Mostrar indicadores</button></div></div>';
-  return '<div class="dashboard-cards-shell"><div class="dashboard-cards-toolbar"><button type="button" class="dashboard-cards-toggle" onclick="toggleDashboardCardsCollapsed(\''+tab+'\')">Minimizar indicadores</button></div><div class="'+gridClass+'">'+content+'</div></div>';
+  return '<div class="dashboard-cards-shell"><div class="dashboard-cards-toolbar"><button type="button" class="dashboard-cards-toggle" onclick="toggleDashboardCardsCollapsed(\''+tab+'\')">Minimizar indicadores</button></div><div class="'+gridClass+'" data-dashboard-grid="'+tab+'" ondragover="dashboardCardDragOver(event)" ondrop="dashboardCardDrop(event,\''+tab+'\')">'+content+'</div></div>';
+}
+function dashboardDraggableCardHtml(tab,key,html){
+  if(!html)return '';
+  return html.replace('<div ','<div draggable="true" data-dashboard-card="'+key+'" data-dashboard-tab="'+tab+'" ondragstart="dashboardCardDragStart(event)" ondragend="dashboardCardDragEnd(event)" ontouchstart="dashboardCardTouchStart(event)" ontouchmove="dashboardCardTouchMove(event)" ontouchend="dashboardCardTouchEnd(event)" ontouchcancel="dashboardCardTouchEnd(event)" ');
+}
+var dashboardDraggedCard=null,dashboardTouchDrag=null;
+function dashboardCardDragStart(event){
+  if(event.target.closest&&event.target.closest('button')){event.preventDefault();return;}
+  dashboardDraggedCard=event.currentTarget;
+  dashboardDraggedCard.classList.add('dashboard-card-dragging');
+  if(event.dataTransfer){event.dataTransfer.effectAllowed='move';event.dataTransfer.setData('text/plain',dashboardDraggedCard.getAttribute('data-dashboard-card')||'');}
+}
+function dashboardCardDragOver(event){
+  if(!dashboardDraggedCard)return;
+  event.preventDefault();
+  var target=event.target.closest&&event.target.closest('[data-dashboard-card]');
+  if(!target||target===dashboardDraggedCard||target.parentNode!==dashboardDraggedCard.parentNode)return;
+  var rect=target.getBoundingClientRect();
+  var before=event.clientY<rect.top+rect.height/2||(Math.abs(event.clientY-(rect.top+rect.height/2))<rect.height*.3&&event.clientX<rect.left+rect.width/2);
+  target.parentNode.insertBefore(dashboardDraggedCard,before?target:target.nextSibling);
+}
+function saveDashboardCardDomOrder(tab,grid){
+  var keys=Array.prototype.map.call(grid.querySelectorAll(':scope > [data-dashboard-card]'),function(card){return card.getAttribute('data-dashboard-card');});
+  if(keys.length)saveDashboardCards(tab,keys);
+}
+function dashboardCardDrop(event,tab){event.preventDefault();saveDashboardCardDomOrder(tab,event.currentTarget);dashboardCardDragEnd();}
+function dashboardCardDragEnd(){if(dashboardDraggedCard)dashboardDraggedCard.classList.remove('dashboard-card-dragging');dashboardDraggedCard=null;}
+function dashboardCardTouchStart(event){
+  if(event.target.closest&&event.target.closest('button'))return;
+  var card=event.currentTarget,touch=event.touches&&event.touches[0];if(!touch)return;
+  dashboardTouchDrag={card:card,tab:card.getAttribute('data-dashboard-tab'),x:touch.clientX,y:touch.clientY,active:false,timer:setTimeout(function(){if(!dashboardTouchDrag||dashboardTouchDrag.card!==card)return;dashboardTouchDrag.active=true;card.classList.add('dashboard-card-dragging','dashboard-card-touch-ready');},260)};
+}
+function dashboardCardTouchMove(event){
+  var state=dashboardTouchDrag,touch=event.touches&&event.touches[0];if(!state||state.card!==event.currentTarget||!touch)return;
+  if(!state.active){if(Math.abs(touch.clientX-state.x)>12||Math.abs(touch.clientY-state.y)>12){clearTimeout(state.timer);dashboardTouchDrag=null;}return;}
+  event.preventDefault();
+  var target=document.elementFromPoint(touch.clientX,touch.clientY);target=target&&target.closest?target.closest('[data-dashboard-card]'):null;
+  if(!target||target===state.card||target.parentNode!==state.card.parentNode)return;
+  var rect=target.getBoundingClientRect(),before=touch.clientY<rect.top+rect.height/2;
+  target.parentNode.insertBefore(state.card,before?target:target.nextSibling);
+}
+function dashboardCardTouchEnd(event){
+  var state=dashboardTouchDrag;if(!state||state.card!==event.currentTarget)return;
+  clearTimeout(state.timer);state.card.classList.remove('dashboard-card-dragging','dashboard-card-touch-ready');
+  if(state.active)saveDashboardCardDomOrder(state.tab,state.card.parentNode);
+  dashboardTouchDrag=null;
 }
 var FUT_COLS=[
   {key:'status',label:'Status',w:84},{key:'tipo',label:'Tipo',w:82},{key:'lote',label:'Lote / operação',w:210},{key:'momentoLote',label:'Momento lote',w:118},
@@ -7847,7 +7898,7 @@ function renderHomeDashboardNovo(lotes){
       +'</div>'
       +homeTableHtml(loteRows)
     +'</div>'
-    +(quadrosMinimizados?'':dashboardCardsShellHtml('home','home-dashboard-grid',homeCardKeys.map(function(key){return homeCards[key]||'';}).join('')+dashboardAddCardHtml('home')))
+    +(quadrosMinimizados?'':dashboardCardsShellHtml('home','home-dashboard-grid',homeCardKeys.map(function(key){return dashboardDraggableCardHtml('home',key,homeCards[key]||'');}).join('')+dashboardAddCardHtml('home')))
     +(quadrosMinimizados?'':'<div class="home-charts-grid">'+homePieChartHtml(pieGroups,total.qtd,pieGroupDef)+homeMonthlyBarsHtml(chartRows,homeChartState.metricas,chartPeriodOptions)+homeOverviewLineChartHtml(filtrados)+'</div>'+homeOperationalPanelsHtml());
 
   applyHomeColumnWidths();
@@ -8449,7 +8500,7 @@ function renderFuturos(){
       filtro:futCard('filtro','Filtro atual',filtrados.length,'lançamento(s) na lista')
     };
     var futCardKeys=getDashboardCards('futuros');
-    sum.innerHTML=dashboardCardsShellHtml('futuros','fut-summary',futCardKeys.map(function(key){return futCards[key]||'';}).join('')+dashboardAddCardHtml('futuros'));
+    sum.innerHTML=dashboardCardsShellHtml('futuros','fut-summary',futCardKeys.map(function(key){return dashboardDraggableCardHtml('futuros',key,futCards[key]||'');}).join('')+dashboardAddCardHtml('futuros'));
   }
   var note=document.getElementById('fut-list-note');
   if(note)note.textContent=filtrados.length+' de '+arr.length+' lançamento(s)';
