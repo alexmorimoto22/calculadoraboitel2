@@ -1949,6 +1949,20 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 .cash-table tr:last-child td{border-bottom:0;}
 .cash-table .cash-money{text-align:right;font-weight:950;white-space:nowrap;}
 .cash-empty{padding:22px 8px 8px;text-align:center;color:var(--text-3);font-size:11px;}
+.cash-entry-card,.cash-timeline{margin-top:12px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:15px;box-shadow:0 5px 18px rgba(13,27,42,.05);}
+.cash-entry-grid{display:grid;grid-template-columns:150px minmax(220px,1fr) 150px 160px auto;gap:9px;align-items:end;}
+.cash-entry-field label{display:block;margin-bottom:5px;font-size:8px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:var(--taupe);}
+.cash-entry-field input,.cash-entry-field select{width:100%;height:38px;box-sizing:border-box;border:1px solid var(--border);border-radius:8px;background:var(--input-bg);padding:0 10px;color:var(--text);font:700 12px 'Inter',sans-serif;outline:none;}
+.cash-entry-field input:focus,.cash-entry-field select:focus{border-color:var(--accent);background:#fff;}
+.cash-entry-btn{height:38px;border:1px solid var(--navy);border-radius:8px;background:var(--navy);color:#fff;padding:0 15px;font:850 11px 'Inter',sans-serif;cursor:pointer;white-space:nowrap;}
+.cash-manual-tag{display:inline-flex;margin-top:3px;border-radius:999px;padding:2px 6px;background:rgba(201,162,78,.14);color:#8a650f;font-size:8px;font-weight:850;text-transform:uppercase;}
+.cash-delete{border:0;background:transparent;color:var(--red);font:850 10px 'Inter',sans-serif;cursor:pointer;padding:3px 0;}
+.cash-timeline-list{margin-top:10px;border-top:1px solid var(--border);}
+.cash-time-row{display:grid;grid-template-columns:110px minmax(220px,1fr) 140px 140px 140px 150px;gap:10px;align-items:center;padding:11px 7px;border-bottom:1px solid var(--border);font-size:11px;}
+.cash-time-row:nth-child(even){background:rgba(242,237,227,.3);}
+.cash-time-row.head{padding-top:8px;padding-bottom:8px;background:#faf8f1;color:var(--taupe);font-size:8px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;}
+.cash-time-date{font-weight:900;color:var(--navy);}.cash-time-in{color:var(--green);font-weight:900;text-align:right;}.cash-time-out{color:var(--red);font-weight:900;text-align:right;}.cash-time-net,.cash-time-balance{text-align:right;font-weight:950;}.cash-time-net.pos{color:var(--green);}.cash-time-net.neg{color:var(--red);}
+@media(max-width:900px){.cash-entry-grid{grid-template-columns:1fr 1fr;}.cash-entry-field.description{grid-column:1/-1;}.cash-entry-btn{width:100%;}.cash-timeline{overflow-x:auto;}.cash-timeline-list{min-width:850px;}}
 .fin-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:14px;padding:16px 18px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(135deg,rgba(255,253,247,.9),rgba(242,237,227,.84));box-shadow:0 8px 24px rgba(13,27,42,.06);}
 .fin-title{font-size:25px;font-weight:950;color:var(--navy);line-height:1.05;}
 .fin-sub{font-size:12px;color:var(--taupe);margin-top:5px;max-width:780px;line-height:1.45;}
@@ -5977,6 +5991,23 @@ function finLoteRecebIso(lote,orc){
 }
 var CAIXA_MANUAL_KEY='vmagro_caixa_manual_v1';
 var CAIXA_MANUAL_UPDATED_KEY='vmagro_caixa_manual_updated_v1';
+var CAIXA_LANCAMENTOS_KEY='vmagro_caixa_lancamentos_v1';
+function getCaixaLancamentos(){try{var arr=JSON.parse(localStorage.getItem(CAIXA_LANCAMENTOS_KEY)||'[]');return Array.isArray(arr)?arr:[];}catch(e){return [];}}
+function saveCaixaLancamentos(arr){try{localStorage.setItem(CAIXA_LANCAMENTOS_KEY,JSON.stringify(arr||[]));}catch(e){}}
+function adicionarCaixaLancamento(){
+  var tipo=(document.getElementById('cash-entry-type')||{}).value||'pagar';
+  var descricao=String((document.getElementById('cash-entry-description')||{}).value||'').trim();
+  var data=(document.getElementById('cash-entry-date')||{}).value||'';
+  var valor=finNum((document.getElementById('cash-entry-value')||{}).value||0);
+  if(!descricao||!data||!(valor>0)){toast('Preencha descrição, data e valor');return;}
+  var arr=getCaixaLancamentos();
+  arr.push({id:'cx_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),tipo:tipo,descricao:descricao,data:data,valor:valor,criadoEm:new Date().toISOString()});
+  saveCaixaLancamentos(arr);renderCaixa();toast('Lançamento adicionado');
+}
+function excluirCaixaLancamento(id){
+  if(!confirm('Excluir este lançamento manual?'))return;
+  saveCaixaLancamentos(getCaixaLancamentos().filter(function(item){return item.id!==id;}));renderCaixa();
+}
 function getCaixaManual(){
   try{return finNum(localStorage.getItem(CAIXA_MANUAL_KEY)||0);}catch(e){return 0;}
 }
@@ -6011,10 +6042,15 @@ function renderCaixa(){
       dataEntrada:finLoteEntradaIso(lote,orc),
       dataRecebimento:finLoteRecebIso(lote,orc),
       capital:parseFloat(metric.capital)||0,
-      faturamento:parseFloat(metric.faturamento)||0
+      faturamento:parseFloat(metric.faturamento)||0,
+      manual:false
     };
     if(lote.status==='embarque')pagar.push(item);
     if(lote.status==='abatido')receber.push(item);
+  });
+  getCaixaLancamentos().forEach(function(item){
+    var row={id:item.id,lote:item.descricao,qtd:'Lançamento manual',dataEntrada:item.data,dataRecebimento:item.data,capital:item.tipo==='pagar'?finNum(item.valor):0,faturamento:item.tipo==='receber'?finNum(item.valor):0,manual:true};
+    if(item.tipo==='pagar')pagar.push(row);else receber.push(row);
   });
   pagar.sort(function(a,b){return String(a.dataEntrada||'').localeCompare(String(b.dataEntrada||''));});
   receber.sort(function(a,b){return String(a.dataRecebimento||'').localeCompare(String(b.dataRecebimento||''));});
@@ -6028,9 +6064,14 @@ function renderCaixa(){
     return items.map(function(item){
       var data=tipo==='pagar'?item.dataEntrada:item.dataRecebimento;
       var valor=tipo==='pagar'?item.capital:item.faturamento;
-      return '<tr><td><div class="fin-strong">'+escHtml(item.lote)+'</div><div class="fin-muted">'+escHtml(item.qtd)+'</div></td><td>'+finDateBR(data)+'</td><td class="cash-money">'+fmt(valor)+'</td></tr>';
+      return '<tr><td><div class="fin-strong">'+escHtml(item.lote)+'</div><div class="fin-muted">'+escHtml(item.qtd)+'</div>'+(item.manual?'<span class="cash-manual-tag">Manual</span>':'')+'</td><td>'+finDateBR(data)+'</td><td class="cash-money">'+fmt(valor)+(item.manual?'<div><button type="button" class="cash-delete" onclick="excluirCaixaLancamento(\''+item.id+'\')">Excluir</button></div>':'')+'</td></tr>';
     }).join('');
   }
+  var timeline={};
+  pagar.forEach(function(item){var d=item.dataEntrada||'';if(!d)return;timeline[d]=timeline[d]||{entradas:0,saidas:0,itens:[]};timeline[d].saidas+=item.capital;timeline[d].itens.push('Pagar: '+item.lote);});
+  receber.forEach(function(item){var d=item.dataRecebimento||'';if(!d)return;timeline[d]=timeline[d]||{entradas:0,saidas:0,itens:[]};timeline[d].entradas+=item.faturamento;timeline[d].itens.push('Receber: '+item.lote);});
+  var saldoLinha=caixa;
+  var timelineRows=Object.keys(timeline).sort().map(function(data){var dia=timeline[data],liquido=dia.entradas-dia.saidas;saldoLinha+=liquido;return '<div class="cash-time-row"><div class="cash-time-date">'+finDateBR(data)+'</div><div title="'+escHtml(dia.itens.join(' · '))+'">'+escHtml(dia.itens.join(' · '))+'</div><div class="cash-time-in">'+fmt(dia.entradas)+'</div><div class="cash-time-out">'+fmt(dia.saidas)+'</div><div class="cash-time-net '+(liquido>=0?'pos':'neg')+'">'+fmt(liquido)+'</div><div class="cash-time-balance">'+fmt(saldoLinha)+'</div></div>';}).join('');
   content.innerHTML='<div class="cash-hero"><div><div class="cash-title">Caixa</div><div class="cash-sub">Visão do saldo disponível, pagamentos dos lotes em embarque e recebimentos dos lotes abatidos.</div></div></div>'
     +'<div class="cash-kpis">'
       +'<div class="cash-kpi"><label class="cash-label" for="cash-manual-input">Caixa</label><div class="cash-manual-row"><input id="cash-manual-input" class="cash-manual-input" type="text" inputmode="decimal" value="'+escHtml(fmtNum(caixa,2))+'" onchange="salvarCaixaManual(this.value)"><div class="cash-update-info"><span class="cash-update-label">Última atualização</span><span class="cash-update-value">'+escHtml(atualizadoEm)+'</span></div></div></div>'
@@ -6041,7 +6082,15 @@ function renderCaixa(){
     +'<div class="cash-grid">'
       +'<section class="cash-card payable"><div class="cash-card-head"><div class="cash-card-title">A pagar</div><div class="cash-card-total">'+fmt(totalPagar)+'</div></div><table class="cash-table"><thead><tr><th>Lote</th><th>Entrada</th><th style="text-align:right">Capital investido</th></tr></thead><tbody>'+tableRows(pagar,'pagar')+'</tbody></table></section>'
       +'<section class="cash-card"><div class="cash-card-head"><div class="cash-card-title">A receber</div><div class="cash-card-total">'+fmt(totalReceber)+'</div></div><table class="cash-table"><thead><tr><th>Lote</th><th>Recebimento</th><th style="text-align:right">Fat. lote</th></tr></thead><tbody>'+tableRows(receber,'receber')+'</tbody></table></section>'
-    +'</div>';
+    +'</div>'
+    +'<section class="cash-entry-card"><div class="cash-card-head"><div><div class="cash-card-title">Novo lançamento manual</div><div class="fin-muted">Adicione pagamentos e recebimentos que não pertencem a um lote.</div></div></div><div class="cash-entry-grid">'
+      +'<div class="cash-entry-field"><label>Tipo</label><select id="cash-entry-type"><option value="pagar">A pagar</option><option value="receber">A receber</option></select></div>'
+      +'<div class="cash-entry-field description"><label>Descrição</label><input id="cash-entry-description" type="text" placeholder="Ex.: Frete, comissão ou recebimento"></div>'
+      +'<div class="cash-entry-field"><label>Data</label><input id="cash-entry-date" type="date"></div>'
+      +'<div class="cash-entry-field"><label>Valor</label><input id="cash-entry-value" type="text" inputmode="decimal" placeholder="R$ 0,00"></div>'
+      +'<button type="button" class="cash-entry-btn" onclick="adicionarCaixaLancamento()">Adicionar</button>'
+    +'</div></section>'
+    +'<section class="cash-timeline"><div class="cash-card-head"><div><div class="cash-card-title">Linha do tempo do caixa</div><div class="fin-muted">Pagamentos e recebimentos agrupados pela data, com saldo acumulado.</div></div></div><div class="cash-timeline-list"><div class="cash-time-row head"><div>Data</div><div>Movimentos</div><div style="text-align:right">Receber</div><div style="text-align:right">Pagar</div><div style="text-align:right">Líquido</div><div style="text-align:right">Saldo previsto</div></div>'+(timelineRows||'<div class="cash-empty">Nenhum movimento com data definida.</div>')+'</div></section>';
 }
 function finAutoLancamentosLotes(){
   var out=[];
