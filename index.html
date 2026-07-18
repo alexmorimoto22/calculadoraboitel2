@@ -489,6 +489,12 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-multi.open .home-multi-chevron{transform:rotate(225deg) translate(-1px,-1px);}
   .home-multi-menu{display:none;position:absolute;z-index:90;top:calc(100% + 5px);left:0;width:max(100%,210px);max-height:250px;overflow-y:auto;padding:6px;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 14px 34px rgba(13,27,42,.18);}
   .home-multi.open .home-multi-menu{display:grid;gap:2px;}
+  .table-multi{position:relative;min-width:0;}
+  .table-multi-trigger{width:26px;height:26px;display:grid;place-items:center;border:1px solid var(--border);border-radius:7px;background:var(--surface2);color:var(--taupe);font-size:11px;font-weight:900;cursor:pointer;}
+  .table-multi.active .table-multi-trigger{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .table-multi-menu{display:none;position:absolute;z-index:120;top:calc(100% + 5px);left:0;width:220px;max-height:280px;overflow:auto;padding:6px;background:#fff;border:1px solid var(--border);border-radius:9px;box-shadow:0 14px 34px rgba(13,27,42,.2);}
+  .table-multi.open .table-multi-menu{display:grid;gap:2px;}
+  .table-multi .home-multi-option{min-height:31px;font-size:10px;}
   .home-multi-option{width:100%;min-height:34px;display:grid;grid-template-columns:20px minmax(0,1fr);align-items:center;gap:7px;padding:6px 8px;background:transparent;border:0;border-radius:6px;color:var(--text);font-family:'Inter',sans-serif;font-size:11px;font-weight:650;text-align:left;cursor:pointer;}
   .home-multi-option:hover{background:var(--surface2);}
   .home-multi-check{width:18px;height:18px;display:grid;place-items:center;border:1.5px solid var(--border2);border-radius:5px;background:#fff;color:#fff;font-size:12px;font-weight:900;}
@@ -1094,6 +1100,20 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .status-filter-row{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:2;}
   .status-filter-cell{display:flex;align-items:center;gap:4px;min-width:0;padding:6px;}
   .status-filter-label{position:relative;order:2;flex:0 0 20px;width:20px;min-height:30px;display:grid;place-items:center;margin:0;border:0;background:transparent;color:var(--taupe);font-family:'Inter',sans-serif;font-size:12px;font-weight:900;line-height:1;cursor:pointer;padding:0;text-align:center;}
+  .status-filter-cell .status-filter-label{order:1;flex:1 1 auto;width:auto;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:4px;padding:0 3px;color:var(--taupe);font-size:9px;text-align:left;}
+  .status-filter-column-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:850;letter-spacing:.65px;text-transform:uppercase;}
+  .status-filter-cell .table-multi{order:2;flex:0 0 26px;}
+  #panel-lotes .status-filter-cell{height:36px;box-sizing:border-box;padding:0 5px 0 8px;gap:2px;background:#fffdf8;border-right:1px solid var(--border);}
+  #panel-lotes .status-filter-cell{position:relative;}
+  #panel-lotes .status-filter-cell>.status-col-resizer{position:absolute;z-index:8;top:0;right:-3px;width:7px;height:100%;cursor:col-resize;background:transparent;}
+  #panel-lotes .status-filter-cell>.status-col-resizer:hover{background:rgba(201,162,78,.28);}
+  #panel-lotes .status-filter-cell .status-filter-label{min-height:34px;padding:0;border-radius:0;color:var(--taupe);}
+  #panel-lotes .status-filter-cell .status-filter-label:hover{color:var(--accent);}
+  #panel-lotes .status-filter-cell .status-sort-mark:empty{display:none;}
+  #panel-lotes .status-filter-cell .table-multi{flex-basis:22px;}
+  #panel-lotes .status-filter-cell .table-multi-trigger{width:22px;height:28px;border:0;border-radius:5px;background:transparent;font-size:10px;}
+  #panel-lotes .status-filter-cell .table-multi-trigger:hover{background:var(--surface2);color:var(--accent);}
+  #panel-lotes .status-filter-cell .table-multi.active .table-multi-trigger{background:var(--accent);color:#fff;}
   .status-filter-label:hover{color:var(--accent);}
   .status-filter-label .status-sort-mark{margin:0;font-size:12px;}
   .status-filter-control{position:relative;order:1;flex:1 1 auto;width:auto;min-width:0;}
@@ -2714,7 +2734,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   #panel-lotes .status-head{position:sticky;top:0;z-index:6;background:#fbfaf5;}
   #panel-lotes .status-filter-row{position:sticky;top:0;z-index:5;background:#fffdf7;}
   #panel-lotes .status-head-cell{padding:8px 9px;font-size:8px;}
-  #panel-lotes .status-filter-cell{padding:5px 6px;gap:4px;}
+  #panel-lotes .status-filter-cell{height:36px;padding:0 5px 0 8px;gap:2px;}
   #panel-lotes .status-filter-control input,#panel-lotes .status-filter-control select{height:28px;font-size:10px;border-radius:8px;}
   #panel-lotes .status-row{min-height:38px;}
   #panel-lotes .status-cell{padding:5px 8px;font-size:11px;}
@@ -7755,13 +7775,7 @@ function homePieChartHtml(groups,totalQtd,grouping){
   homeFilterClean('confinamento',confs);
   homeFilterClean('origem',origens);
   homeFilterClean('vendedor',vendedores);
-  var filtrados=rows.filter(function(r){
-    return homeFilterMatches('ano',r.ano)
-      &&homeFilterMatches('status',r.status)
-      &&homeFilterMatches('confinamento',r.confinamento)
-      &&homeFilterMatches('origem',r.origem)
-      &&homeFilterMatches('vendedor',r.vendedor);
-  });
+  var filtrados=rows.slice();
   var total=sumRows(filtrados);
   var statusGroups=STATUS_ORDER.map(function(s){
     var arr=filtrados.filter(function(r){return r.status===s;});
@@ -7989,24 +8003,6 @@ function homePieChartHtml(groups,totalQtd,grouping){
   var filtrosMinimizados=homeFiltersCollapsed();
   var quadrosMinimizados=false;
   live.innerHTML=''
-    +'<div class="home-panel home-list-only">'
-      +'<div class="home-panel-head">'
-        +'<div><div class="home-panel-title">Lotes filtrados</div><div class="home-panel-note">'+escHtml(filtroResumo)+'</div></div>'
-        +'<div class="home-column-actions-wrap"><div class="home-panel-note">'+filtrados.length+' lote(s) · '+numCab(total.qtd)+' · lucro '+moneyShort(total.lucro)+'</div>'+homeColumnsPanelHtml()+'</div>'
-      +'</div>'
-      +'<div class="home-list-filters">'
-        +'<div class="home-filter-grid">'
-          +homeMultiFilterHtml('ano','Ano',optionObjects(anos),'Todos os anos')
-          +homeMultiFilterHtml('status','Status',STATUS_ORDER.map(function(status){return {value:status,label:STATUS_CFG[status].label};}),'Todos os status')
-          +homeMultiFilterHtml('confinamento','Confinamento',optionObjects(confs),'Todos os confinamentos')
-          +homeMultiFilterHtml('origem','Origem',optionObjects(origens),'Todas as origens')
-          +homeMultiFilterHtml('vendedor','Vendedor',optionObjects(vendedores),'Todos os vendedores')
-          +'<button type="button" class="home-filter-clear-inline" onclick="homeResetFilters()">Limpar filtros</button>'
-        +'</div>'
-      +'</div>'
-      +homeTableHtml(loteRows)
-    +'</div>'
-    +(quadrosMinimizados?'':dashboardCardsShellHtml('home','home-dashboard-grid',homeCardKeys.map(function(key){return dashboardDraggableCardHtml('home',key,homeCards[key]||'');}).join('')+dashboardAddCardHtml('home')))
     +(quadrosMinimizados?'':'<div class="home-charts-grid"><div class="home-pie-pair">'+homePieChartHtml(pieGroups,total.qtd,pieGroupDef)+futCoverageChartHtml(lotesDisponiveisB3().filter(function(lote){return filtrados.some(function(row){return row.id===lote.id;});}))+'</div>'+homeMonthlyBarsHtml(chartRows,homeChartState.metricas,chartPeriodOptions)+homeOverviewLineChartHtml(filtrados)+'</div>'+homeOperationalPanelsHtml());
 
   applyHomeColumnWidths();
@@ -8508,14 +8504,29 @@ function futSortComparable(value){
   if(/^\d{4}-\d{2}-\d{2}/.test(String(value||'')))return String(value);
   return _statusNorm(value);
 }
+var tableMultiOpen={scope:'',key:''};
+function tableFilterState(scope){return scope==='fut'?futColumnFilters:statusColumnFilters;}
+function tableFilterSelected(scope,key){var value=tableFilterState(scope)[key];return Array.isArray(value)?value:((value===null||value===undefined||value==='')?[]:[String(value)]);}
+function tableMultiFilterHtml(scope,key,options,allLabel){
+  var selected=tableFilterSelected(scope,key),open=tableMultiOpen.scope===scope&&tableMultiOpen.key===key;
+  return '<div class="table-multi'+(open?' open':'')+(selected.length?' active':'')+'" data-table-filter="'+scope+'-'+key+'"><button type="button" class="table-multi-trigger" title="Filtrar" onclick="toggleTableMulti(\''+scope+'\',\''+key+'\',event)">'+(selected.length?selected.length:'⌄')+'</button><div class="table-multi-menu">'
+    +'<button type="button" class="home-multi-option'+(!selected.length?' selected':'')+'" onclick="toggleTableMultiValue(\''+scope+'\',\''+key+'\',\'__all__\',event)"><span class="home-multi-check"></span><span>'+escHtml(allLabel||'Todos')+'</span></button>'
+    +options.map(function(option){var value=String(option.value),active=selected.indexOf(value)>=0,encoded=encodeURIComponent(value).replace(/'/g,'%27');return '<button type="button" class="home-multi-option'+(active?' selected':'')+'" onclick="toggleTableMultiValue(\''+scope+'\',\''+key+'\',\''+encoded+'\',event)"><span class="home-multi-check"></span><span>'+escHtml(option.label)+'</span></button>';}).join('')+'</div></div>';
+}
+function toggleTableMulti(scope,key,event){if(event)event.stopPropagation();var same=tableMultiOpen.scope===scope&&tableMultiOpen.key===key;tableMultiOpen=same?{scope:'',key:''}:{scope:scope,key:key};if(scope==='fut')renderFuturos();else renderLotes();}
+function toggleTableMultiValue(scope,key,encoded,event){
+  if(event)event.stopPropagation();var selected=tableFilterSelected(scope,key).slice();
+  if(encoded==='__all__')selected=[];else{var value=decodeURIComponent(encoded),index=selected.indexOf(value);if(index>=0)selected.splice(index,1);else selected.push(value);}
+  tableFilterState(scope)[key]=selected;tableMultiOpen={scope:scope,key:key};if(scope==='fut')renderFuturos();else renderLotes();
+}
+document.addEventListener('click',function(event){if(event.target&&event.target.closest&&event.target.closest('.table-multi'))return;if(tableMultiOpen.scope){tableMultiOpen={scope:'',key:''};document.querySelectorAll('.table-multi.open').forEach(function(el){el.classList.remove('open');});}});
 function updateFutColumnFilter(key,value){
   futColumnFilters[key]=value||'';
   renderFuturos();
 }
 function futTableFilterHtml(key,options){
-  var value=futColumnFilters[key]||'';
   if(key==='acoes')return '';
-  return '<select class="fut-filter-native" id="fut-header-filter-'+key+'" aria-label="Filtrar '+escHtml(key)+'" onchange="updateFutColumnFilter(\''+key+'\',this.value)"><option value="">Todos</option>'+options.map(function(option){return '<option value="'+escHtml(option.value)+'"'+(value===String(option.value)?' selected':'')+'>'+escHtml(option.label)+'</option>';}).join('')+'</select>';
+  return tableMultiFilterHtml('fut',key,options,'Todos');
 }
 function futColumnFilterValue(c,r,lote,dados,key){
   if(key==='status')return r.status||'';
@@ -8608,10 +8619,11 @@ function renderFuturos(){
     var lote=loteMap[c.loteId]||getLotes().find(function(l){return l.id===c.loteId;});
     var dados=futuroDadosLote(lote);
     return FUT_COLS.filter(function(col){return !col.fixed;}).every(function(col){
-      var filtro=String(futColumnFilters[col.key]||'').trim();
-      if(!filtro||filtro==='todos')return true;
-      if(col.key==='lote'&&filtro==='livre')return !c.loteId;
-      return _statusNorm(futColumnFilterValue(c,r,lote,dados,col.key)).indexOf(_statusNorm(filtro))>=0;
+      var filtros=tableFilterSelected('fut',col.key);
+      if(!filtros.length)return true;
+      if(col.key==='lote'&&filtros.indexOf('livre')>=0&&!c.loteId)return true;
+      var valor=_statusNorm(futColumnFilterValue(c,r,lote,dados,col.key));
+      return filtros.some(function(filtro){return _statusNorm(valor).indexOf(_statusNorm(filtro))>=0;});
     });
   });
   var total={registros:filtrados.length,contratos:0,abertos:0,liquidados:0,arrobas:0,resultado:0};
@@ -8654,7 +8666,7 @@ function renderFuturos(){
       var title=col.key==='acoes'?'<span class="fut-table-sort">'+escHtml(col.label)+'</span>'
         :'<button type="button" class="fut-table-sort" onclick="setFutSort(\''+col.key+'\')">'+escHtml(col.label)+'<span class="fut-sort-mark">'+mark+'</span></button>';
       var filter=futTableFilterHtml(col.key,futHeaderFilterOptions(col.key,arr,loteMap));
-      var trigger=filter?'<span class="fut-filter-native-wrap" title="Filtrar '+escHtml(col.label)+'">'+filter+'<span class="fut-filter-native-icon" aria-hidden="true">⌄</span></span>':'';
+      var trigger=filter?filter:'';
       return '<th data-fut-col="'+col.key+'"'+futColumnStyle(col.key)+'><div class="fut-table-head-line">'+title+trigger+'</div><span class="fut-col-resizer" onmousedown="startFutColumnResize(event,\''+col.key+'\')"></span></th>';
     }).join('');
   }
@@ -8760,7 +8772,7 @@ function renderFuturos(){
 function abrirLoteNoStatus(loteId){
   if(!loteId)return;
   pillFilter='';
-  Object.keys(statusColumnFilters).forEach(function(k){statusColumnFilters[k]='';});
+  Object.keys(statusColumnFilters).forEach(function(k){statusColumnFilters[k]=[];});
   switchTab('lotes');
   setTimeout(function(){
     var row=document.querySelector('.status-row[data-lid="'+loteId+'"]');
@@ -10455,20 +10467,20 @@ function updateStatusColumnFilter(key,value){
   applyStatusColumnFilters();
 }
 function limparStatusColumnFilters(){
-  Object.keys(statusColumnFilters).forEach(function(k){statusColumnFilters[k]='';});
+  Object.keys(statusColumnFilters).forEach(function(k){statusColumnFilters[k]=[];});
   renderLotes();
 }
 function statusRowPassaFiltros(row){
   for(var key in statusColumnFilters){
     if(!Object.prototype.hasOwnProperty.call(statusColumnFilters,key))continue;
-    var f=String(statusColumnFilters[key]||'').trim();
-    if(!f)continue;
+    var filtros=tableFilterSelected('status',key);
+    if(!filtros.length)continue;
     if(key==='status'){
       var statusValue=((row.getAttribute('data-status')||'')+' '+(row.getAttribute('data-filter-status')||''));
-      if(_statusNorm(statusValue).indexOf(_statusNorm(f))<0)return false;
+      if(!filtros.some(function(f){return _statusNorm(statusValue).indexOf(_statusNorm(f))>=0;}))return false;
     }else{
       var value=row.getAttribute('data-filter-'+key)||'';
-      if(_statusNorm(value).indexOf(_statusNorm(f))<0)return false;
+      if(!filtros.some(function(f){return _statusNorm(value).indexOf(_statusNorm(f))>=0;}))return false;
     }
   }
   return true;
@@ -10765,26 +10777,23 @@ function renderLotes(){
   function statusFilterLabel(c){
     var mark=statusSortState.key===c.key?(statusSortState.dir==='asc'?'↑':'↓'):'';
     return '<button type="button" class="status-filter-label" data-col="'+c.key+'" aria-label="Ordenar por '+escHtml(c.label)+'" title="Ordenar por '+escHtml(c.label)+'" onclick="event.stopPropagation();setStatusSort(\''+c.key+'\')">'
-      +'<span class="status-sort-mark">'+(mark||'↕')+'</span>'
-      +'<span class="status-col-resizer" onmousedown="startStatusColumnResize(event,\''+c.key+'\')"></span>'
+      +'<span class="status-filter-column-name">'+escHtml(c.label)+'</span>'
+      +'<span class="status-sort-mark">'+mark+'</span>'
     +'</button>';
   }
+  function statusFilterResizeHandle(c){return '<span class="status-col-resizer" title="Arraste para ajustar a largura" onmousedown="startStatusColumnResize(event,\''+c.key+'\')" onclick="event.stopPropagation()"></span>';}
   function filterInput(c,placeholder){
     var key=c.key;
-    var v=statusColumnFilters[key]||'';
-    return '<div class="status-filter-cell '+statusColClass(key)+'">'+statusFilterLabel(c)+'<div class="status-filter-control"><input type="text" list="status-dl-'+key+'" value="'+escHtml(v)+'" placeholder="'+escHtml(placeholder||'Filtrar')+'" onfocus="abrirSugestoesFiltroStatus(this)" oninput="updateStatusColumnFilter(\''+key+'\',this.value)" onclick="event.stopPropagation();abrirSugestoesFiltroStatus(this)" onpointerdown="event.stopPropagation()">'+filterOptionsHtml(key)+'</div></div>';
+    var options=(statusFilterOptions[key]||[]).map(function(value){return {value:value,label:value};});
+    return '<div class="status-filter-cell '+statusColClass(key)+'">'+statusFilterLabel(c)+tableMultiFilterHtml('status',key,options,'Todos')+statusFilterResizeHandle(c)+'</div>';
   }
   function filterStatus(c){
-    var cur=statusColumnFilters.status||'';
-    return '<div class="status-filter-cell '+statusColClass('status')+'">'+statusFilterLabel(c)+'<div class="status-filter-control"><input type="text" list="status-dl-status" value="'+escHtml(cur)+'" placeholder="Status" onfocus="abrirSugestoesFiltroStatus(this)" oninput="updateStatusColumnFilter(\'status\',this.value)" onclick="event.stopPropagation();abrirSugestoesFiltroStatus(this)" onpointerdown="event.stopPropagation()">'+filterOptionsHtml('status')+'</div></div>';
+    var options=(statusFilterOptions.status||[]).map(function(value){return {value:value,label:value};});
+    return '<div class="status-filter-cell '+statusColClass('status')+'">'+statusFilterLabel(c)+tableMultiFilterHtml('status','status',options,'Todos os status')+statusFilterResizeHandle(c)+'</div>';
   }
   function filterB3(c){
     var estados=['Aberto','Parcial','Travado'];
-    var cur=statusColumnFilters.b3||'';
-    if(cur&&estados.indexOf(cur)<0){cur='';statusColumnFilters.b3='';}
-    return '<div class="status-filter-cell '+statusColClass('b3')+'">'+statusFilterLabel(c)+'<div class="status-filter-control"><input type="text" list="status-dl-b3" value="'+escHtml(cur)+'" placeholder="B3" onfocus="abrirSugestoesFiltroStatus(this)" oninput="updateStatusColumnFilter(\'b3\',this.value)" onclick="event.stopPropagation();abrirSugestoesFiltroStatus(this)" onpointerdown="event.stopPropagation()"><datalist id="status-dl-b3">'
-      +estados.map(function(estado){return '<option value="'+estado+'"></option>';}).join('')
-    +'</datalist></div></div>';
+    return '<div class="status-filter-cell '+statusColClass('b3')+'">'+statusFilterLabel(c)+tableMultiFilterHtml('status','b3',estados.map(function(estado){return {value:estado,label:estado};}),'Todos')+statusFilterResizeHandle(c)+'</div>';
   }
   function statusHeaderHtml(){
     return STATUS_COLS.map(function(c){
@@ -11072,6 +11081,9 @@ function renderLotes(){
   lotes.forEach(function(l){
     var vend=vends.find(function(v){return v.id===l.vendedorId;});
     var o=l.orcamentos&&l.orcamentos[0];
+    var frigorificoId=(o&&o.frigId)||l.frigId||'';
+    var frigorifico=frigorificoId?frigs.find(function(f){return f.id===frigorificoId;}):null;
+    var frigorificoVal=(o&&o.frigNome)||(frigorifico&&frigorifico.nome)||'A definir';
     var sc=STATUS_CFG[l.status]||STATUS_CFG.embarque;
     var nomeReferencia=getLoteNomeReferencia(l,o);
     var cardTitle=nomeReferencia;
@@ -11100,6 +11112,7 @@ function renderLotes(){
     addStatusFilterOption('raca',l.tipoCustom||labelRaca(l.tipoAnimal)||(o&&(o.tipoCustom||labelRaca(o.tipoAnimal)))||'A definir');
     addStatusFilterOption('origem',origemVal);
     addStatusFilterOption('vendedor',(vend&&vend.nome)?vend.nome:'A definir');
+    addStatusFilterOption('frigorifico',frigorificoVal);
     addStatusFilterOption('lote','Lote '+numeroLote+(cardTitle?' '+cardTitle:''));
     var b3Status=coberturaStatusB3(l,o,metric);
     addStatusFilterOption('b3',b3Status.estado||'Aberto');
@@ -14305,22 +14318,22 @@ function buildB3ExportData(){
   var lotes=lotesDisponiveisB3();
   var loteMap={};
   lotes.forEach(function(l){loteMap[l.id]=l;});
-  var filtroStatus=futColumnFilters.status||'todos';
-  var filtroOperacao=futColumnFilters.tipo||'todos';
-  var filtroLado=futColumnFilters.lado||'todos';
-  var filtroLote=futColumnFilters.lote||'todos';
-  var filtroCodigo=String(futColumnFilters.codigo||'').trim().toUpperCase();
-  var filtroVenc='';
+  var filtroStatus=tableFilterSelected('fut','status');
+  var filtroOperacao=tableFilterSelected('fut','tipo');
+  var filtroLado=tableFilterSelected('fut','lado');
+  var filtroLote=tableFilterSelected('fut','lote');
+  var filtroCodigo=tableFilterSelected('fut','codigo').map(function(v){return String(v).toUpperCase();});
+  var filtroVenc=tableFilterSelected('fut','vencimento');
   var contratos=[['Status','Tipo operação','Lote / operação','Momento lote','Confinamento','Origem','Qtd lote','Data entrada','Faturamento lote','Código','Vencimento','Lado','Qtd original','Qtd aberta','Qtd liquidada','Preço abertura','Data abertura','Liquidação média','Resultado realizado','Custos']];
   getFuturos().filter(function(c){
     var r=futuroResultado(c);
     var codigo=String(gerarCodigoB3(c.vencimento)||c.codigo||'').toUpperCase();
-    return (filtroStatus==='todos'||r.status===filtroStatus)
-      &&(filtroOperacao==='todos'||r.operacao===filtroOperacao)
-      &&(filtroLado==='todos'||r.lado===filtroLado)
-      &&(filtroLote==='todos'||(filtroLote==='livre'&&!c.loteId)||c.loteId===filtroLote)
-      &&(!filtroCodigo||codigo.indexOf(filtroCodigo)>=0)
-      &&(!filtroVenc||c.vencimento===filtroVenc);
+    return (!filtroStatus.length||filtroStatus.indexOf(r.status)>=0)
+      &&(!filtroOperacao.length||filtroOperacao.indexOf(r.operacao)>=0)
+      &&(!filtroLado.length||filtroLado.indexOf(r.lado)>=0)
+      &&(!filtroLote.length||(filtroLote.indexOf('livre')>=0&&!c.loteId)||filtroLote.indexOf(c.loteId)>=0)
+      &&(!filtroCodigo.length||filtroCodigo.some(function(f){return codigo.indexOf(f)>=0;}))
+      &&(!filtroVenc.length||filtroVenc.indexOf(c.vencimento)>=0);
   }).forEach(function(c){
     var r=futuroResultado(c);
     var lote=loteMap[c.loteId]||getLotes().find(function(l){return l.id===c.loteId;});
