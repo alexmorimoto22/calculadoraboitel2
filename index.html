@@ -5044,13 +5044,13 @@ let activeLoteDetailId=null;
 let activeOrcEditIndex=null;
 let activeLoteReturnStatus=null;
 let pillFilter='';
-var statusColumnFilters={status:'',ano:'',confinamento:'',modalidade:'',raca:'',origem:'',vendedor:'',frigorifico:'',numeroLote:'',lote:'',b3:'',qtd:'',quebraPct:'',quebraKg:'',entrada:'',abate:'',recebimento:'',faturamento:'',capital:'',lucro:'',rent:'',rentmes:'',rcExpectativa:'',rcRealizado:'',consumoMedioExpectativa:'',consumoMedioRealizado:'',gmdOrigem:'',gmdChegada:'',gmcOrigem:'',gmcChegada:'',eficiencia:'',eficienciaChegada:''};
+var statusColumnFilters={status:'',ano:'',confinamento:'',modalidade:'',raca:'',origem:'',vendedor:'',frigorifico:'',numeroLote:'',lote:'',b3:'',qtd:'',quebraPct:'',quebraKg:'',entrada:'',abate:'',recebimento:'',faturamento:'',capital:'',lucro:'',rent:'',rentmes:'',rcExpectativa:'',rcRealizado:'',consumoMedioExpectativa:'',consumoMedioRealizado:'',gmdOrigem:'',gmdChegada:'',gmcOrigem:'',gmcChegada:'',eficiencia:'',eficienciaChegada:'',atProdChegada:'',atProdOrigem:'',custoAtChegada:'',custoAtOrigem:''};
 var STATUS_COLS=[
   {key:'status',label:'Status',w:88},{key:'ano',label:'Ano',w:52},{key:'confinamento',label:'Confinamento',w:112},
   {key:'modalidade',label:'Modalidade',w:128},{key:'raca',label:'Raça',w:118},{key:'origem',label:'Origem',w:118},{key:'vendedor',label:'Vendedor',w:112},{key:'frigorifico',label:'Frigorífico',w:132},{key:'numeroLote',label:'Nº lote',w:76},{key:'lote',label:'Nome do lote',w:210},{key:'b3',label:'B3',w:136},{key:'qtd',label:'Qtd',w:62},{key:'quebraPct',label:'Quebra %',w:86},{key:'quebraKg',label:'Quebra kg',w:96},
   {key:'entrada',label:'Entrada',w:92},{key:'abate',label:'Abate',w:92},{key:'recebimento',label:'Recebimento',w:104},
   {key:'faturamento',label:'Fat. lote',w:126},{key:'capital',label:'Capital',w:126},{key:'lucro',label:'Lucro',w:116},
-  {key:'rent',label:'% Oper.',w:76},{key:'rentmes',label:'% Mês',w:76},{key:'rcExpectativa',label:'RC expectativa',w:108},{key:'rcRealizado',label:'RC realizado',w:100},{key:'consumoMedioExpectativa',label:'Consumo méd. expectativa',w:138},{key:'consumoMedioRealizado',label:'Consumo méd. realizado',w:130},{key:'gmdOrigem',label:'GMD Origem',w:108},{key:'gmdChegada',label:'GMD Chegada',w:108},{key:'gmcOrigem',label:'GMC Origem',w:116},{key:'gmcChegada',label:'GMC Chegada',w:116},{key:'eficiencia',label:'Efic. Origem',w:116},{key:'eficienciaChegada',label:'Efic. Cheg.',w:116}
+  {key:'rent',label:'% Oper.',w:76},{key:'rentmes',label:'% Mês',w:76},{key:'rcExpectativa',label:'RC expectativa',w:108},{key:'rcRealizado',label:'RC realizado',w:100},{key:'consumoMedioExpectativa',label:'Consumo méd. expectativa',w:138},{key:'consumoMedioRealizado',label:'Consumo méd. realizado',w:130},{key:'gmdOrigem',label:'GMD Origem',w:108},{key:'gmdChegada',label:'GMD Chegada',w:108},{key:'gmcOrigem',label:'GMC Origem',w:116},{key:'gmcChegada',label:'GMC Chegada',w:116},{key:'eficiencia',label:'Efic. Origem',w:116},{key:'eficienciaChegada',label:'Efic. Cheg.',w:116},{key:'atProdChegada',label:'@ produzida - chegada',w:132},{key:'atProdOrigem',label:'@ produzida - origem',w:126},{key:'custoAtChegada',label:'Custo @ prod. chegada',w:142},{key:'custoAtOrigem',label:'Custo @ prod. origem',w:136}
 ];
 var STATUS_COL_VISIBLE_KEY='vm_status_cols_visible_v1';
 var STATUS_COL_WIDTH_KEY='vm_status_cols_width_v1';
@@ -5169,7 +5169,7 @@ var HOME_STATUS_COLUMN_GROUPS=[
   {label:'Compra e logística',keys:['origem','vendedor','frigorifico','qtd','quebraPct','quebraKg']},
   {label:'Datas',keys:['entrada','abate','recebimento']},
   {label:'Financeiro',keys:['faturamento','capital','lucro','rent','rentmes']},
-  {label:'Zootécnico',keys:['rcExpectativa','rcRealizado','consumoMedioExpectativa','consumoMedioRealizado','gmdOrigem','gmdChegada','gmcOrigem','gmcChegada','eficiencia','eficienciaChegada']},
+  {label:'Zootécnico',keys:['rcExpectativa','rcRealizado','consumoMedioExpectativa','consumoMedioRealizado','gmdOrigem','gmdChegada','gmcOrigem','gmcChegada','eficiencia','eficienciaChegada','atProdChegada','atProdOrigem','custoAtChegada','custoAtOrigem']},
   {label:'Proteção B3',keys:['b3']}
 ];
 function groupedColumnOptionsHtml(columns,groups,renderOption){
@@ -10978,7 +10978,7 @@ function statusSortValue(row,key){
   var v=row.getAttribute('data-sort-'+key);
   if(v===null||v===undefined)v=row.getAttribute('data-filter-'+key)||row.textContent||'';
   var n=parseFloat(String(v).replace(/\./g,'').replace(',','.'));
-  if(['ano','qtd','quebraPct','quebraKg','faturamento','capital','lucro','rent','rentmes','rcExpectativa','rcRealizado','consumoMedioExpectativa','consumoMedioRealizado','eficiencia','eficienciaChegada','status'].indexOf(key)>=0&&!isNaN(n))return n;
+  if(['ano','qtd','quebraPct','quebraKg','faturamento','capital','lucro','rent','rentmes','rcExpectativa','rcRealizado','consumoMedioExpectativa','consumoMedioRealizado','eficiencia','eficienciaChegada','atProdChegada','atProdOrigem','custoAtChegada','custoAtOrigem','status'].indexOf(key)>=0&&!isNaN(n))return n;
   return _statusNorm(v);
 }
 function sortStatusRows(){
@@ -11028,7 +11028,7 @@ function resetStatusColumns(){
     localStorage.removeItem(STATUS_COL_ORDER_KEY);
     localStorage.removeItem(STATUS_COL_FROZEN_KEY);
   }catch(e){}
-  var defaultStatusOrder=['status','ano','confinamento','modalidade','raca','origem','vendedor','frigorifico','numeroLote','lote','b3','qtd','quebraPct','quebraKg','entrada','abate','recebimento','faturamento','capital','lucro','rent','rentmes','rcExpectativa','rcRealizado','consumoMedioExpectativa','consumoMedioRealizado','gmdOrigem','gmdChegada','gmcOrigem','gmcChegada','eficiencia','eficienciaChegada'];
+  var defaultStatusOrder=['status','ano','confinamento','modalidade','raca','origem','vendedor','frigorifico','numeroLote','lote','b3','qtd','quebraPct','quebraKg','entrada','abate','recebimento','faturamento','capital','lucro','rent','rentmes','rcExpectativa','rcRealizado','consumoMedioExpectativa','consumoMedioRealizado','gmdOrigem','gmdChegada','gmcOrigem','gmcChegada','eficiencia','eficienciaChegada','atProdChegada','atProdOrigem','custoAtChegada','custoAtOrigem'];
   STATUS_COLS.sort(function(a,b){return defaultStatusOrder.indexOf(a.key)-defaultStatusOrder.indexOf(b.key);});
   statusColumnsPanelOpen=false;
   renderLotes();
@@ -11141,7 +11141,7 @@ function renderLotes(){
     var placeholders={
       status:'Todos',ano:'Ano',confinamento:'Confinamento',modalidade:'Modalidade',raca:'Raça',origem:'Origem',vendedor:'Vendedor',lote:'Lote',b3:'B3',qtd:'Qtd',quebraPct:'%',quebraKg:'kg',
       entrada:'Entrada',abate:'Abate',recebimento:'Receb.',faturamento:'R$',capital:'R$',
-      lucro:'R$',rent:'%',rentmes:'%',rcExpectativa:'%',rcRealizado:'%',consumoMedioExpectativa:'%',consumoMedioRealizado:'%',gmdOrigem:'kg/dia',gmdChegada:'kg/dia',gmcOrigem:'kg/dia',gmcChegada:'kg/dia',eficiencia:'kg MS/@ origem',eficienciaChegada:'kg MS/@ cheg.'
+      lucro:'R$',rent:'%',rentmes:'%',rcExpectativa:'%',rcRealizado:'%',consumoMedioExpectativa:'%',consumoMedioRealizado:'%',gmdOrigem:'kg/dia',gmdChegada:'kg/dia',gmcOrigem:'kg/dia',gmcChegada:'kg/dia',eficiencia:'kg MS/@ origem',eficienciaChegada:'kg MS/@ cheg.',atProdChegada:'@',atProdOrigem:'@',custoAtChegada:'R$/@',custoAtOrigem:'R$/@'
     };
     return STATUS_COLS.map(function(c){
       if(c.key==='status')return filterStatus(c);
@@ -11248,6 +11248,18 @@ function renderLotes(){
     var eficienciaChegadaRaw=finNum(zooStatus&&zooStatus.efic);
     var eficienciaVal=o&&eficienciaOrigemRaw?(fmtNum(eficienciaOrigemRaw,2)+' kg MS/@'):'—';
     var eficienciaChegadaVal=o&&eficienciaChegadaRaw?(fmtNum(eficienciaChegadaRaw,2)+' kg MS/@'):'—';
+    var atProdChegadaRaw=finNum(zooStatus&&zooStatus.atProd);
+    var atProdOrigemRaw=finNum(zooStatus&&zooStatus.atProdOrigem);
+    var atProdChegadaVal=o&&atProdChegadaRaw?fmtNum(atProdChegadaRaw,3)+' @':'—';
+    var atProdOrigemVal=o&&atProdOrigemRaw?fmtNum(atProdOrigemRaw,3)+' @':'—';
+    var custoAtChegadaRaw=useRealizedTechnical?finNum(zooStatus&&zooStatus.custoAtChegada):finNum(o&&(o.custoAtProd||o.custoArrobaProduzida));
+    if(!useRealizedTechnical&&!custoAtChegadaRaw&&zooStatus&&zooStatus.atProd){
+      var custoConfinamentoProjetado=(finNum(zooStatus.consumoTotal)*finNum(o&&o.msKG))+(finNum(o&&o.opDia)*finNum(zooStatus.dias));
+      custoAtChegadaRaw=custoConfinamentoProjetado/finNum(zooStatus.atProd);
+    }
+    var custoAtOrigemRaw=useRealizedTechnical?finNum(zooStatus&&zooStatus.custoAtOrigem):(zooStatus&&zooStatus.atProdOrigem?custoAtChegadaRaw*finNum(zooStatus.atProd)/finNum(zooStatus.atProdOrigem):0);
+    var custoAtChegadaVal=o&&custoAtChegadaRaw?fmt(custoAtChegadaRaw)+'/@':'—';
+    var custoAtOrigemVal=o&&custoAtOrigemRaw?fmt(custoAtOrigemRaw)+'/@':'—';
     var abateSortDate=saidaIso||(entradaIso&&dias&&_addDias(entradaIso,dias)?_addDias(entradaIso,dias).toISOString().slice(0,10):'');
     var recebSortDate=recebDate?recebDate.toISOString().slice(0,10):'';
     var b3Nec=necessidadeContratosB3(l,o);
@@ -11289,6 +11301,10 @@ function renderLotes(){
       +' data-filter-gmcChegada="'+escHtml(gmcChegadaVal)+'"'
       +' data-filter-eficiencia="'+escHtml(eficienciaVal)+'"'
       +' data-filter-eficienciaChegada="'+escHtml(eficienciaChegadaVal)+'"'
+      +' data-filter-atProdChegada="'+escHtml(atProdChegadaVal)+'"'
+      +' data-filter-atProdOrigem="'+escHtml(atProdOrigemVal)+'"'
+      +' data-filter-custoAtChegada="'+escHtml(custoAtChegadaVal)+'"'
+      +' data-filter-custoAtOrigem="'+escHtml(custoAtOrigemVal)+'"'
       +' data-sort-status="'+STATUS_ORDER.indexOf(l.status||'embarque')+'"'
       +' data-sort-ano="'+escHtml(anoVal)+'"'
       +' data-sort-confinamento="'+escHtml(confinamento)+'"'
@@ -11319,7 +11335,11 @@ function renderLotes(){
       +' data-sort-gmcOrigem="'+techStatus.gmcOrigem+'"'
       +' data-sort-gmcChegada="'+techStatus.gmcChegada+'"'
       +' data-sort-eficiencia="'+(o?eficienciaOrigemRaw:0)+'"'
-      +' data-sort-eficienciaChegada="'+(o?eficienciaChegadaRaw:0)+'"';
+      +' data-sort-eficienciaChegada="'+(o?eficienciaChegadaRaw:0)+'"'
+      +' data-sort-atProdChegada="'+(o?atProdChegadaRaw:0)+'"'
+      +' data-sort-atProdOrigem="'+(o?atProdOrigemRaw:0)+'"'
+      +' data-sort-custoAtChegada="'+(o?custoAtChegadaRaw:0)+'"'
+      +' data-sort-custoAtOrigem="'+(o?custoAtOrigemRaw:0)+'"';
     var statusLabel='<div class="status-cell status-badge-cell '+statusColClass('status')+'" data-status-col="status">'
       +'<span class="status-drag-dot" style="background:'+(barColor||'var(--border)')+'"></span>'
       +'<span class="badge '+sc.cls+'">'+escHtml(sc.label)+'</span>'
@@ -11363,6 +11383,10 @@ function renderLotes(){
       +'<span data-status-mobile-field="modalidade"><em>Modalidade</em>'+escHtml(modalidadeVal)+'</span>'
       +'<span data-status-mobile-field="eficiencia" title="'+escHtml(eficienciaVal)+'"><em>Efic. origem</em>'+escHtml(eficienciaVal)+'</span>'
       +'<span data-status-mobile-field="eficienciaChegada" title="'+escHtml(eficienciaChegadaVal)+'"><em>Efic. chegada</em>'+escHtml(eficienciaChegadaVal)+'</span>'
+      +'<span data-status-mobile-field="atProdChegada" title="'+escHtml(atProdChegadaVal)+'"><em>@ produzida chegada</em>'+escHtml(atProdChegadaVal)+'</span>'
+      +'<span data-status-mobile-field="atProdOrigem" title="'+escHtml(atProdOrigemVal)+'"><em>@ produzida origem</em>'+escHtml(atProdOrigemVal)+'</span>'
+      +'<span data-status-mobile-field="custoAtChegada" title="'+escHtml(custoAtChegadaVal)+'"><em>Custo @ prod. chegada</em>'+escHtml(custoAtChegadaVal)+'</span>'
+      +'<span data-status-mobile-field="custoAtOrigem" title="'+escHtml(custoAtOrigemVal)+'"><em>Custo @ prod. origem</em>'+escHtml(custoAtOrigemVal)+'</span>'
     +'</div>';
     return '<div class="status-row'+(idx%2?' status-row-alt':'')+'" style="grid-template-columns:'+statusGridTemplate()+'" data-lid="'+l.id+'" data-lote-seq="'+escHtml(numeroLote)+'" data-status="'+(l.status||'embarque')+'" draggable="true"'+attrs+'>'
       +statusLabel
@@ -11397,6 +11421,10 @@ function renderLotes(){
       +statusCell('gmcChegada',gmcChegadaVal,'rate')
       +statusCell('eficiencia',eficienciaVal,'rate')
       +statusCell('eficienciaChegada',eficienciaChegadaVal,'rate')
+      +statusCell('atProdChegada',atProdChegadaVal,'rate')
+      +statusCell('atProdOrigem',atProdOrigemVal,'rate')
+      +statusCell('custoAtChegada',custoAtChegadaVal,'money')
+      +statusCell('custoAtOrigem',custoAtOrigemVal,'money')
       +mobileLine
     +'</div>';
   }
@@ -11490,6 +11518,15 @@ function renderLotes(){
       if(techStatus.gmcChegada)addStatusFilterOption('gmcChegada',fmtNum(techStatus.gmcChegada,3)+' kg/dia');
       if(zooStatus.eficOrigem)addStatusFilterOption('eficiencia',fmtNum(zooStatus.eficOrigem,2)+' kg MS/@');
       if(zooStatus.efic)addStatusFilterOption('eficienciaChegada',fmtNum(zooStatus.efic,2)+' kg MS/@');
+      if(zooStatus.atProd)addStatusFilterOption('atProdChegada',fmtNum(zooStatus.atProd,3)+' @');
+      if(zooStatus.atProdOrigem)addStatusFilterOption('atProdOrigem',fmtNum(zooStatus.atProdOrigem,3)+' @');
+      var custoAtChegadaFiltro=useRealizedTechnical?finNum(zooStatus.custoAtChegada):finNum(o.custoAtProd||o.custoArrobaProduzida);
+      if(!useRealizedTechnical&&!custoAtChegadaFiltro&&zooStatus.atProd){
+        custoAtChegadaFiltro=((finNum(zooStatus.consumoTotal)*finNum(o.msKG))+(finNum(o.opDia)*finNum(zooStatus.dias)))/finNum(zooStatus.atProd);
+      }
+      var custoAtOrigemFiltro=useRealizedTechnical?finNum(zooStatus.custoAtOrigem):(zooStatus.atProdOrigem?custoAtChegadaFiltro*finNum(zooStatus.atProd)/finNum(zooStatus.atProdOrigem):0);
+      if(custoAtChegadaFiltro)addStatusFilterOption('custoAtChegada',fmt(custoAtChegadaFiltro)+'/@');
+      if(custoAtOrigemFiltro)addStatusFilterOption('custoAtOrigem',fmt(custoAtOrigemFiltro)+'/@');
     }
   });
   Object.keys(statusFilterOptions).forEach(function(key){
