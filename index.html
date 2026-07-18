@@ -823,6 +823,9 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   #panel-futuros .fut-table-head-line .table-multi-trigger{width:22px;height:28px;border:0;border-radius:5px;background:transparent;font-size:10px;}
   #panel-futuros .fut-table-head-line .table-multi-trigger:hover{background:var(--surface2);color:var(--accent);}
   #panel-futuros .fut-table-head-line .table-multi.active .table-multi-trigger{background:var(--accent);color:#fff;}
+  #panel-futuros .fut-table-head-line{position:relative;padding-left:20px;padding-right:31px;}
+  #panel-futuros .fut-table-head-line>.table-column-drag{position:absolute;left:3px;top:5px;}
+  #panel-futuros .fut-table-head-line>.table-multi{position:absolute;right:4px;top:4px;display:block;}
   #panel-futuros .fut-col-resizer{z-index:8;background:transparent;}
   #panel-futuros .fut-col-resizer:hover,#panel-futuros .fut-col-resizer:active{background:rgba(201,162,78,.28);}
   #panel-futuros .fut-table tbody tr{background:#fff;}
@@ -830,8 +833,8 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   #panel-futuros .fut-table tbody tr:hover{background:rgba(201,162,78,.10);}
   #panel-futuros .fut-table td{border-right:1px solid rgba(216,203,181,.48);}
   #panel-futuros .fut-table td:last-child{border-right:none;}
-  .table-column-drag{flex:0 0 12px;width:12px;height:26px;display:grid;place-items:center;border:0;border-radius:4px;background:rgba(201,162,78,.14);color:#8a650f;font-size:14px;font-weight:900;line-height:1;cursor:grab;opacity:1;user-select:none;}
-  .table-column-drag:hover{background:var(--accent);color:#fff;opacity:1;}
+  .table-column-drag{flex:0 0 12px;width:12px;height:26px;display:grid;place-items:center;border:0;border-radius:4px;background:transparent;color:#9a6a12;font-size:14px;font-weight:900;line-height:1;cursor:grab;opacity:1;user-select:none;}
+  .table-column-drag:hover{background:rgba(201,162,78,.18);color:#6f4d0d;opacity:1;}
   .table-column-drag:active{cursor:grabbing;}
   .column-drag-over{box-shadow:inset 3px 0 0 var(--gold)!important;}
   .column-freeze-control{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0 10px;padding:9px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);font-size:11px;font-weight:750;color:var(--text-2);}
@@ -1138,6 +1141,11 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   #panel-lotes .status-filter-cell .table-multi-trigger{width:22px;height:28px;border:0;border-radius:5px;background:transparent;font-size:10px;}
   #panel-lotes .status-filter-cell .table-multi-trigger:hover{background:var(--surface2);color:var(--accent);}
   #panel-lotes .status-filter-cell .table-multi.active .table-multi-trigger{background:var(--accent);color:#fff;}
+  #panel-lotes .status-filter-cell{padding-left:20px;padding-right:31px;}
+  #panel-lotes .status-filter-cell>.table-column-drag{position:absolute;left:3px;top:5px;}
+  #panel-lotes .status-filter-cell>.table-multi{position:absolute;right:4px;top:4px;display:block;}
+  .table-multi.open .table-multi-menu.table-multi-floating{position:fixed;z-index:10050;margin:0;}
+  body>.table-multi-menu.table-multi-floating{display:grid;gap:2px;position:fixed;z-index:10050;margin:0;}
   .status-filter-label:hover{color:var(--accent);}
   .status-filter-label .status-sort-mark{margin:0;font-size:12px;}
   .status-filter-control{position:relative;order:1;flex:1 1 auto;width:auto;min-width:0;}
@@ -2806,7 +2814,9 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   #panel-lotes .status-head{position:sticky;top:0;z-index:6;background:#fbfaf5;}
   #panel-lotes .status-filter-row{position:sticky;top:0;z-index:5;background:#fffdf7;}
   #panel-lotes .status-head-cell{padding:8px 9px;font-size:8px;}
-  #panel-lotes .status-filter-cell{height:36px;padding:0 5px 0 8px;gap:2px;}
+  #panel-lotes .status-filter-cell{height:36px;padding:0 31px 0 20px;gap:2px;}
+  #panel-lotes .status-filter-cell>.table-column-drag{left:4px;top:5px;}
+  #panel-lotes .status-filter-cell>.table-multi{right:4px;top:4px;}
   #panel-lotes .status-filter-control input,#panel-lotes .status-filter-control select{height:28px;font-size:10px;border-radius:8px;}
   #panel-lotes .status-row{min-height:38px;}
   #panel-lotes .status-cell{padding:5px 8px;font-size:11px;}
@@ -6097,7 +6107,7 @@ function renderCaixa(){
   pagar.forEach(function(item){var d=item.dataEntrada||'';if(!d)return;timeline[d]=timeline[d]||{entradas:0,saidas:0,itens:[]};timeline[d].saidas+=item.capital;timeline[d].itens.push('Pagar: '+item.lote);});
   receber.forEach(function(item){var d=item.dataRecebimento||'';if(!d)return;timeline[d]=timeline[d]||{entradas:0,saidas:0,itens:[]};timeline[d].entradas+=item.faturamento;timeline[d].itens.push('Receber: '+item.lote);});
   var saldoLinha=caixa;
-  var timelineRows=Object.keys(timeline).sort().map(function(data){var dia=timeline[data],liquido=dia.entradas-dia.saidas;saldoLinha+=liquido;return '<div class="cash-time-row"><div class="cash-time-date">'+finDateBR(data)+'</div><div title="'+escHtml(dia.itens.join(' · '))+'">'+escHtml(dia.itens.join(' · '))+'</div><div class="cash-time-in">'+fmt(dia.entradas)+'</div><div class="cash-time-out">'+fmt(dia.saidas)+'</div><div class="cash-time-net '+(liquido>=0?'pos':'neg')+'">'+fmt(liquido)+'</div><div class="cash-time-balance">'+fmt(saldoLinha)+'</div></div>';}).join('');
+  var timelineRows=Object.keys(timeline).sort().map(function(data){var dia=timeline[data],saldoInicial=saldoLinha,liquido=dia.entradas-dia.saidas;saldoLinha+=liquido;return '<div class="cash-time-row"><div class="cash-time-date">'+finDateBR(data)+'</div><div title="'+escHtml(dia.itens.join(' · '))+'">'+escHtml(dia.itens.join(' · '))+'</div><div class="cash-time-balance">'+fmt(saldoInicial)+'</div><div class="cash-time-in">'+fmt(dia.entradas)+'</div><div class="cash-time-out">'+fmt(dia.saidas)+'</div><div class="cash-time-net '+(liquido>=0?'pos':'neg')+'">'+fmt(liquido)+'</div><div class="cash-time-balance">'+fmt(saldoLinha)+'</div></div>';}).join('');
   content.innerHTML='<div class="cash-hero"><div><div class="cash-title">Caixa</div><div class="cash-sub">Visão do saldo disponível, pagamentos dos lotes em embarque e recebimentos dos lotes abatidos.</div></div></div>'
     +'<div class="cash-kpis">'
       +'<div class="cash-kpi"><label class="cash-label" for="cash-manual-input">Caixa</label><div class="cash-manual-row"><input id="cash-manual-input" class="cash-manual-input" type="text" inputmode="decimal" value="'+escHtml(fmtNum(caixa,2))+'" onchange="salvarCaixaManual(this.value)"><div class="cash-update-info"><span class="cash-update-label">Última atualização</span><span class="cash-update-value">'+escHtml(atualizadoEm)+'</span></div></div></div>'
@@ -6116,7 +6126,7 @@ function renderCaixa(){
       +'<div class="cash-entry-field"><label>Valor</label><input id="cash-entry-value" type="text" inputmode="decimal" placeholder="R$ 0,00"></div>'
       +'<button type="button" class="cash-entry-btn" onclick="adicionarCaixaLancamento()">Adicionar</button>'
     +'</div></section>'
-    +'<section class="cash-timeline"><div class="cash-card-head"><div><div class="cash-card-title">Linha do tempo do caixa</div><div class="fin-muted">Pagamentos e recebimentos agrupados pela data, com saldo acumulado.</div></div></div><div class="cash-timeline-list"><div class="cash-time-row head"><div>Data</div><div>Movimentos</div><div style="text-align:right">Receber</div><div style="text-align:right">Pagar</div><div style="text-align:right">Líquido</div><div style="text-align:right">Saldo previsto</div></div>'+(timelineRows||'<div class="cash-empty">Nenhum movimento com data definida.</div>')+'</div></section>';
+    +'<section class="cash-timeline"><div class="cash-card-head"><div><div class="cash-card-title">Linha do tempo do caixa</div><div class="fin-muted">Pagamentos e recebimentos agrupados pela data, com saldo acumulado.</div></div></div><div class="cash-timeline-list"><div class="cash-time-row head"><div>Data</div><div>Movimentos</div><div style="text-align:right">Saldo inicial</div><div style="text-align:right">Receber</div><div style="text-align:right">Pagar</div><div style="text-align:right">Líquido</div><div style="text-align:right">Saldo previsto</div></div>'+(timelineRows||'<div class="cash-empty">Nenhum movimento com data definida.</div>')+'</div></section>';
 }
 function finAutoLancamentosLotes(){
   var out=[];
@@ -8529,7 +8539,7 @@ function getFutColWidths(){
 function futColWidth(key){
   var col=FUT_COLS.find(function(c){return c.key===key;});
   var saved=getFutColWidths();
-  return Math.max(56,parseFloat(saved[key]||(col&&col.w)||100)||100);
+  return Math.max(78,parseFloat(saved[key]||(col&&col.w)||100)||100);
 }
 function futVisibleCols(){
   var visible=getFutColVisible();
@@ -8630,7 +8640,7 @@ function startFutColumnResize(ev,key){
 function moveFutColumnResize(ev){
   if(!futResizeState)return;
   var widths=getFutColWidths();
-  widths[futResizeState.key]=Math.max(56,futResizeState.startW+(ev.clientX-futResizeState.startX));
+  widths[futResizeState.key]=Math.max(78,futResizeState.startW+(ev.clientX-futResizeState.startX));
   try{localStorage.setItem(FUT_COL_WIDTH_KEY,JSON.stringify(widths));}catch(e){}
   applyFutTableLayout();
 }
@@ -8670,13 +8680,29 @@ function tableMultiFilterHtml(scope,key,options,allLabel){
     +'<button type="button" class="home-multi-option'+(!selected.length?' selected':'')+'" onclick="toggleTableMultiValue(\''+scope+'\',\''+key+'\',\'__all__\',event)"><span class="home-multi-check"></span><span>'+escHtml(allLabel||'Todos')+'</span></button>'
     +options.map(function(option){var value=String(option.value),active=selected.indexOf(value)>=0,encoded=encodeURIComponent(value).replace(/'/g,'%27');return '<button type="button" class="home-multi-option'+(active?' selected':'')+'" onclick="toggleTableMultiValue(\''+scope+'\',\''+key+'\',\''+encoded+'\',event)"><span class="home-multi-check"></span><span>'+escHtml(option.label)+'</span></button>';}).join('')+'</div></div>';
 }
-function toggleTableMulti(scope,key,event){if(event)event.stopPropagation();var same=tableMultiOpen.scope===scope&&tableMultiOpen.key===key;tableMultiOpen=same?{scope:'',key:''}:{scope:scope,key:key};if(scope==='fut')renderFuturos();else renderLotes();}
+function positionOpenTableMulti(){
+  document.querySelectorAll('body>.table-multi-menu.table-multi-floating').forEach(function(old){old.remove();});
+  var wrap=document.querySelector('.table-multi.open');if(!wrap)return;
+  var trigger=wrap.querySelector('.table-multi-trigger'),menu=wrap.querySelector('.table-multi-menu');if(!trigger||!menu)return;
+  menu.classList.add('table-multi-floating');
+  var rect=trigger.getBoundingClientRect(),gap=5,width=Math.min(260,Math.max(210,window.innerWidth-16));
+  menu.style.width=width+'px';
+  var left=Math.max(8,Math.min(rect.right-width,window.innerWidth-width-8));
+  var below=window.innerHeight-rect.bottom-gap,above=rect.top-gap;
+  var openAbove=below<180&&above>below;
+  var available=Math.max(110,(openAbove?above:below)-8);
+  menu.style.left=left+'px';menu.style.right='auto';menu.style.maxHeight=Math.min(320,available)+'px';
+  menu.style.top=openAbove?'auto':(rect.bottom+gap)+'px';menu.style.bottom=openAbove?(window.innerHeight-rect.top+gap)+'px':'auto';
+  document.body.appendChild(menu);
+}
+function toggleTableMulti(scope,key,event){if(event)event.stopPropagation();var same=tableMultiOpen.scope===scope&&tableMultiOpen.key===key;tableMultiOpen=same?{scope:'',key:''}:{scope:scope,key:key};document.querySelectorAll('body>.table-multi-menu.table-multi-floating').forEach(function(old){old.remove();});if(scope==='fut')renderFuturos();else renderLotes();if(!same)requestAnimationFrame(positionOpenTableMulti);}
 function toggleTableMultiValue(scope,key,encoded,event){
   if(event)event.stopPropagation();var selected=tableFilterSelected(scope,key).slice();
   if(encoded==='__all__')selected=[];else{var value=decodeURIComponent(encoded),index=selected.indexOf(value);if(index>=0)selected.splice(index,1);else selected.push(value);}
-  tableFilterState(scope)[key]=selected;tableMultiOpen={scope:scope,key:key};if(scope==='fut')renderFuturos();else renderLotes();
+  tableFilterState(scope)[key]=selected;tableMultiOpen={scope:scope,key:key};if(scope==='fut')renderFuturos();else renderLotes();requestAnimationFrame(positionOpenTableMulti);
 }
-document.addEventListener('click',function(event){if(event.target&&event.target.closest&&event.target.closest('.table-multi'))return;if(tableMultiOpen.scope){tableMultiOpen={scope:'',key:''};document.querySelectorAll('.table-multi.open').forEach(function(el){el.classList.remove('open');});}});
+window.addEventListener('resize',function(){if(tableMultiOpen.scope)requestAnimationFrame(positionOpenTableMulti);});
+document.addEventListener('click',function(event){if(event.target&&event.target.closest&&(event.target.closest('.table-multi')||event.target.closest('.table-multi-menu')))return;if(tableMultiOpen.scope){tableMultiOpen={scope:'',key:''};document.querySelectorAll('.table-multi.open').forEach(function(el){el.classList.remove('open');});document.querySelectorAll('body>.table-multi-menu.table-multi-floating').forEach(function(old){old.remove();});}});
 function updateFutColumnFilter(key,value){
   futColumnFilters[key]=value||'';
   renderFuturos();
@@ -10786,7 +10812,7 @@ function statusGridTemplate(){
   return STATUS_COLS.map(function(c){
     if(visible[c.key]===false)return '0px';
     var w=parseFloat(widths[c.key]||c.w)||c.w;
-    return Math.max(42,w)+'px';
+    return Math.max(78,w)+'px';
   }).join(' ');
 }
 function statusGridWidth(){
@@ -10795,7 +10821,7 @@ function statusGridWidth(){
   return STATUS_COLS.reduce(function(total,c){
     if(visible[c.key]===false)return total;
     var w=parseFloat(widths[c.key]||c.w)||c.w;
-    return total+Math.max(42,w);
+    return total+Math.max(78,w);
   },0);
 }
 function applyStatusGridTemplate(){
@@ -10822,7 +10848,7 @@ function applyStatusGridTemplate(){
   var visible=statusVisibleCols(),frozen=Math.min(getStatusFrozenCount(),visible.length),left=0,widths=getStatusColWidths();
   visible.slice(0,frozen).forEach(function(col){
     document.querySelectorAll('#panel-lotes [data-status-col="'+col.key+'"]').forEach(function(el){el.classList.add('column-frozen');el.style.left=left+'px';});
-    left+=Math.max(42,parseFloat(widths[col.key]||col.w)||col.w);
+    left+=Math.max(78,parseFloat(widths[col.key]||col.w)||col.w);
   });
 }
 var statusGridResizeTimer=null;
@@ -10916,7 +10942,7 @@ function startStatusColumnResize(ev,key){
 function moveStatusColumnResize(ev){
   if(!statusResizeState)return;
   var widths=getStatusColWidths();
-  widths[statusResizeState.key]=Math.max(44,statusResizeState.startW+(ev.clientX-statusResizeState.startX));
+  widths[statusResizeState.key]=Math.max(78,statusResizeState.startW+(ev.clientX-statusResizeState.startX));
   try{localStorage.setItem(STATUS_COL_WIDTH_KEY,JSON.stringify(widths));}catch(e){}
   applyStatusGridTemplate();
 }
