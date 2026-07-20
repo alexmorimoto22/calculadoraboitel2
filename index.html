@@ -864,7 +864,8 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 .fut-mobile-card{background:#fff;border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;box-shadow:0 2px 10px rgba(13,27,42,.05);}
 .fut-mobile-card summary{list-style:none;cursor:pointer;}
 .fut-mobile-card summary::-webkit-details-marker{display:none;}
-.fut-mobile-top{display:flex;justify-content:space-between;gap:10px;padding:12px 13px;background:rgba(13,27,42,.035);border-bottom:1px solid var(--border);}
+.fut-mobile-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:12px 13px;background:rgba(13,27,42,.035);border-bottom:1px solid var(--border);}
+.fut-mobile-top>.badge{flex:0 0 auto;align-self:flex-start;margin:0;padding:5px 9px;font-size:8.5px;line-height:1;border-radius:999px;}
 .fut-mobile-title{font-size:13px;font-weight:850;color:var(--navy);line-height:1.25;}
 .fut-contract-month{display:inline-flex;align-items:center;margin-left:6px;padding:3px 7px;border-radius:999px;background:rgba(201,162,78,.14);color:var(--taupe);font-size:10px;font-weight:850;white-space:nowrap;vertical-align:middle;}
 .fut-mobile-sub{font-size:10px;color:var(--text-3);margin-top:3px;}
@@ -3039,6 +3040,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
     display: flex;
     justify-content: flex-end;
     align-items: center;
+    gap: 8px;
     margin: 8px 0;
   }
 
@@ -3227,6 +3229,32 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
     grid-column: auto;
   }
 }
+
+/* Status mobile: ordenar e filtrar ao lado de Dados visiveis. */
+.status-mobile-sort-trigger,.status-mobile-sort-backdrop,.status-mobile-sort-sheet{display:none;}
+@media (max-width:768px){
+  .status-mobile-sort-trigger{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:7px 12px;border:1px solid rgba(201,162,78,.48);border-radius:8px;background:#fff;color:#0d1b2a;font:inherit;font-size:12px!important;font-weight:700;line-height:1;cursor:pointer;white-space:nowrap;}
+  .status-mobile-sort-trigger svg{width:15px;height:15px;flex:0 0 auto;}
+  body.status-mobile-sort-open{overflow:hidden!important;}
+  .status-mobile-sort-backdrop{position:fixed;inset:0;z-index:10042;display:block;visibility:hidden;opacity:0;background:rgba(13,27,42,.48);transition:opacity .18s ease,visibility .18s ease;}
+  .status-mobile-sort-sheet{position:fixed;z-index:10043;left:0;right:0;bottom:0;display:block;visibility:hidden;transform:translateY(105%);max-height:min(78dvh,680px);overflow:auto;padding:10px 16px calc(16px + env(safe-area-inset-bottom));border-radius:18px 18px 0 0;background:#fff;box-shadow:0 -18px 54px rgba(13,27,42,.22);transition:transform .2s ease,visibility .2s ease;}
+  body.status-mobile-sort-open .status-mobile-sort-backdrop{visibility:visible;opacity:1;}
+  body.status-mobile-sort-open .status-mobile-sort-sheet{visibility:visible;transform:translateY(0);}
+  .status-mobile-sort-handle{width:38px;height:4px;margin:0 auto 12px;border-radius:999px;background:var(--border2);}
+  .status-mobile-sort-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+  .status-mobile-sort-title{margin:0;color:var(--navy);font-size:17px;font-weight:900;}
+  .status-mobile-sort-sub{margin:4px 0 0;color:var(--text-3);font-size:11px;line-height:1.3;}
+  .status-mobile-sort-close{width:32px;height:32px;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--text-2);font-size:18px;cursor:pointer;}
+  .status-mobile-sort-body{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 0;}
+  .status-mobile-sort-field{min-width:0;}
+  .status-mobile-sort-field.full{grid-column:1/-1;}
+  .status-mobile-sort-field label{display:block;margin:0 0 5px;color:var(--taupe);font-size:8px;font-weight:850;letter-spacing:.8px;text-transform:uppercase;}
+  .status-mobile-sort-field select{width:100%;height:42px;padding:0 34px 0 10px;border:1px solid var(--border);border-radius:9px;background:var(--surface2);color:var(--text);font-family:Inter,sans-serif;font-size:12px;font-weight:750;}
+  .status-mobile-sort-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .status-mobile-sort-action{min-height:42px;border:1px solid var(--border);border-radius:9px;background:#fff;color:var(--text-2);font-family:Inter,sans-serif;font-size:11px;font-weight:850;cursor:pointer;}
+  .status-mobile-sort-action.primary{background:var(--navy);border-color:var(--navy);color:#fff;}
+}
+@media (min-width:769px){.status-mobile-sort-trigger,.status-mobile-sort-backdrop,.status-mobile-sort-sheet{display:none!important;}}
 
 @media (max-width: 349px) {
   .status-mobile-columns-options {
@@ -15755,6 +15783,105 @@ restoreBasicSession();
     refreshStatusMobileColumns(true);
   }
 
+  function statusMobileUniqueValues(key) {
+    var panel = getStatusPanel();
+    if (!panel) return [];
+    var seen = {};
+    return Array.prototype.reduce.call(panel.querySelectorAll('.status-row[data-lid]'), function (values, row) {
+      var value = String(row.getAttribute('data-filter-' + key) || '').trim();
+      if (!value || value === '—' || seen[value]) return values;
+      seen[value] = true;
+      values.push(value);
+      return values;
+    }, []).sort(function (a, b) { return a.localeCompare(b, 'pt-BR', { numeric: true }); });
+  }
+
+  function fillStatusMobileSortFilters() {
+    var boitel = document.getElementById('status-mobile-sort-boitel');
+    var modalidade = document.getElementById('status-mobile-sort-modalidade');
+    if (!boitel || !modalidade) return;
+    var boitelAtual = tableFilterSelected('status', 'confinamento')[0] || '';
+    var modalidadeAtual = tableFilterSelected('status', 'modalidade')[0] || '';
+    boitel.innerHTML = '<option value="">Todos os boiteis</option>' + statusMobileUniqueValues('confinamento').map(function (value) {
+      return '<option value="' + escHtml(value) + '"' + (value === boitelAtual ? ' selected' : '') + '>' + escHtml(value) + '</option>';
+    }).join('');
+    modalidade.innerHTML = '<option value="">Todas as modalidades</option>' + statusMobileUniqueValues('modalidade').map(function (value) {
+      return '<option value="' + escHtml(value) + '"' + (value === modalidadeAtual ? ' selected' : '') + '>' + escHtml(value) + '</option>';
+    }).join('');
+    var sortKey = document.getElementById('status-mobile-sort-key');
+    var sortDir = document.getElementById('status-mobile-sort-dir');
+    if (sortKey) sortKey.value = ['numeroLote','entrada','abate','recebimento','b3'].indexOf(statusSortState.key) >= 0 ? statusSortState.key : 'numeroLote';
+    if (sortDir) sortDir.value = statusSortState.dir === 'desc' ? 'desc' : 'asc';
+  }
+
+  function buildStatusMobileSortSheet() {
+    if (document.getElementById('status-mobile-sort-sheet-v1')) return;
+    var backdrop = document.createElement('div');
+    backdrop.id = 'status-mobile-sort-backdrop-v1';
+    backdrop.className = 'status-mobile-sort-backdrop';
+    backdrop.setAttribute('aria-hidden', 'true');
+    var sheet = document.createElement('aside');
+    sheet.id = 'status-mobile-sort-sheet-v1';
+    sheet.className = 'status-mobile-sort-sheet';
+    sheet.setAttribute('role', 'dialog');
+    sheet.setAttribute('aria-modal', 'true');
+    sheet.innerHTML =
+      '<div class="status-mobile-sort-handle"></div>' +
+      '<div class="status-mobile-sort-head"><div><h2 class="status-mobile-sort-title">Ordenar e filtrar</h2><p class="status-mobile-sort-sub">Organize os lotes e refine a visualização.</p></div><button type="button" class="status-mobile-sort-close" aria-label="Fechar">&times;</button></div>' +
+      '<div class="status-mobile-sort-body">' +
+        '<div class="status-mobile-sort-field"><label for="status-mobile-sort-key">Ordenar por</label><select id="status-mobile-sort-key"><option value="numeroLote">Lote</option><option value="entrada">Data de entrada</option><option value="abate">Data de abate</option><option value="recebimento">Data de recebimento</option><option value="b3">Trava</option></select></div>' +
+        '<div class="status-mobile-sort-field"><label for="status-mobile-sort-dir">Ordem</label><select id="status-mobile-sort-dir"><option value="asc">Crescente</option><option value="desc">Decrescente</option></select></div>' +
+        '<div class="status-mobile-sort-field full"><label for="status-mobile-sort-boitel">Boitel</label><select id="status-mobile-sort-boitel"></select></div>' +
+        '<div class="status-mobile-sort-field full"><label for="status-mobile-sort-modalidade">Modalidade</label><select id="status-mobile-sort-modalidade"></select></div>' +
+      '</div>' +
+      '<div class="status-mobile-sort-actions"><button type="button" class="status-mobile-sort-action status-mobile-sort-clear">Limpar filtros</button><button type="button" class="status-mobile-sort-action primary status-mobile-sort-apply">Aplicar</button></div>';
+    document.body.appendChild(backdrop);
+    document.body.appendChild(sheet);
+    backdrop.addEventListener('click', closeStatusMobileSort);
+    sheet.querySelector('.status-mobile-sort-close').addEventListener('click', closeStatusMobileSort);
+    sheet.querySelector('.status-mobile-sort-apply').addEventListener('click', applyStatusMobileSort);
+    sheet.querySelector('.status-mobile-sort-clear').addEventListener('click', clearStatusMobileSortFilters);
+  }
+
+  function openStatusMobileSort() {
+    if (!isMobile()) return;
+    buildStatusMobileSortSheet();
+    fillStatusMobileSortFilters();
+    document.body.classList.add('status-mobile-sort-open');
+    var backdrop = document.getElementById('status-mobile-sort-backdrop-v1');
+    if (backdrop) backdrop.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeStatusMobileSort() {
+    document.body.classList.remove('status-mobile-sort-open');
+    var backdrop = document.getElementById('status-mobile-sort-backdrop-v1');
+    if (backdrop) backdrop.setAttribute('aria-hidden', 'true');
+  }
+
+  function applyStatusMobileSort() {
+    var key = (document.getElementById('status-mobile-sort-key') || {}).value || 'numeroLote';
+    var dir = (document.getElementById('status-mobile-sort-dir') || {}).value || 'asc';
+    var boitel = (document.getElementById('status-mobile-sort-boitel') || {}).value || '';
+    var modalidade = (document.getElementById('status-mobile-sort-modalidade') || {}).value || '';
+    statusColumnFilters.confinamento = boitel ? [boitel] : [];
+    statusColumnFilters.modalidade = modalidade ? [modalidade] : [];
+    setStatusSort(key, dir);
+    applyStatusColumnFilters();
+    closeStatusMobileSort();
+    showToast('Ordenação e filtros aplicados.');
+  }
+
+  function clearStatusMobileSortFilters() {
+    statusColumnFilters.confinamento = [];
+    statusColumnFilters.modalidade = [];
+    var boitel = document.getElementById('status-mobile-sort-boitel');
+    var modalidade = document.getElementById('status-mobile-sort-modalidade');
+    if (boitel) boitel.value = '';
+    if (modalidade) modalidade.value = '';
+    applyStatusColumnFilters();
+    showToast('Filtros de boitel e modalidade limpos.');
+  }
+
   function ensureTrigger() {
     var panel = getStatusPanel();
     var current = document.getElementById('status-mobile-columns-trigger-v2');
@@ -15782,7 +15909,19 @@ restoreBasicSession();
         else panel.insertBefore(wrap, panel.firstChild);
       }
     }
+    var wrap = current.parentNode;
+    var sortTrigger = document.getElementById('status-mobile-sort-trigger-v1');
+    if (!sortTrigger && wrap) {
+      sortTrigger = document.createElement('button');
+      sortTrigger.type = 'button';
+      sortTrigger.id = 'status-mobile-sort-trigger-v1';
+      sortTrigger.className = 'status-mobile-sort-trigger';
+      sortTrigger.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h8M8 18h4M4 5v14M2 17l2 2 2-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Ordenar</span>';
+      sortTrigger.addEventListener('click', openStatusMobileSort);
+      wrap.appendChild(sortTrigger);
+    }
     current.style.display = isMobile() && panelIsVisible(panel) ? '' : 'none';
+    if (sortTrigger) sortTrigger.style.display = isMobile() && panelIsVisible(panel) ? '' : 'none';
   }
 
   function normalizeText(value) {
@@ -15906,15 +16045,18 @@ restoreBasicSession();
   window.openStatusMobileColumns = openStatusMobileColumns;
   window.closeStatusMobileColumns = closeStatusMobileColumns;
   window.applyStatusMobileColumns = applyStatusMobileColumns;
+  window.openStatusMobileSort = openStatusMobileSort;
+  window.closeStatusMobileSort = closeStatusMobileSort;
 
   function init() {
     buildSheet();
+    buildStatusMobileSortSheet();
     refreshStatusMobileColumns(false);
     observer = new MutationObserver(scheduleRefresh);
     observer.observe(document.body, { childList: true, subtree: true });
     window.addEventListener('resize', scheduleRefresh, { passive: true });
     document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape') closeStatusMobileColumns();
+      if (event.key === 'Escape') { closeStatusMobileColumns(); closeStatusMobileSort(); }
     });
   }
 
