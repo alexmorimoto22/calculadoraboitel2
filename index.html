@@ -652,7 +652,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .home-bar-option:hover{background:var(--surface2);}
   .home-bar-option input{width:15px;height:15px;accent-color:var(--accent);}
   .home-pie-slice{cursor:pointer;transition:opacity .15s;}
-  .home-pie-slice:hover,.home-pie-slice.active{opacity:.72;}
+  .home-pie-slice:hover,.home-pie-slice.active,.home-pie-slice.pinned{opacity:.72;}
   .home-chart-legend-button{width:100%;display:grid;grid-template-columns:9px minmax(0,1fr) auto;gap:7px;align-items:center;padding:3px 4px;border:0;border-radius:6px;background:transparent;color:var(--text-2);font-family:'Inter',sans-serif;font-size:10px;text-align:left;cursor:pointer;}
   .home-chart-legend-button:hover,.home-chart-legend-button.active{background:var(--surface2);}
   .home-chart-legend-values{display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap;max-width:210px;}
@@ -2978,13 +2978,16 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .auth-secondary{width:100%;min-height:44px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--navy);font-weight:800;cursor:pointer}
   .password-strength{height:5px;border-radius:999px;background:var(--surface2);overflow:hidden;margin-top:6px}.password-strength span{display:block;height:100%;width:0;background:var(--red);transition:.2s}
   .auth-status-card{padding:18px;border:1px solid var(--border);border-radius:10px;background:rgba(255,255,255,.7);text-align:center}.auth-status-card h3{margin:0 0 8px}.auth-status-card p{font-size:13px;line-height:1.45;color:var(--text-2)}
-  .users-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:14px 0}.users-stat{padding:14px;background:#fff;border:1px solid var(--border);border-radius:9px}.users-stat small{display:block;color:var(--text-3);font-size:9px;font-weight:800;text-transform:uppercase}.users-stat strong{display:block;font-size:22px;margin-top:5px}
-  .users-toolbar{display:grid;grid-template-columns:1.2fr 1.4fr .9fr .9fr auto;gap:8px;margin-bottom:12px}.users-toolbar input,.users-toolbar select{min-height:42px}
-  .users-table-wrap{overflow:auto;border:1px solid var(--border);border-radius:10px;background:#fff}.users-table{width:100%;border-collapse:collapse;min-width:920px}.users-table th,.users-table td{padding:11px;border-bottom:1px solid var(--border);text-align:left;font-size:11px}.users-table th{font-size:9px;text-transform:uppercase;color:var(--text-3);background:var(--surface2)}
-  .role-badge,.profile-status{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:9px;font-weight:850;text-transform:uppercase;background:var(--surface2)}.profile-status.active{color:#3f7d1b}.profile-status.pending{color:#9b6900}.profile-status.blocked,.profile-status.rejected{color:var(--red)}
-  .user-actions{display:flex;gap:5px;flex-wrap:wrap}.user-actions button{min-height:30px;border:1px solid var(--border);border-radius:6px;background:#fff;font-size:9px;font-weight:800;cursor:pointer}.user-actions .primary{background:var(--navy);color:#fff}
+  .users-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:14px 0}.users-stat{min-height:78px;display:flex;flex-direction:column;justify-content:center;padding:13px 15px;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 3px 12px rgba(13,27,42,.035)}.users-stat small{display:block;color:var(--text-3);font-size:8px;font-weight:850;letter-spacing:.75px;text-transform:uppercase}.users-stat strong{display:block;font-size:22px;line-height:1;margin-top:7px;color:var(--text)}
+  #cfg-users .users-stat:first-child{background:var(--navy);border-color:var(--navy)}#cfg-users .users-stat:first-child small{color:rgba(255,255,255,.7)}#cfg-users .users-stat:first-child strong{color:#fff}
+  .users-toolbar{display:grid;grid-template-columns:1.2fr 1.4fr .9fr .9fr auto;gap:8px;margin-bottom:12px}.users-filter{display:grid;gap:5px;min-width:0}.users-filter>span{font-size:8px;font-weight:850;letter-spacing:.75px;text-transform:uppercase;color:var(--text-3)}.users-toolbar input,.users-toolbar select{width:100%;min-height:38px;padding:0 11px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--text);font-family:'Inter',sans-serif;font-size:10.5px;font-weight:650;outline:none}.users-toolbar input:focus,.users-toolbar select:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(13,27,42,.07);background:#fff}
+  #cfg-users .users-toolbar{grid-template-columns:minmax(220px,1.5fr) minmax(150px,.7fr) minmax(150px,.7fr)}
+  #cfg-users .users-stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .users-table-wrap{overflow:auto;border:1px solid var(--border);border-radius:8px;background:#fff;box-shadow:0 3px 12px rgba(13,27,42,.035)}.users-table{width:100%;border-collapse:collapse;min-width:920px;table-layout:fixed}.users-table th,.users-table td{height:48px;padding:9px 12px;border-bottom:1px solid var(--border);text-align:left;font-size:10.5px;vertical-align:middle}.users-table th{height:36px;font-size:8px;font-weight:850;letter-spacing:.7px;text-transform:uppercase;color:var(--text-3);background:var(--surface2)}.users-table th:nth-child(1){width:28%}.users-table th:nth-child(2){width:28%}.users-table th:nth-child(3){width:11%}.users-table th:nth-child(4){width:10%}.users-table th:nth-child(5){width:23%}.users-table tbody tr:nth-child(even){background:rgba(245,241,233,.45)}.users-table tbody tr:hover{background:#faf8f2}.users-table tbody tr:last-child td{border-bottom:0}.users-table td strong{font-size:11px;color:var(--text)}.users-table td small{color:var(--text-3)}
+  .role-badge,.profile-status{display:inline-flex;align-items:center;min-height:22px;padding:3px 9px;border-radius:999px;font-size:8px;font-weight:850;letter-spacing:.25px;text-transform:uppercase;background:var(--surface2)}.role-badge{color:var(--text-2)}.profile-status.active{color:#3f7d1b;background:#eef3e8}.profile-status.pending{color:#9b6900}.profile-status.blocked,.profile-status.rejected{color:var(--red);background:#faece9}
+  .user-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.user-actions button{min-width:64px;min-height:30px;padding:0 10px;border:1px solid var(--border);border-radius:7px;background:#fff;color:var(--text-2);font-family:'Inter',sans-serif;font-size:9px;font-weight:800;cursor:pointer;white-space:nowrap}.user-actions button:hover{border-color:var(--accent);color:var(--accent)}.user-actions .primary{background:var(--navy);border-color:var(--navy);color:#fff}.user-actions .primary:hover{background:#18324a;color:#fff}
   .users-empty{padding:30px;text-align:center;color:var(--text-3)}
-  @media(max-width:768px){.auth-view input,.auth-view select,.auth-view button{font-size:16px!important}.users-stats{grid-template-columns:repeat(2,1fr)}.users-toolbar{grid-template-columns:1fr}.users-table-wrap{border:0;background:transparent;overflow:visible}.users-table{min-width:0;display:block}.users-table thead{display:none}.users-table tbody{display:grid;gap:10px}.users-table tr{display:block;background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px}.users-table td{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px}.users-table td::before{content:attr(data-label);font-size:9px;font-weight:800;text-transform:uppercase;color:var(--text-3)}.users-table td:last-child{display:block;border:0}.user-actions{margin-top:8px}}
+  @media(max-width:768px){.auth-view input,.auth-view select,.auth-view button{font-size:16px!important}.users-stats,#cfg-users .users-stats{grid-template-columns:repeat(2,1fr)}.users-toolbar,#cfg-users .users-toolbar{grid-template-columns:1fr}.users-table-wrap{border:0;background:transparent;overflow:visible}.users-table{min-width:0;display:block}.users-table thead{display:none}.users-table tbody{display:grid;gap:10px}.users-table tr{display:block;background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px}.users-table td{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px}.users-table td::before{content:attr(data-label);font-size:9px;font-weight:800;text-transform:uppercase;color:var(--text-3)}.users-table td:last-child{display:block;border:0}.user-actions{margin-top:8px}}
 /* ─ STATUS MOBILE · COLUNAS VISÍVEIS ─ */
 /* Seletor independente de informacoes dos cards do Status mobile. */
 .status-mobile-columns-trigger,
@@ -4549,9 +4552,9 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
               <tr><td>Bônus frete</td><td id="d-bonusFreteAt">—</td><td id="d-bonusFrete">—</td><td id="d-bonusFreteBoitel">—</td></tr>
               <tr><td>Frete líquido</td><td id="d-freteAnimAt">—</td><td id="d-freteAnim">—</td><td id="d-freteAnimBoitel">—</td></tr>
               <tr><td>Comissão</td><td id="d-comsAt">—</td><td id="d-coms">—</td><td id="d-comsBoitel">—</td></tr>
-              <tr><td>Sanidade</td><td id="d-sanidadeAt">—</td><td id="d-sanidade2">—</td><td id="d-sanidadeBoitel">—</td></tr>
               <tr id="d-custom-costs-rows"></tr>
               <tr class="res-total"><td>Investimento total / animal</td><td id="d-custoAtSaida">—</td><td id="d-invest">—</td><td id="d-investBoitel">—</td></tr>
+              <tr><td>Sanidade <span style="font-size:9px;color:var(--text-3);">(custo operacional)</span></td><td id="d-sanidadeAt">—</td><td id="d-sanidade2">—</td><td id="d-sanidadeBoitel">—</td></tr>
               <tr><td>Custo por @ produzida</td><td id="d-custoProdAt">—</td><td id="d-custoAt">—</td><td id="d-custoAtBoitel">—</td></tr>
 
               <tr class="res-group"><td colspan="4">Faturamento</td></tr>
@@ -4739,6 +4742,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
         <button class="csn" onclick="showCfg('frigs')">Frigoríficos</button>
         <button class="csn" onclick="showCfg('boiteis')">Boitéis</button>
         <button class="csn" onclick="showCfg('transportadoras')">Transportadoras</button>
+        <button class="csn" id="csn-users" onclick="showCfg('users')">Usuários</button>
         <button class="csn" id="csn-params" onclick="showCfg('params')">Parâmetros</button>
       </div>
 
@@ -4863,6 +4867,38 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
         <div id="transportadora-list"></div>
       </div>
 
+      <!-- USUÁRIOS (master only) -->
+      <div id="cfg-users" style="display:none">
+        <div class="cfg-header">
+          <div><h2>Usuários</h2><p>Acessos cadastrados no sistema</p></div>
+          <button class="btn-add" id="user-add-btn" onclick="showUserForm()">+ Adicionar</button>
+        </div>
+        <div id="user-form" style="display:none" class="cfg-form">
+          <div class="form-title" id="user-form-title">Novo usuário</div>
+          <input type="hidden" id="uf-original-username">
+          <div class="g2">
+            <div class="field"><label>Nome</label><input type="text" id="uf-name" placeholder="Nome do usuário"></div>
+            <div class="field"><label>Usuário / e-mail</label><input type="email" id="uf-username" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="usuario@empresa.com"></div>
+          </div>
+          <div class="g2">
+            <div class="field"><label>Senha</label><input type="password" id="uf-password" autocomplete="new-password" placeholder="Mínimo de 6 caracteres"><div class="hint" id="uf-password-hint">Obrigatória para novos usuários.</div></div>
+            <div class="field"><label>Perfil</label><select id="uf-role"><option value="user">Usuário</option><option value="master">Master</option></select><div class="hint">Master pode administrar configurações e usuários.</div></div>
+          </div>
+          <div class="field"><label>Status</label><select id="uf-status"><option value="active">Ativo</option><option value="blocked">Bloqueado</option></select></div>
+          <div class="form-btns">
+            <button class="btn-save" onclick="saveManagedUser()">Salvar usuário</button>
+            <button class="btn-cancel" onclick="hideUserForm()">Cancelar</button>
+          </div>
+        </div>
+        <div id="users-stats" class="users-stats"></div>
+        <div class="users-toolbar">
+          <label class="users-filter"><span>Buscar</span><input type="search" id="users-search" placeholder="Nome ou usuário" oninput="renderUsersList()"></label>
+          <label class="users-filter"><span>Perfil</span><select id="users-role-filter" onchange="renderUsersList()"><option value="">Todos os perfis</option><option value="master">Master</option><option value="user">Usuário</option></select></label>
+          <label class="users-filter"><span>Status</span><select id="users-status-filter" onchange="renderUsersList()"><option value="">Todos os status</option><option value="active">Ativo</option><option value="blocked">Bloqueado</option></select></label>
+        </div>
+        <div id="users-list"></div>
+      </div>
+
       <!-- PARÂMETROS (admin only) -->
       <div id="cfg-params" style="display:none">
         <div class="cfg-header">
@@ -4875,7 +4911,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
             <div class="field" style="margin-bottom:0;">
               <label>Próximo lote</label>
               <input type="text" inputmode="numeric" pattern="[0-9]*" id="p-nextLotNumber" value="1">
-              <div class="hint">Número que será usado no próximo lote. Após o cadastro, avança automaticamente.</div>
+              <div class="hint">Após o cadastro, avança automaticamente. Ao excluir o lote mais recente, o número volta a ficar disponível.</div>
             </div>
             <div class="field next-lot-action">
               <label aria-hidden="true">&nbsp;</label>
@@ -5037,6 +5073,58 @@ const USERS={
 const ADMINS=['hastagro','caroline','alexmorimoto','alex.morimoto22@gmail.com','vitormorimoto@gmail.com','marianamariano2006@gmail.com'];
 const PARAM_ADMINS=['hastagro','alexmorimoto','alex.morimoto22@gmail.com','vitormorimoto@gmail.com','marianamariano2006@gmail.com'];
 const FULL_ACCESS=['hastagro','caroline','alexmorimoto','alex.morimoto22@gmail.com','vitormorimoto@gmail.com','marianamariano2006@gmail.com'];
+const MANAGED_USERS_KEY='vm_agro_managed_users_v1';
+const BUILTIN_USERS=Object.assign({},USERS);
+const BUILTIN_ADMINS=ADMINS.slice();
+const BUILTIN_PARAM_ADMINS=PARAM_ADMINS.slice();
+const BUILTIN_FULL_ACCESS=FULL_ACCESS.slice();
+var managedUsers=[];
+function normalizeManagedUsername(value){return String(value||'').trim().toLowerCase();}
+function setUserArrayMembership(list,username,enabled){
+  var index=list.indexOf(username);
+  if(enabled&&index<0)list.push(username);
+  if(!enabled&&index>=0)list.splice(index,1);
+}
+function applyManagedUsers(){
+  Object.keys(USERS).forEach(function(username){delete USERS[username];});
+  Object.keys(BUILTIN_USERS).forEach(function(username){USERS[username]=BUILTIN_USERS[username];});
+  ADMINS.splice.apply(ADMINS,[0,ADMINS.length].concat(BUILTIN_ADMINS));
+  PARAM_ADMINS.splice.apply(PARAM_ADMINS,[0,PARAM_ADMINS.length].concat(BUILTIN_PARAM_ADMINS));
+  FULL_ACCESS.splice.apply(FULL_ACCESS,[0,FULL_ACCESS.length].concat(BUILTIN_FULL_ACCESS));
+  managedUsers.forEach(function(record){
+    var username=normalizeManagedUsername(record.username);
+    if(!username||!record.password)return;
+    USERS[username]=record.password;
+    var master=record.role==='master';
+    setUserArrayMembership(ADMINS,username,master);
+    setUserArrayMembership(PARAM_ADMINS,username,master);
+    setUserArrayMembership(FULL_ACCESS,username,master);
+  });
+}
+function loadManagedUsers(){
+  try{
+    var saved=JSON.parse(localStorage.getItem(MANAGED_USERS_KEY)||'[]');
+    managedUsers=Array.isArray(saved)?saved.filter(function(record){return record&&normalizeManagedUsername(record.username);}):[];
+  }catch(e){managedUsers=[];}
+  applyManagedUsers();
+}
+function persistManagedUsers(){
+  localStorage.setItem(MANAGED_USERS_KEY,JSON.stringify(managedUsers));
+  applyManagedUsers();
+}
+function getManagedUserRecord(username){
+  username=normalizeManagedUsername(username);
+  var custom=managedUsers.find(function(record){return normalizeManagedUsername(record.username)===username;});
+  if(custom)return Object.assign({},custom,{username:username,builtin:Object.prototype.hasOwnProperty.call(BUILTIN_USERS,username)});
+  if(!Object.prototype.hasOwnProperty.call(BUILTIN_USERS,username))return null;
+  return {username:username,name:'',role:BUILTIN_ADMINS.indexOf(username)>=0?'master':'user',status:'active',password:BUILTIN_USERS[username],builtin:true,createdAt:''};
+}
+function getAllManagedUserRecords(){
+  var usernames=Object.keys(BUILTIN_USERS);
+  managedUsers.forEach(function(record){var username=normalizeManagedUsername(record.username);if(username&&usernames.indexOf(username)<0)usernames.push(username);});
+  return usernames.map(getManagedUserRecord).filter(Boolean).sort(function(a,b){return String(a.name||a.username).localeCompare(String(b.name||b.username),'pt-BR');});
+}
+loadManagedUsers();
 const SESSION_KEY='vm_agro_session';
 let currentUser='';
 /* Mantidos como compatibilidade dos dados antigos; o login básico não usa perfis do Supabase. */
@@ -5049,7 +5137,8 @@ function getCurrentRole(){return isAdminUser()?'admin':'user';}
 function hasPermission(permission){
   if(!currentUser)return false;
   if(permission==='settings.parameters')return isParameterAdmin();
-  if(String(permission||'').indexOf('users.')===0||permission==='audit.view')return false;
+  if(String(permission||'').indexOf('users.')===0)return isAdminUser();
+  if(permission==='audit.view')return false;
   if(isAdminUser())return true;
   return [
     'home.view','lots.view_allowed','lots.view_assigned','lots.create','lots.edit_assigned',
@@ -5721,6 +5810,7 @@ SUPABASE_LOCAL_KEYS[FUTUROS_KEY]='futuros';
 SUPABASE_LOCAL_KEYS[FIN_TX_KEY]='financeiro_lancamentos';
 SUPABASE_LOCAL_KEYS[FIN_DOC_KEY]='financeiro_notas';
 SUPABASE_LOCAL_KEYS[FIN_FREIGHT_KEY]='financeiro_fretes';
+SUPABASE_LOCAL_KEYS[MANAGED_USERS_KEY]='managed_users';
 const SUPABASE_REMOTE_KEYS=Object.keys(SUPABASE_LOCAL_KEYS).reduce(function(acc,localKey){
   acc[SUPABASE_LOCAL_KEYS[localKey]]=localKey;
   return acc;
@@ -5749,6 +5839,23 @@ function getSupabaseClient(){
     supabaseClient=window.supabase.createClient(cfg.url,cfg.anonKey);
   }
   return supabaseClient;
+}
+async function refreshManagedUsersFromCloud(){
+  if(!supabaseIsConfigured())return false;
+  try{
+    var onlineUsers=await buscarDadosBanco(MANAGED_USERS_KEY);
+    if(!Array.isArray(onlineUsers))return false;
+    supabaseHydrating=true;
+    localStorage.setItem(MANAGED_USERS_KEY,JSON.stringify(onlineUsers));
+    supabaseHydrating=false;
+    managedUsers=onlineUsers;
+    applyManagedUsers();
+    return true;
+  }catch(err){
+    supabaseHydrating=false;
+    console.warn('Falha ao carregar usuários online',err);
+    return false;
+  }
 }
 function supabaseUserKey(){
   return currentOrganizationId||'sem_organizacao';
@@ -6900,6 +7007,8 @@ function applyCurrentUserPermissions(){
   document.querySelectorAll('.header-report').forEach(function(el){el.style.display='';});
   var canManage=isAdminUser();
   document.querySelectorAll('#cfg-vends input,#cfg-vends select,#cfg-vends textarea,#cfg-vends button,#cfg-frigs input,#cfg-frigs select,#cfg-frigs textarea,#cfg-frigs button,#cfg-boiteis input,#cfg-boiteis select,#cfg-boiteis textarea,#cfg-boiteis button,#cfg-transportadoras input,#cfg-transportadoras select,#cfg-transportadoras textarea,#cfg-transportadoras button').forEach(function(el){el.disabled=!canManage;});
+  var usersTab=document.getElementById('csn-users');if(usersTab)usersTab.style.display=canManage?'':'none';
+  document.querySelectorAll('#cfg-users input,#cfg-users select,#cfg-users button').forEach(function(el){el.disabled=!canManage;});
   var canParams=isParameterAdmin();
   document.querySelectorAll('#cfg-params input,#cfg-params select,#cfg-params textarea,#cfg-params .btn-save,#cfg-params .btn-add,#cfg-params .btn-ic-del').forEach(function(el){el.disabled=!canParams;});
 }
@@ -6910,16 +7019,19 @@ async function entrarApp(username,tab){
   document.getElementById('user-display').textContent=currentUser;
   var err=document.getElementById('login-err');if(err)err.textContent='';
   await carregarDadosSupabase();
+  loadManagedUsers();
   applyCurrentUserPermissions();
   sanitizarLotes();populateTipoSelects();populateFrigSelect();populateBoitelSelect();populateVendSelect();populateFilterVend();populateFilterFrig();populateCalcVendSelect();
   switchTab(canAccessTab(tab||'home')?(tab||'home'):'home');
   return true;
 }
-function doLogin(){
+async function doLogin(){
+  await refreshManagedUsersFromCloud();
   var username=String((document.getElementById('inp-user')||{}).value||'').trim().toLowerCase();
   var password=String((document.getElementById('inp-pass')||{}).value||'');
   var err=document.getElementById('login-err');if(err)err.textContent='';
-  if(!Object.prototype.hasOwnProperty.call(USERS,username)||USERS[username]!==password){
+  var account=getManagedUserRecord(username);
+  if(!account||account.status==='blocked'||!Object.prototype.hasOwnProperty.call(USERS,username)||USERS[username]!==password){
     if(err)err.textContent='Usuário ou senha inválidos.';
     var pass=document.getElementById('inp-pass');if(pass){pass.value='';pass.focus();}
     return;
@@ -6934,11 +7046,13 @@ function doLogout(){currentUser='';currentAuthUser=null;currentProfile=null;curr
   document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';
   var user=document.getElementById('inp-user'),pass=document.getElementById('inp-pass');if(user)user.value='';if(pass)pass.value='';
 }
-function restoreBasicSession(){
+async function restoreBasicSession(){
   try{
+    await refreshManagedUsersFromCloud();
     var saved=JSON.parse(localStorage.getItem(SESSION_KEY)||'null');
     var username=String(saved&&saved.username||'').trim().toLowerCase();
-    if(username&&Object.prototype.hasOwnProperty.call(USERS,username)){
+    var account=getManagedUserRecord(username);
+    if(username&&account&&account.status!=='blocked'&&Object.prototype.hasOwnProperty.call(USERS,username)){
       currentUser=username;
       var inp=document.getElementById('inp-user');if(inp)inp.value=username;
       entrarApp(username,'home');
@@ -7115,6 +7229,54 @@ var HOME_PIE_GROUPS=[
   {key:'recebimento',label:'Recebimento'}
 ];
 var homeChartState={inicio:'',fim:'',modo:'periodo',metricas:{faturamento:true,capital:true,lucro:true},barOptionsOpen:false,pieMetrics:['qtd'],pieOptionsOpen:false,pieGroup:'status'};
+var homePiePinnedSubtotal=null;
+function pieSubtotalChart(event){
+  var panel=event&&event.currentTarget&&event.currentTarget.closest('.home-chart-panel');
+  return panel&&panel.getAttribute('data-pie-chart')||'';
+}
+function fillPieSubtotal(subtotal,label,value){
+  if(!subtotal)return;
+  subtotal.textContent='';
+  var name=document.createElement('div'),amount=document.createElement('strong');
+  name.textContent=label;amount.textContent=value;
+  subtotal.appendChild(name);subtotal.appendChild(amount);subtotal.classList.add('visible');
+}
+function showPieSubtotal(event,label,value){
+  var chart=pieSubtotalChart(event);
+  if(homePiePinnedSubtotal&&homePiePinnedSubtotal.chart===chart)return;
+  var panel=event.currentTarget&&event.currentTarget.closest('.home-chart-panel');
+  fillPieSubtotal(panel&&panel.querySelector('.home-pie-subtotal'),decodeURIComponent(label),decodeURIComponent(value));
+}
+function hidePieSubtotal(event){
+  var chart=pieSubtotalChart(event);
+  if(homePiePinnedSubtotal&&homePiePinnedSubtotal.chart===chart)return;
+  var panel=event.currentTarget&&event.currentTarget.closest('.home-chart-panel');
+  var subtotal=panel&&panel.querySelector('.home-pie-subtotal');if(!subtotal)return;
+  subtotal.textContent='';subtotal.classList.remove('visible');
+}
+function pinPieSubtotal(event,chart,label,value){
+  if(event)event.stopPropagation();
+  chart=chart||pieSubtotalChart(event);
+  homePiePinnedSubtotal={chart:chart,label:decodeURIComponent(label),value:decodeURIComponent(value)};
+  document.querySelectorAll('.home-pie-subtotal').forEach(function(subtotal){subtotal.textContent='';subtotal.classList.remove('visible');});
+  document.querySelectorAll('.home-pie-slice.pinned').forEach(function(slice){slice.classList.remove('pinned');});
+  var panel=event.currentTarget&&event.currentTarget.closest('.home-chart-panel');
+  if(panel){
+    if(event.currentTarget)event.currentTarget.classList.add('pinned');
+    fillPieSubtotal(panel.querySelector('.home-pie-subtotal'),homePiePinnedSubtotal.label,homePiePinnedSubtotal.value);
+  }
+}
+function piePinnedSubtotalHtml(chart){
+  var pinned=homePiePinnedSubtotal&&homePiePinnedSubtotal.chart===chart?homePiePinnedSubtotal:null;
+  return '<div class="home-pie-subtotal'+(pinned?' visible':'')+'" aria-live="polite">'+(pinned?'<div>'+escHtml(pinned.label)+'</div><strong>'+escHtml(pinned.value)+'</strong>':'')+'</div>';
+}
+document.addEventListener('click',function(event){
+  if(!homePiePinnedSubtotal)return;
+  if(event.target&&event.target.closest&&event.target.closest('.home-pie'))return;
+  homePiePinnedSubtotal=null;
+  document.querySelectorAll('.home-pie-subtotal').forEach(function(subtotal){subtotal.textContent='';subtotal.classList.remove('visible');});
+  document.querySelectorAll('.home-pie-slice.pinned').forEach(function(slice){slice.classList.remove('pinned');});
+});
 var homeOverviewState={inicio:'',fim:'',modo:'periodo',metricas:{faturamento:true,capital:true,lucro:true},optionsOpen:false};
 var homeOpenFilter='';
 function homeFilterSelected(type){return Array.isArray(homeFilterState[type])?homeFilterState[type]:[];}
@@ -7267,6 +7429,17 @@ document.addEventListener('click',function(event){
   if(!target.closest('.fut-table-actions')){
     document.querySelectorAll('.fut-column-panel.open').forEach(function(panel){panel.classList.remove('open');});
   }
+});
+document.addEventListener('click',function(event){
+  if(!window.matchMedia||!window.matchMedia('(max-width: 768px)').matches)return;
+  var target=event.target;
+  if(target&&target.closest&&(target.closest('.home-pie-options')||target.closest('.home-bar-options')))return;
+  var shouldClose=homeChartState.pieOptionsOpen||homeChartState.barOptionsOpen||homeOverviewState.optionsOpen;
+  if(!shouldClose)return;
+  homeChartState.pieOptionsOpen=false;
+  homeChartState.barOptionsOpen=false;
+  homeOverviewState.optionsOpen=false;
+  renderHome();
 });
 function renderHome(){
   var now=new Date();
@@ -7869,11 +8042,12 @@ function homePieChartHtml(groups,totalQtd,grouping){
         var value=valueFor(group,key),part=Math.abs(value),pct=total>0?part/total*100:0;
         var selectedStatus=isStatusGroup&&homeFilterSelected('status').indexOf(group.status)>=0;
         var encoded=encodeURIComponent(group.status).replace(/'/g,'%27');
-        var onClick=isStatusGroup?' onclick="homeChartFilterStatus(\''+encoded+'\')"':'';
         var color=isStatusGroup?(colors[group.status]||'#C8C1B4'):groupPalette[groupIndex%groupPalette.length];
         if(pct>0){
           var hoverLabel=encodeURIComponent(group.nome),hoverValue=encodeURIComponent(displayValue(metric,value));
-          slices.push('<circle class="home-pie-slice'+(selectedStatus?' active':'')+'" cx="50" cy="50" r="'+radii[metricIndex]+'" fill="none" stroke="'+color+'" stroke-width="'+stroke+'" pathLength="100" stroke-dasharray="'+pct.toFixed(3)+' '+(100-pct).toFixed(3)+'" stroke-dashoffset="'+(-cursor).toFixed(3)+'" transform="rotate(-90 50 50)" onmouseenter="showPieSubtotal(event,\''+hoverLabel+'\',\''+hoverValue+'\')" onmouseleave="hidePieSubtotal(event)" ontouchstart="showPieSubtotal(event,\''+hoverLabel+'\',\''+hoverValue+'\')"'+onClick+'><title>'+escHtml(metric.label+' · '+group.nome+': '+displayValue(metric,value))+'</title></circle>');
+          var pinned=homePiePinnedSubtotal&&homePiePinnedSubtotal.chart==='distribution'&&homePiePinnedSubtotal.label===group.nome&&homePiePinnedSubtotal.value===displayValue(metric,value);
+          var onClick=' onclick="pinPieSubtotal(event,\'distribution\',\''+hoverLabel+'\',\''+hoverValue+'\')'+(isStatusGroup?';homeChartFilterStatus(\''+encoded+'\')':'')+'"';
+          slices.push('<circle class="home-pie-slice'+(selectedStatus?' active':'')+(pinned?' pinned':'')+'" cx="50" cy="50" r="'+radii[metricIndex]+'" fill="none" stroke="'+color+'" stroke-width="'+stroke+'" pathLength="100" stroke-dasharray="'+pct.toFixed(3)+' '+(100-pct).toFixed(3)+'" stroke-dashoffset="'+(-cursor).toFixed(3)+'" transform="rotate(-90 50 50)" onmouseenter="showPieSubtotal(event,\''+hoverLabel+'\',\''+hoverValue+'\')" onmouseleave="hidePieSubtotal(event)" ontouchstart="showPieSubtotal(event,\''+hoverLabel+'\',\''+hoverValue+'\')"'+onClick+'><title>'+escHtml(metric.label+' · '+group.nome+': '+displayValue(metric,value))+'</title></circle>');
           cursor+=pct;
         }
       });
@@ -7897,25 +8071,10 @@ function homePieChartHtml(groups,totalQtd,grouping){
     var chartTitle='Distribuição por '+grouping.label.toLowerCase();
     var chartNote=isStatusGroup?'Toque em uma fatia para filtrar os lotes':'Compare os indicadores por '+grouping.label.toLowerCase()+'.';
     if(homeChartPanelCollapsed('pie'))return '<div class="home-chart-panel collapsed"><div class="home-chart-head"><div><div class="home-chart-title">'+escHtml(chartTitle)+'</div><div class="home-chart-note">'+escHtml(chartNote)+'</div></div><button type="button" class="home-chart-collapse" onclick="toggleHomeChartPanel(\'pie\')">Mostrar quadro</button></div></div>';
-    return '<div class="home-chart-panel"><div class="home-chart-head"><div><div class="home-chart-title">'+escHtml(chartTitle)+'</div><div class="home-chart-note">'+escHtml(chartNote)+'</div></div><div class="home-pie-head-actions"><div class="home-chart-control" style="min-width:142px"><label for="home-pie-group">Agrupar por</label><select id="home-pie-group" onchange="homePieSetGroup(this.value)">'+groupOptions+'</select></div><div class="home-pie-options"><button type="button" class="home-pie-options-btn'+(homeChartState.pieOptionsOpen?' active':'')+'" onclick="homePieToggleOptions(event)">Dados visíveis · '+selected.length+'/3</button><div class="home-pie-options-panel'+(homeChartState.pieOptionsOpen?' open':'')+'" onclick="event.stopPropagation()"><div class="home-pie-options-title">Dados visíveis</div><div class="home-pie-options-sub">Escolha até três indicadores para comparar.</div><div class="home-pie-options-grid">'+options+'</div></div></div><button type="button" class="home-chart-collapse" onclick="toggleHomeChartPanel(\'pie\')">Minimizar quadro</button></div></div>'
+    return '<div class="home-chart-panel" data-pie-chart="distribution"><div class="home-chart-head"><div><div class="home-chart-title">'+escHtml(chartTitle)+'</div><div class="home-chart-note">'+escHtml(chartNote)+'</div></div><div class="home-pie-head-actions"><div class="home-chart-control" style="min-width:142px"><label for="home-pie-group">Agrupar por</label><select id="home-pie-group" onchange="homePieSetGroup(this.value)">'+groupOptions+'</select></div><div class="home-pie-options"><button type="button" class="home-pie-options-btn'+(homeChartState.pieOptionsOpen?' active':'')+'" onclick="homePieToggleOptions(event)">Dados visíveis · '+selected.length+'/3</button><div class="home-pie-options-panel'+(homeChartState.pieOptionsOpen?' open':'')+'" onclick="event.stopPropagation()"><div class="home-pie-options-title">Dados visíveis</div><div class="home-pie-options-sub">Escolha até três indicadores para comparar.</div><div class="home-pie-options-grid">'+options+'</div></div></div><button type="button" class="home-chart-collapse" onclick="toggleHomeChartPanel(\'pie\')">Minimizar quadro</button></div></div>'
       +'<div class="home-chart-note" style="margin:-4px 0 10px">'+escHtml(metricHint)+'</div>'
-      +'<div class="home-pie-layout"><div class="home-pie'+(selected.length>1?' multi':'')+'"><svg width="160" height="160" viewBox="0 0 100 100" role="img" aria-label="Distribuição por status">'+slices.join('')+'</svg><div class="home-pie-center"><strong>'+escHtml(centerValue(firstMetric,firstTotal))+'</strong><span>'+escHtml(firstMetric.label)+'</span><div class="home-pie-subtotal" aria-live="polite"></div></div></div><div class="home-chart-legend">'+legend+'</div></div></div>';
+      +'<div class="home-pie-layout"><div class="home-pie'+(selected.length>1?' multi':'')+'"><svg width="160" height="160" viewBox="0 0 100 100" role="img" aria-label="Distribuição por status">'+slices.join('')+'</svg><div class="home-pie-center"><strong>'+escHtml(centerValue(firstMetric,firstTotal))+'</strong><span>'+escHtml(firstMetric.label)+'</span>'+piePinnedSubtotalHtml('distribution')+'</div></div><div class="home-chart-legend">'+legend+'</div></div></div>';
   }
-  function showPieSubtotal(event,label,value){
-    var panel=event.currentTarget&&event.currentTarget.closest('.home-chart-panel');
-    var subtotal=panel&&panel.querySelector('.home-pie-subtotal');if(!subtotal)return;
-    subtotal.textContent='';
-    var name=document.createElement('div'),amount=document.createElement('strong');
-    name.textContent=decodeURIComponent(label);amount.textContent=decodeURIComponent(value);
-    subtotal.appendChild(name);subtotal.appendChild(amount);subtotal.classList.add('visible');
-  }
-  function hidePieSubtotal(event){
-    var panel=event.currentTarget&&event.currentTarget.closest('.home-chart-panel');
-    var subtotal=panel&&panel.querySelector('.home-pie-subtotal');if(!subtotal)return;
-    subtotal.textContent='';subtotal.classList.remove('visible');
-  }
-  window.showPieSubtotal=showPieSubtotal;
-  window.hidePieSubtotal=hidePieSubtotal;
   function homeMonthlyBarsHtml(rows,metricas,chartOptions){
     metricas=metricas||homeChartState.metricas;
     chartOptions=chartOptions||{};
@@ -8889,12 +9048,15 @@ function futCoverageChartHtml(lotes){
   var head='<div class="home-chart-head"><div><div class="home-chart-title">Cobertura B3</div><div class="home-chart-note">Necessidade total de contratos dos lotes vinculados</div></div><button type="button" class="home-chart-collapse" onclick="toggleFutCoverageChart()">'+(collapsed?'Mostrar quadro':'Minimizar quadro')+'</button></div>';
   if(collapsed)return '<div class="home-chart-panel collapsed">'+head+'</div>';
   var circles='<circle cx="50" cy="50" r="37" fill="none" stroke="#E8E3D9" stroke-width="22"></circle>';
-  if(pctTravado>0)circles+='<circle cx="50" cy="50" r="37" fill="none" stroke="#6B7056" stroke-width="22" pathLength="100" stroke-dasharray="'+pctTravado.toFixed(3)+' '+(100-pctTravado).toFixed(3)+'" transform="rotate(-90 50 50)" onmouseenter="showPieSubtotal(event,\'Travados\',\''+encodeURIComponent(fmtContratosB3(travados)+' ctr')+'\')" onmouseleave="hidePieSubtotal(event)" ontouchstart="showPieSubtotal(event,\'Travados\',\''+encodeURIComponent(fmtContratosB3(travados)+' ctr')+'\')"><title>Travados: '+fmtContratosB3(travados)+' contratos</title></circle>';
-  if(pctAberto>0)circles+='<circle cx="50" cy="50" r="37" fill="none" stroke="#C9A24E" stroke-width="22" pathLength="100" stroke-dasharray="'+pctAberto.toFixed(3)+' '+(100-pctAberto).toFixed(3)+'" stroke-dashoffset="'+(-pctTravado).toFixed(3)+'" transform="rotate(-90 50 50)" onmouseenter="showPieSubtotal(event,\'Em%20aberto\',\''+encodeURIComponent(fmtContratosB3(emAberto)+' ctr')+'\')" onmouseleave="hidePieSubtotal(event)" ontouchstart="showPieSubtotal(event,\'Em%20aberto\',\''+encodeURIComponent(fmtContratosB3(emAberto)+' ctr')+'\')"><title>Em aberto: '+fmtContratosB3(emAberto)+' contratos</title></circle>';
+  var travadosValue=fmtContratosB3(travados)+' ctr',abertoValue=fmtContratosB3(emAberto)+' ctr';
+  var travadosPinned=homePiePinnedSubtotal&&homePiePinnedSubtotal.chart==='b3'&&homePiePinnedSubtotal.label==='Travados'&&homePiePinnedSubtotal.value===travadosValue;
+  var abertoPinned=homePiePinnedSubtotal&&homePiePinnedSubtotal.chart==='b3'&&homePiePinnedSubtotal.label==='Em aberto'&&homePiePinnedSubtotal.value===abertoValue;
+  if(pctTravado>0)circles+='<circle class="home-pie-slice'+(travadosPinned?' pinned':'')+'" cx="50" cy="50" r="37" fill="none" stroke="#6B7056" stroke-width="22" pathLength="100" stroke-dasharray="'+pctTravado.toFixed(3)+' '+(100-pctTravado).toFixed(3)+'" transform="rotate(-90 50 50)" onmouseenter="showPieSubtotal(event,\'Travados\',\''+encodeURIComponent(travadosValue)+'\')" onmouseleave="hidePieSubtotal(event)" ontouchstart="showPieSubtotal(event,\'Travados\',\''+encodeURIComponent(travadosValue)+'\')" onclick="pinPieSubtotal(event,\'b3\',\'Travados\',\''+encodeURIComponent(travadosValue)+'\')"><title>Travados: '+fmtContratosB3(travados)+' contratos</title></circle>';
+  if(pctAberto>0)circles+='<circle class="home-pie-slice'+(abertoPinned?' pinned':'')+'" cx="50" cy="50" r="37" fill="none" stroke="#C9A24E" stroke-width="22" pathLength="100" stroke-dasharray="'+pctAberto.toFixed(3)+' '+(100-pctAberto).toFixed(3)+'" stroke-dashoffset="'+(-pctTravado).toFixed(3)+'" transform="rotate(-90 50 50)" onmouseenter="showPieSubtotal(event,\'Em%20aberto\',\''+encodeURIComponent(abertoValue)+'\')" onmouseleave="hidePieSubtotal(event)" ontouchstart="showPieSubtotal(event,\'Em%20aberto\',\''+encodeURIComponent(abertoValue)+'\')" onclick="pinPieSubtotal(event,\'b3\',\'Em%20aberto\',\''+encodeURIComponent(abertoValue)+'\')"><title>Em aberto: '+fmtContratosB3(emAberto)+' contratos</title></circle>';
   var legend='<div class="home-chart-legend-button"><span class="home-chart-legend-dot" style="background:#0D1B2A"></span><span>Total necessário</span><span class="home-chart-legend-values"><strong>'+fmtContratosB3(totalNecessario)+' ctr</strong></span></div>'
     +'<div class="home-chart-legend-button"><span class="home-chart-legend-dot" style="background:#C9A24E"></span><span>Em aberto</span><span class="home-chart-legend-values"><strong>'+fmtContratosB3(emAberto)+' ctr</strong></span></div>'
     +'<div class="home-chart-legend-button"><span class="home-chart-legend-dot" style="background:#6B7056"></span><span>Travados</span><span class="home-chart-legend-values"><strong>'+fmtContratosB3(travados)+' ctr</strong></span></div>';
-  return '<div class="home-chart-panel fut-coverage-panel">'+head+'<div class="home-pie-layout"><div class="home-pie"><svg width="160" height="160" viewBox="0 0 100 100" role="img" aria-label="Cobertura de contratos B3">'+circles+'</svg><div class="home-pie-center"><strong>'+fmtContratosB3(totalNecessario)+'</strong><span>Total necessário</span><div class="home-pie-subtotal" aria-live="polite"></div></div></div><div class="home-chart-legend">'+legend+'</div></div></div>';
+  return '<div class="home-chart-panel fut-coverage-panel" data-pie-chart="b3">'+head+'<div class="home-pie-layout"><div class="home-pie"><svg width="160" height="160" viewBox="0 0 100 100" role="img" aria-label="Cobertura de contratos B3">'+circles+'</svg><div class="home-pie-center"><strong>'+fmtContratosB3(totalNecessario)+'</strong><span>Total necessário</span>'+piePinnedSubtotalHtml('b3')+'</div></div><div class="home-chart-legend">'+legend+'</div></div></div>';
 }
 function renderFuturos(){
   fillFuturoLoteSelects();
@@ -12094,11 +12256,8 @@ function nextAvailableLotNumber(numero,lotes){
 function preservarSequenciaAoExcluirLote(lote,lotes){
   var excluido=parseInt(getNumeroLote(lote),10);
   if(!isFinite(excluido)||excluido<1)return;
-  updateGlobalLotSequence(excluido);
-  var configurado=parseInt(getConfiguredNextLotNumber(),10);
-  if(isFinite(configurado)&&configurado>excluido)return;
   var restantes=(lotes||[]).filter(function(item){return String(item.id)!==String(lote.id);});
-  setConfiguredNextLotNumber(nextAvailableLotNumber(excluido+1,restantes));
+  setConfiguredNextLotNumber(getHighestExistingLotNumber(restantes)+1);
 }
 function proximoNumeroLote(lotes){
   var configurado=getConfiguredNextLotNumber();
@@ -13488,8 +13647,8 @@ function calcular(opts){
   // Custo total
   const investAnim=investCapital+custoOp;
   const investAnimBoitel=investCapital+custoOpBoitel;
-  // Total exibido no bloco "Custos por animal": soma apenas as linhas visíveis ali.
-  const investAnimVisivel=investCapital+sanidade+extraCostPerAnim;
+  // Investimento exibido: compra, comissão, frete e adicionais; sanidade fica como custo operacional separado.
+  const investAnimVisivel=investCapital+extraCostPerAnim;
   const custoAtCompraVisivel=atCompra>0?investAnimVisivel/atCompra:0;
   // Custo por @ produzida (somente ração + operacional — sem frete e sanidade)
   const custoAtProd=atProd>0?(custoConf)/atProd:0;
@@ -13770,8 +13929,9 @@ function calcular(opts){
 
 /* ── CONFIGURAÇÕES ─────────────────────────────── */
 function showCfg(sec){
-  var sections=['vends','frigs','boiteis','transportadoras','params'];
+  var sections=['vends','frigs','boiteis','transportadoras','users','params'];
   if(sections.indexOf(sec)<0)sec='vends';
+  if(sec==='users'&&!isAdminUser())sec='vends';
   sections.forEach(function(s){
     const el=document.getElementById('cfg-'+s);
     if(el)el.style.display=s===sec?'block':'none';
@@ -13781,8 +13941,112 @@ function showCfg(sec){
   if(sec==='frigs')renderFrigList();
   if(sec==='boiteis')renderBoitelList();
   if(sec==='transportadoras')renderTransportadoraList();
+  if(sec==='users')renderUsersList();
   if(sec==='params'){loadParamsForm();renderCustomCostList();renderRacasList();}
   applyCurrentUserPermissions();
+}
+function userDisplayName(record){
+  if(record&&String(record.name||'').trim())return String(record.name).trim();
+  var knownNames={hastagro:'Hasta Agro',caroline:'Caroline','alexmorimoto':'Alex Morimoto','alex.morimoto22@gmail.com':'Alex Morimoto','vitormorimoto':'Vitor Morimoto','vitormorimoto@gmail.com':'Vitor Morimoto','marianamariano2006@gmail.com':'Mariana Mariano'};
+  if(record&&knownNames[record.username])return knownNames[record.username];
+  var base=String(record&&record.username||'').split('@')[0].replace(/[._-]+/g,' ');
+  return base.replace(/\b\w/g,function(letter){return letter.toUpperCase();})||'Usuário';
+}
+function renderUsersList(){
+  var list=document.getElementById('users-list'),stats=document.getElementById('users-stats');
+  if(!list||!stats)return;
+  var all=getAllManagedUserRecords();
+  var active=all.filter(function(record){return record.status!=='blocked';}).length;
+  var masters=all.filter(function(record){return record.role==='master'&&record.status!=='blocked';}).length;
+  var blocked=all.length-active;
+  stats.innerHTML='<div class="users-stat"><small>Total</small><strong>'+all.length+'</strong></div>'
+    +'<div class="users-stat"><small>Ativos</small><strong>'+active+'</strong></div>'
+    +'<div class="users-stat"><small>Masters</small><strong>'+masters+'</strong></div>'
+    +'<div class="users-stat"><small>Bloqueados</small><strong>'+blocked+'</strong></div>';
+  var search=String((document.getElementById('users-search')||{}).value||'').trim().toLowerCase();
+  var role=String((document.getElementById('users-role-filter')||{}).value||'');
+  var status=String((document.getElementById('users-status-filter')||{}).value||'');
+  var rows=all.filter(function(record){
+    var haystack=(userDisplayName(record)+' '+record.username).toLowerCase();
+    return (!search||haystack.indexOf(search)>=0)&&(!role||record.role===role)&&(!status||(record.status||'active')===status);
+  });
+  if(!rows.length){list.innerHTML='<div class="users-empty">Nenhum usuário encontrado.</div>';return;}
+  list.innerHTML='<div class="users-table-wrap"><table class="users-table"><thead><tr><th>Nome</th><th>Usuário / e-mail</th><th>Perfil</th><th>Status</th><th>Ações</th></tr></thead><tbody>'
+    +rows.map(function(record){
+      var encoded=encodeURIComponent(record.username);
+      var isCurrent=record.username===currentUser;
+      return '<tr><td data-label="Nome"><strong>'+escHtml(userDisplayName(record))+'</strong></td>'
+        +'<td data-label="Usuário / e-mail">'+escHtml(record.username)+(isCurrent?' <small>(você)</small>':'')+'</td>'
+        +'<td data-label="Perfil"><span class="role-badge">'+(record.role==='master'?'Master':'Usuário')+'</span></td>'
+        +'<td data-label="Status"><span class="profile-status '+(record.status==='blocked'?'blocked':'active')+'">'+(record.status==='blocked'?'Bloqueado':'Ativo')+'</span></td>'
+        +'<td data-label="Ações"><div class="user-actions"><button class="primary" onclick="showUserForm(decodeURIComponent(\''+encoded+'\'))">Editar</button>'
+        +(!isCurrent?'<button onclick="toggleManagedUserStatus(decodeURIComponent(\''+encoded+'\'))">'+(record.status==='blocked'?'Ativar':'Bloquear')+'</button>':'')
+        +(!record.builtin&&!isCurrent?'<button onclick="deleteManagedUser(decodeURIComponent(\''+encoded+'\'))">Excluir</button>':'')
+        +'</div></td></tr>';
+    }).join('')+'</tbody></table></div>';
+}
+function showUserForm(username){
+  if(!requirePermission('users.manage'))return;
+  var record=username?getManagedUserRecord(username):null;
+  document.getElementById('user-form-title').textContent=record?'Editar usuário':'Novo usuário';
+  document.getElementById('uf-original-username').value=record?record.username:'';
+  document.getElementById('uf-name').value=record?userDisplayName(record):'';
+  document.getElementById('uf-username').value=record?record.username:'';
+  document.getElementById('uf-username').disabled=!!record;
+  document.getElementById('uf-password').value='';
+  document.getElementById('uf-password-hint').textContent=record?'Deixe em branco para manter a senha atual.':'Obrigatória para novos usuários.';
+  document.getElementById('uf-role').value=record&&record.role==='master'?'master':'user';
+  document.getElementById('uf-status').value=record&&record.status==='blocked'?'blocked':'active';
+  document.getElementById('user-form').style.display='block';
+  (record?document.getElementById('uf-name'):document.getElementById('uf-username')).focus();
+}
+function hideUserForm(){
+  var form=document.getElementById('user-form');if(form)form.style.display='none';
+  var username=document.getElementById('uf-username');if(username)username.disabled=false;
+}
+function saveManagedUser(){
+  if(!requirePermission('users.manage'))return;
+  var original=normalizeManagedUsername(document.getElementById('uf-original-username').value);
+  var username=normalizeManagedUsername(document.getElementById('uf-username').value);
+  var name=String(document.getElementById('uf-name').value||'').trim();
+  var password=String(document.getElementById('uf-password').value||'');
+  var role=document.getElementById('uf-role').value==='master'?'master':'user';
+  var status=document.getElementById('uf-status').value==='blocked'?'blocked':'active';
+  var previous=original?getManagedUserRecord(original):null;
+  if(!name){toast('Informe o nome do usuário.');document.getElementById('uf-name').focus();return;}
+  if(!username||username.length<3){toast('Informe um usuário ou e-mail válido.');document.getElementById('uf-username').focus();return;}
+  if(!original&&getManagedUserRecord(username)){toast('Este usuário já está cadastrado.');return;}
+  if(!original&&password.length<6){toast('A senha deve ter pelo menos 6 caracteres.');document.getElementById('uf-password').focus();return;}
+  if(original&&password&&password.length<6){toast('A nova senha deve ter pelo menos 6 caracteres.');return;}
+  if(original===currentUser&&(role!=='master'||status==='blocked')){toast('Você não pode remover ou bloquear o próprio acesso master.');return;}
+  var otherActiveMasters=getAllManagedUserRecords().filter(function(record){return record.username!==original&&record.role==='master'&&record.status!=='blocked';}).length;
+  if(previous&&previous.role==='master'&&previous.status!=='blocked'&&(role!=='master'||status==='blocked')&&!otherActiveMasters){toast('Mantenha pelo menos um usuário master ativo.');return;}
+  var entry={username:username,name:name,role:role,status:status,password:password||(previous&&previous.password)||'',createdAt:(previous&&previous.createdAt)||new Date().toISOString(),updatedAt:new Date().toISOString()};
+  var index=managedUsers.findIndex(function(record){return normalizeManagedUsername(record.username)===(original||username);});
+  if(index>=0)managedUsers[index]=entry;else managedUsers.push(entry);
+  persistManagedUsers();
+  hideUserForm();renderUsersList();applyCurrentUserPermissions();toast('Usuário salvo com sucesso.');
+}
+function toggleManagedUserStatus(username){
+  if(!requirePermission('users.manage'))return;
+  username=normalizeManagedUsername(username);
+  if(username===currentUser){toast('Você não pode bloquear o próprio usuário.');return;}
+  var record=getManagedUserRecord(username);if(!record)return;
+  var next=record.status==='blocked'?'active':'blocked';
+  var originalIndex=managedUsers.findIndex(function(item){return normalizeManagedUsername(item.username)===username;});
+  var entry=Object.assign({},record,{status:next,password:record.password,updatedAt:new Date().toISOString()});delete entry.builtin;
+  if(record.role==='master'&&next==='blocked'&&!getAllManagedUserRecords().some(function(item){return item.username!==username&&item.role==='master'&&item.status!=='blocked';})){toast('Mantenha pelo menos um usuário master ativo.');return;}
+  if(originalIndex>=0)managedUsers[originalIndex]=entry;else managedUsers.push(entry);
+  persistManagedUsers();renderUsersList();toast(next==='active'?'Usuário ativado.':'Usuário bloqueado.');
+}
+function deleteManagedUser(username){
+  if(!requirePermission('users.manage'))return;
+  username=normalizeManagedUsername(username);
+  var record=getManagedUserRecord(username);if(!record||record.builtin)return;
+  if(username===currentUser){toast('Você não pode excluir o próprio usuário.');return;}
+  if(!confirm('Excluir o usuário '+username+'?'))return;
+  managedUsers=managedUsers.filter(function(item){return normalizeManagedUsername(item.username)!==username;});
+  persistManagedUsers();renderUsersList();toast('Usuário excluído.');
 }
 function loadParamsForm(){
   var p=getParams();
